@@ -5,8 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eichel Ober – Verein mit Sitz in Uster</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    #pw-overlay {
+      position: fixed; inset: 0;
+      background: #1a4d1a;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #pw-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 40px 36px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #pw-box img { height: 80px; margin-bottom: 16px; }
+    #pw-box h2 { color: #1a4d1a; font-size: 1.4rem; margin-bottom: 6px; }
+    #pw-box p  { color: #555; font-size: 0.9rem; margin-bottom: 20px; }
+    #pw-input {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #c5dfc0; border-radius: 6px;
+      font-size: 1rem; outline: none; margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+    #pw-input:focus { border-color: #2d6a2d; }
+    #pw-btn {
+      width: 100%; padding: 11px;
+      background: #2d6a2d; color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 1rem; cursor: pointer; font-weight: bold;
+    }
+    #pw-btn:hover { background: #1a4d1a; }
+    #pw-error {
+      color: #c0392b; font-size: 0.85rem;
+      margin-top: 10px; display: none;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Passwortschutz -->
+  <div id="pw-overlay">
+    <div id="pw-box">
+      <img src="img/eichel-ober.gif" alt="Eichel Ober">
+      <h2>Eichel Ober</h2>
+      <p>Bitte Passwort eingeben</p>
+      <input type="password" id="pw-input" placeholder="Passwort" onkeydown="if(event.key==='Enter')checkPw()">
+      <button id="pw-btn" onclick="checkPw()">Einloggen</button>
+      <div id="pw-error">Falsches Passwort. Bitte nochmals versuchen.</div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      if (sessionStorage.getItem('eo_auth') === '1') {
+        document.getElementById('pw-overlay').style.display = 'none';
+      }
+    })();
+    function checkPw() {
+      var val = document.getElementById('pw-input').value;
+      if (val === 'Hampi') {
+        sessionStorage.setItem('eo_auth', '1');
+        document.getElementById('pw-overlay').style.display = 'none';
+      } else {
+        document.getElementById('pw-error').style.display = 'block';
+        document.getElementById('pw-input').value = '';
+        document.getElementById('pw-input').focus();
+      }
+    }
+  </script>
 
   <header>
     <div class="header-inner">
