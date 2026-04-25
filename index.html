@@ -4,43 +4,653 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eichel Ober – Verein mit Sitz in Uster</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green-900: #0f2e0f;
+      --green-800: #1a4d1a;
+      --green-700: #2d6a2d;
+      --green-500: #4a9e4a;
+      --green-200: #c5dfc0;
+      --green-100: #eaf4e7;
+      --green-50:  #f4f9f2;
+      --cream: #fafaf7;
+      --ink: #1a1a1a;
+      --muted: #6b7566;
+      --serif: 'Libre Baskerville', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── PASSWORT ── */
+    #pw-overlay {
+      position: fixed; inset: 0;
+      background: var(--green-800);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+
+    #pw-box {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 52px 44px 44px;
+      text-align: center;
+      width: 340px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    }
+
+    #pw-box img {
+      height: 72px; margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    #pw-box h2 {
+      font-family: var(--serif);
+      color: var(--green-800);
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    #pw-box p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    #pw-input {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--green-200);
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 1rem;
+      outline: none;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+
+    #pw-input:focus { border-color: var(--green-700); }
+
+    #pw-btn {
+      width: 100%; padding: 13px;
+      background: var(--green-800); color: #fff;
+      border: none; border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+
+    #pw-btn:hover { background: var(--green-900); }
+
+    #pw-error {
+      color: #b94040;
+      font-size: 0.83rem;
+      margin-top: 12px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    /* ── ANRUF-SCREEN ── */
+    #call-overlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #1c1c1e 0%, #2c2c2e 100%);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+    }
+
+    #call-overlay.visible { display: flex; animation: callFadeIn 0.4s ease; }
+
+    @keyframes callFadeIn {
+      from { opacity: 0; transform: scale(1.04); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    #call-box {
+      text-align: center;
+      padding: 40px 32px 48px;
+      width: 320px;
+    }
+
+    #call-avatar-ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+
+    #call-avatar-ring::before,
+    #call-avatar-ring::after {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      animation: pulse 2s ease-out infinite;
+    }
+
+    #call-avatar-ring::after {
+      inset: -22px;
+      animation-delay: 0.6s;
+    }
+
+    @keyframes pulse {
+      0%   { opacity: 0.6; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.12); }
+    }
+
+    #call-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+
+    #call-name {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      color: #fff;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    #call-status {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 56px;
+    }
+
+    #call-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 56px;
+    }
+
+    .call-btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .call-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, filter 0.15s;
+    }
+
+    .call-btn:hover { transform: scale(1.08); filter: brightness(1.15); }
+    .call-btn:active { transform: scale(0.96); }
+
+    .call-btn.decline { background: #ff3b30; }
+    .call-btn.accept  { background: #34c759; }
+
+    .call-label {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    #call-overlay.accepting {
+      animation: callFadeOut 0.5s ease forwards;
+    }
+
+    @keyframes callFadeOut {
+      to { opacity: 0; transform: scale(0.96); }
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--green-800);
+      padding: 36px 48px 32px;
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .logo {
+      height: 72px;
+      width: auto;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      color: #fff;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+    }
+
+    .header-text p {
+      color: var(--green-200);
+      font-size: 0.88rem;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--green-900);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav ul {
+      max-width: 960px;
+      margin: 0 auto;
+      list-style: none;
+      display: flex;
+      padding: 0 24px;
+    }
+
+    nav ul li a {
+      display: block;
+      padding: 15px 22px;
+      color: var(--green-200);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 22px; right: 22px;
+      height: 2px;
+      background: var(--green-500);
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    nav ul li a:hover { color: #fff; }
+    nav ul li a:hover::after { transform: scaleX(1); }
+
+    /* ── SECTIONS ── */
+    section {
+      max-width: 960px;
+      margin: 72px auto;
+      padding: 0 32px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      color: var(--green-800);
+      margin-bottom: 8px;
+    }
+
+    .section-rule {
+      width: 48px;
+      height: 3px;
+      background: var(--green-500);
+      border-radius: 2px;
+      margin-bottom: 36px;
+    }
+
+    /* ── VORSTAND ── */
+    .group-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .vorstand-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .person-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 20px 24px;
+      text-align: center;
+      border: 1px solid var(--green-100);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .person-card:hover {
+      box-shadow: 0 8px 24px rgba(15,46,15,0.10);
+      transform: translateY(-2px);
+    }
+
+    .person-card.vorstand {
+      border-top: 3px solid var(--green-700);
+    }
+
+    .person-card .suit {
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .person-card .role {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--green-700);
+      margin-bottom: 6px;
+    }
+
+    .person-card .name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    /* ── DOKUMENTE ── */
+    .doc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .doc-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--green-100);
+      overflow: hidden;
+    }
+
+    .doc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .doc-header:hover { background: var(--green-50); }
+
+    .doc-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .doc-icon-wrap {
+      width: 44px;
+      height: 44px;
+      background: var(--green-100);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .doc-info h3 {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .doc-info p {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .doc-chevron {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--green-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green-700);
+      font-size: 0.75rem;
+      transition: transform 0.3s, background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .doc-chevron.open {
+      transform: rotate(180deg);
+      background: var(--green-200);
+    }
+
+    .doc-body {
+      display: none;
+      border-top: 1px solid var(--green-100);
+    }
+
+    .doc-body.open { display: block; }
+
+    .doc-body iframe {
+      width: 100%;
+      height: 580px;
+      border: none;
+      display: block;
+    }
+
+    .doc-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 20px;
+      background: var(--green-50);
+      border-top: 1px solid var(--green-100);
+    }
+
+    .doc-footer a {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--green-700);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .doc-footer a:hover { color: var(--green-900); text-decoration: underline; }
+
+    /* ── SONSTIGES ── */
+    .soon-box {
+      background: #fff;
+      border-radius: 12px;
+      border: 1.5px dashed var(--green-200);
+      padding: 56px 32px;
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--green-900);
+      color: var(--green-200);
+      text-align: center;
+      padding: 22px;
+      font-size: 0.82rem;
+      margin-top: 80px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      header { padding: 24px 20px; }
+      .header-inner { flex-direction: column; text-align: center; }
+      nav ul { flex-direction: column; padding: 0; }
+      nav ul li a { padding: 12px 20px; font-size: 0.8rem; }
+      section { padding: 0 20px; margin: 52px auto; }
+      .vorstand-grid, .member-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 420px) {
+      .vorstand-grid, .member-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
   <!-- ── Passwortschutz ── -->
   <div id="pw-overlay">
     <div id="pw-box">
-      <img src="eichel-ober.gif" alt="Eichel Ober">
+      <img src="img/eichel-ober.gif" alt="Eichel Ober">
       <h2>Eichel Ober</h2>
-      <p>Bitte Passwort eingeben. Wer ist de Coolsti?</p>
-      <input type="password" id="pw-input" placeholder="Passwort" onkeydown="if(event.key==='Enter')checkPw()">
+      <p>Bitte Passwort eingeben.<br>Wer ist de Coolsti?</p>
+      <input type="password" id="pw-input" placeholder="Passwort"
+             onkeydown="if(event.key==='Enter')checkPw()">
       <button id="pw-btn" onclick="checkPw()">Einloggen</button>
-      <div id="pw-error">Falsches Passwort. Gar keis Problem. Wer ist verantwortlich für den ZS?</div>
+      <div id="pw-error">Falsches Passwort. Gar keis Problem.<br>Wer ist verantwortlich für den ZS?</div>
     </div>
   </div>
+
+  <!-- ── Anruf-Screen ── -->
+  <div id="call-overlay">
+    <div id="call-box">
+      <div id="call-avatar-ring">
+        <img src="img/eichle%20ober%20ruft%20an.jpg" alt="Eichel Ober" id="call-avatar">
+      </div>
+      <div id="call-name">Eichel Ober</div>
+      <div id="call-status">Incoming Call…</div>
+      <div id="call-buttons">
+        <div class="call-btn-wrap">
+          <button class="call-btn decline" onclick="declineCall()">
+            <svg viewBox="0 0 24 24" fill="white" width="28" height="28">
+              <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" transform="rotate(135 12 12)"/>
+            </svg>
+          </button>
+          <span class="call-label">Ablehnen</span>
+        </div>
+        <div class="call-btn-wrap">
+          <button class="call-btn accept" onclick="acceptCall()">
+            <svg viewBox="0 0 24 24" fill="white" width="28" height="28">
+              <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+            </svg>
+          </button>
+          <span class="call-label">Annehmen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function() {
       if (sessionStorage.getItem('eo_auth') === '1') {
         document.getElementById('pw-overlay').style.display = 'none';
       }
     })();
+
     function checkPw() {
       if (document.getElementById('pw-input').value === 'Hampi') {
         sessionStorage.setItem('eo_auth', '1');
         document.getElementById('pw-overlay').style.display = 'none';
+        var call = document.getElementById('call-overlay');
+        call.classList.add('visible');
+        try { playRing(); } catch(e) {}
       } else {
         document.getElementById('pw-error').style.display = 'block';
         document.getElementById('pw-input').value = '';
         document.getElementById('pw-input').focus();
       }
     }
+
+    function acceptCall() {
+      stopRing();
+      var call = document.getElementById('call-overlay');
+      call.classList.add('accepting');
+      setTimeout(function() { call.style.display = 'none'; }, 500);
+    }
+
+    function declineCall() {
+      stopRing();
+      sessionStorage.removeItem('eo_auth');
+      var call = document.getElementById('call-overlay');
+      call.classList.add('accepting');
+      setTimeout(function() {
+        call.classList.remove('visible', 'accepting');
+        call.style.display = '';
+        document.getElementById('pw-overlay').style.display = 'flex';
+        document.getElementById('pw-input').value = '';
+        document.getElementById('pw-input').focus();
+      }, 500);
+    }
+
+    var audioCtx, ringInterval;
+    function playRing() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      function beep() {
+        var freqs = [880, 1108, 1320];
+        freqs.forEach(function(f, i) {
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.type = 'sine';
+          osc.frequency.value = f;
+          var t = audioCtx.currentTime + i * 0.07;
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.12, t + 0.02);
+          gain.gain.linearRampToValueAtTime(0, t + 0.18);
+          osc.start(t); osc.stop(t + 0.2);
+        });
+      }
+      beep();
+      ringInterval = setInterval(beep, 1800);
+    }
+    function stopRing() {
+      if (ringInterval) clearInterval(ringInterval);
+      if (audioCtx) audioCtx.close();
+    }
   </script>
 
   <!-- ── Header ── -->
   <header>
     <div class="header-inner">
-      <img src="eichel-ober.gif" alt="Eichel Ober" class="logo">
+      <img src="img/eichel-ober.gif" alt="Eichel Ober" class="logo">
       <div class="header-text">
         <h1>Eichel Ober</h1>
         <p>Verein mit Sitz in Uster</p>
@@ -54,93 +664,94 @@
       <li><a href="#vorstand">Vorstand &amp; Mitglieder</a></li>
       <li><a href="#dokumente">Statuten &amp; Gründungsprotokoll</a></li>
       <li><a href="#sonstiges">Sonstiges</a></li>
+      <li><a href="jass.html">🃏 Jass</a></li>
     </ul>
   </nav>
 
-  <!-- ══ SECTION 1: Vorstand & Mitglieder ══ -->
+  <!-- ── Vorstand & Mitglieder ── -->
   <section id="vorstand">
     <h2 class="section-title">Vorstand &amp; Mitglieder</h2>
+    <div class="section-rule"></div>
 
-    <p class="member-label">Vorstand</p>
+    <p class="group-label">Vorstand</p>
     <div class="vorstand-grid">
       <div class="person-card vorstand">
+        <span class="suit">♠</span>
         <div class="role">Präsident/in</div>
-        <div class="avatar">♠</div>
         <div class="name">Name</div>
       </div>
       <div class="person-card vorstand">
+        <span class="suit">♣</span>
         <div class="role">Vizepräsident/in</div>
-        <div class="avatar">♣</div>
         <div class="name">Name</div>
       </div>
       <div class="person-card vorstand">
+        <span class="suit">♦</span>
         <div class="role">Aktuar/in</div>
-        <div class="avatar">♦</div>
         <div class="name">Name</div>
       </div>
     </div>
 
-    <p class="member-label" style="margin-top: 32px;">Mitglieder</p>
+    <p class="group-label">Mitglieder</p>
     <div class="member-grid">
       <div class="person-card">
+        <span class="suit">♥</span>
         <div class="role">Mitglied</div>
-        <div class="avatar">♥</div>
         <div class="name">Name</div>
       </div>
       <div class="person-card">
+        <span class="suit">♥</span>
         <div class="role">Mitglied</div>
-        <div class="avatar">♥</div>
         <div class="name">Name</div>
       </div>
       <div class="person-card">
+        <span class="suit">♥</span>
         <div class="role">Mitglied</div>
-        <div class="avatar">♥</div>
         <div class="name">Name</div>
       </div>
     </div>
   </section>
 
-  <!-- ══ SECTION 2: Statuten & Gründungsprotokoll ══ -->
+  <!-- ── Dokumente ── -->
   <section id="dokumente">
     <h2 class="section-title">Statuten &amp; Gründungsprotokoll</h2>
+    <div class="section-rule"></div>
 
-    <div class="doc-cards">
+    <div class="doc-list">
 
-      <!-- Statuten -->
       <div class="doc-card">
-        <div class="doc-card-header" onclick="toggleDoc('statuten')">
-          <div class="doc-left">
-            <div class="doc-icon">📄</div>
+        <div class="doc-header" onclick="toggleDoc('statuten')">
+          <div class="doc-header-left">
+            <div class="doc-icon-wrap">📄</div>
             <div class="doc-info">
               <h3>Statuten</h3>
               <p>Vereinsstatuten Eichel Ober</p>
             </div>
           </div>
-          <div class="doc-arrow" id="arrow-statuten">▼</div>
+          <div class="doc-chevron" id="chev-statuten">▾</div>
         </div>
         <div class="doc-body" id="statuten">
           <iframe src="Statuten_Eichel_Ober.pdf" title="Statuten"></iframe>
-          <div class="doc-download">
+          <div class="doc-footer">
             <a href="Statuten_Eichel_Ober.pdf" download>⬇ PDF herunterladen</a>
           </div>
         </div>
       </div>
 
-      <!-- Gründungsprotokoll -->
       <div class="doc-card">
-        <div class="doc-card-header" onclick="toggleDoc('protokoll')">
-          <div class="doc-left">
-            <div class="doc-icon">📋</div>
+        <div class="doc-header" onclick="toggleDoc('protokoll')">
+          <div class="doc-header-left">
+            <div class="doc-icon-wrap">📋</div>
             <div class="doc-info">
               <h3>Gründungsprotokoll</h3>
               <p>Protokoll der Gründungsversammlung</p>
             </div>
           </div>
-          <div class="doc-arrow" id="arrow-protokoll">▼</div>
+          <div class="doc-chevron" id="chev-protokoll">▾</div>
         </div>
         <div class="doc-body" id="protokoll">
           <iframe src="Gr%C3%BCndungsprotokoll_Eichel_Ober.pdf" title="Gründungsprotokoll"></iframe>
-          <div class="doc-download">
+          <div class="doc-footer">
             <a href="Gr%C3%BCndungsprotokoll_Eichel_Ober.pdf" download>⬇ PDF herunterladen</a>
           </div>
         </div>
@@ -149,12 +760,11 @@
     </div>
   </section>
 
-  <!-- ══ SECTION 3: Sonstiges ══ -->
+  <!-- ── Sonstiges ── -->
   <section id="sonstiges">
     <h2 class="section-title">Sonstiges</h2>
-    <div class="sonstiges-placeholder">
-      Demnächst...
-    </div>
+    <div class="section-rule"></div>
+    <div class="soon-box">Demnächst…</div>
   </section>
 
   <footer>
@@ -164,10 +774,10 @@
   <script>
     function toggleDoc(id) {
       var body = document.getElementById(id);
-      var arrow = document.getElementById('arrow-' + id);
-      var isOpen = body.classList.contains('open');
-      body.classList.toggle('open', !isOpen);
-      arrow.classList.toggle('open', !isOpen);
+      var chev = document.getElementById('chev-' + id);
+      var open = body.classList.contains('open');
+      body.classList.toggle('open', !open);
+      chev.classList.toggle('open', !open);
     }
   </script>
 
