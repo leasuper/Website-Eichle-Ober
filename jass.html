@@ -146,7 +146,7 @@ function aiPlay(hand, trick, rndIdx, tricksDone) {
 function CardView({card, size='md', anim=false, special=false}) {
   const w = {sm:46, md:62, lg:76}[size]||62;
   const isEO = card.suit==='Eichel'&&card.rank==='O';
-  const src = `img/CH-Jasskartenset/${SUIT_FILE[card.suit]}_${RANK_FILE[card.rank]}.png`;
+  const src = `CH-Jasskartenset/${SUIT_FILE[card.suit]}_${RANK_FILE[card.rank]}.png`;
   const shadow = isEO&&special
     ? '0 0 0 2px #D4A010, 0 4px 14px rgba(0,0,0,.35)'
     : '0 3px 10px rgba(0,0,0,.25)';
