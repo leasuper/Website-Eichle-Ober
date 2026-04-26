@@ -804,6 +804,203 @@
       white-space: pre-wrap;
     }
 
+    /* ── DISKUSSION ── */
+    .disk-post {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--green-100);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .disk-post-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 20px 24px 0;
+    }
+
+    .disk-post-author {
+      font-weight: 600;
+      color: var(--green-800);
+      font-size: 0.9rem;
+    }
+
+    .disk-post-date {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .disk-post-body {
+      padding: 8px 24px 16px;
+      color: var(--ink);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .disk-comments {
+      border-top: 1px solid var(--green-100);
+      background: var(--green-50);
+      padding: 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .disk-comment {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .disk-comment-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green-500);
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+
+    .disk-comment-content { flex: 1; }
+
+    .disk-comment-author {
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--green-700);
+    }
+
+    .disk-comment-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .disk-comment-text {
+      font-size: 0.88rem;
+      color: var(--ink);
+      line-height: 1.5;
+      margin-top: 2px;
+      white-space: pre-wrap;
+    }
+
+    .disk-reply-btn {
+      background: none;
+      border: none;
+      color: var(--green-700);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--sans);
+      margin-top: 2px;
+    }
+
+    .disk-reply-btn:hover { color: var(--green-900); }
+
+    .disk-comment-form {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .disk-comment-form.open { display: flex; }
+
+    .disk-comment-form input,
+    .disk-comment-form textarea {
+      border: 1.5px solid var(--green-200);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+
+    .disk-comment-form input:focus,
+    .disk-comment-form textarea:focus { border-color: var(--green-700); }
+
+    .disk-comment-form textarea { height: 68px; resize: vertical; }
+
+    .disk-comment-form-actions {
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+
+    .disk-comment-cancel {
+      padding: 7px 16px;
+      border: 1.5px solid var(--green-200);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .disk-comment-submit {
+      padding: 7px 18px;
+      background: var(--green-700);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .disk-comment-submit:hover { background: var(--green-900); }
+
+    #disk-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #disk-modal.open { display: flex; }
+
+    #disk-box {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 460px;
+      max-width: 94vw;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    }
+
+    #disk-box h3 {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      color: var(--green-800);
+      margin-bottom: 20px;
+    }
+
+    #disk-author, #disk-text {
+      width: 100%;
+      border: 1.5px solid var(--green-200);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+    }
+
+    #disk-author:focus, #disk-text:focus { border-color: var(--green-700); }
+    #disk-text { height: 120px; resize: vertical; }
+
     /* ── SONSTIGES ── */
     .soon-box {
       background: #fff;
@@ -1048,6 +1245,7 @@
       <li><a href="#vorstand">Vorstand</a></li>
       <li><a href="#dokumente">Statuten</a></li>
       <li><a href="#protokoll">Protokoll</a></li>
+      <li><a href="#diskussion">Diskussion</a></li>
       <li><a href="#sonstiges">Sonstiges</a></li>
       <li><a href="jass.html">🃏 Jass</a></li>
       <li><a href="jasstafel.html">📊 Jasstafel</a></li>
@@ -1245,6 +1443,32 @@
     </div>
   </div>
 
+  <!-- ── Diskussion ── -->
+  <section id="diskussion">
+    <h2 class="section-title">Diskussion</h2>
+    <div class="section-rule"></div>
+    <p class="protokoll-intro">Stellt Fragen, plant Treffen, tauscht euch aus — Antworten direkt unter dem Beitrag.</p>
+    <button class="protokoll-add-btn" onclick="openDiskModal()">
+      💬 Beitrag starten
+    </button>
+    <div id="disk-entries">
+      <div class="protokoll-empty" id="disk-empty">Noch keine Beiträge. Starte die Diskussion!</div>
+    </div>
+  </section>
+
+  <!-- Diskussion Modal -->
+  <div id="disk-modal">
+    <div id="disk-box">
+      <h3>Neuer Beitrag</h3>
+      <input type="text" id="disk-author" placeholder="Dein Name">
+      <textarea id="disk-text" placeholder="Worüber möchtest du reden?"></textarea>
+      <div class="proto-actions">
+        <button class="proto-cancel" onclick="closeDiskModal()">Abbrechen</button>
+        <button class="proto-submit" onclick="submitDiskPost()">Posten</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Sonstiges ── -->
   <section id="sonstiges">
     <h2 class="section-title">Sonstiges</h2>
@@ -1267,6 +1491,7 @@
 
     /* ── Shared state (populated by Firebase listeners) ── */
     var protoEntries = [];
+    var diskPosts    = [];
     var fbRounds     = [];
     var fbWins       = [0,0,0,0,0,0];
 
@@ -1321,6 +1546,109 @@
 
     document.getElementById('proto-modal').addEventListener('click', function(e) {
       if (e.target === this) closeProto();
+    });
+
+    /* ── Diskussion ── */
+
+    function renderDiskussion() {
+      var container = document.getElementById('disk-entries');
+      var empty = document.getElementById('disk-empty');
+      container.querySelectorAll('.disk-post').forEach(function(e) { e.remove(); });
+      if (diskPosts.length === 0) { empty.style.display = ''; return; }
+      empty.style.display = 'none';
+      diskPosts.slice().reverse().forEach(function(post) {
+        var div = document.createElement('div');
+        div.className = 'disk-post';
+        div.id = 'disk-post-' + post.id;
+        var cmtsHtml = renderCommentsHtml(post.comments || []);
+        var pid = JSON.stringify(post.id);
+        div.innerHTML =
+          '<div class="disk-post-header">' +
+            '<span class="disk-post-author">' + escHtml(post.author) + '</span>' +
+            '<span class="disk-post-date">' + escHtml(post.date) + '</span>' +
+          '</div>' +
+          '<div class="disk-post-body">' + escHtml(post.text) + '</div>' +
+          '<div class="disk-comments">' +
+            cmtsHtml +
+            '<button class="disk-reply-btn" onclick="toggleCommentForm(' + pid + ')">💬 Antworten</button>' +
+            '<div class="disk-comment-form" id="disk-cform-' + post.id + '">' +
+              '<input type="text" placeholder="Dein Name" id="disk-cin-' + post.id + '">' +
+              '<textarea placeholder="Deine Antwort…" id="disk-ctxt-' + post.id + '"></textarea>' +
+              '<div class="disk-comment-form-actions">' +
+                '<button class="disk-comment-cancel" onclick="toggleCommentForm(' + pid + ')">Abbrechen</button>' +
+                '<button class="disk-comment-submit" onclick="submitComment(' + pid + ')">Senden</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        container.appendChild(div);
+      });
+    }
+
+    function renderCommentsHtml(comments) {
+      return comments.map(function(c) {
+        return '<div class="disk-comment">' +
+          '<div class="disk-comment-dot"></div>' +
+          '<div class="disk-comment-content">' +
+            '<div><span class="disk-comment-author">' + escHtml(c.author) + '</span>' +
+            '<span class="disk-comment-date">' + escHtml(c.date) + '</span></div>' +
+            '<div class="disk-comment-text">' + escHtml(c.text) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function openDiskModal() {
+      document.getElementById('disk-modal').classList.add('open');
+      document.getElementById('disk-author').focus();
+    }
+
+    function closeDiskModal() {
+      document.getElementById('disk-modal').classList.remove('open');
+      document.getElementById('disk-author').value = '';
+      document.getElementById('disk-text').value = '';
+    }
+
+    function submitDiskPost() {
+      var author = document.getElementById('disk-author').value.trim();
+      var text   = document.getElementById('disk-text').value.trim();
+      if (!author || !text) return;
+      var now  = new Date();
+      var date = now.toLocaleDateString('de-CH', {day:'2-digit', month:'2-digit', year:'numeric'});
+      var post = { id: Date.now(), author: author, text: text, date: date, comments: [] };
+      db.ref('diskussion').set(JSON.stringify(diskPosts.concat([post])));
+      closeDiskModal();
+    }
+
+    function toggleCommentForm(postId) {
+      var form = document.getElementById('disk-cform-' + postId);
+      if (!form) return;
+      var isOpen = form.classList.contains('open');
+      document.querySelectorAll('.disk-comment-form.open').forEach(function(f) { f.classList.remove('open'); });
+      if (!isOpen) {
+        form.classList.add('open');
+        var inp = document.getElementById('disk-cin-' + postId);
+        if (inp) inp.focus();
+      }
+    }
+
+    function submitComment(postId) {
+      var author = (document.getElementById('disk-cin-'  + postId) || {}).value || '';
+      var text   = (document.getElementById('disk-ctxt-' + postId) || {}).value || '';
+      author = author.trim(); text = text.trim();
+      if (!author || !text) return;
+      var now  = new Date();
+      var date = now.toLocaleDateString('de-CH', {day:'2-digit', month:'2-digit', year:'numeric'});
+      var newPosts = diskPosts.map(function(p) {
+        if (p.id === postId) {
+          return Object.assign({}, p, { comments: (p.comments || []).concat([{ author: author, text: text, date: date }]) });
+        }
+        return p;
+      });
+      db.ref('diskussion').set(JSON.stringify(newPosts));
+    }
+
+    document.getElementById('disk-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeDiskModal();
     });
 
     function toggleDoc(id) {
@@ -1526,6 +1854,10 @@
       db.ref('protokoll').on('value', function(snap) {
         try { protoEntries = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { protoEntries = []; }
         renderEntries();
+      });
+      db.ref('diskussion').on('value', function(snap) {
+        try { diskPosts = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { diskPosts = []; }
+        renderDiskussion();
       });
     }
   </script>
