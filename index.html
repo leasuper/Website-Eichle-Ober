@@ -353,7 +353,7 @@
     .person-card {
       background: #fff;
       border-radius: 12px;
-      padding: 28px 20px 24px;
+      overflow: hidden;
       text-align: center;
       border: 1px solid var(--green-100);
       transition: box-shadow 0.2s, transform 0.2s;
@@ -364,16 +364,24 @@
       transform: translateY(-2px);
     }
 
-    .person-card.vorstand {
-      border-top: 3px solid var(--green-700);
-    }
+    .person-card.vorstand { border-top: 3px solid var(--green-700); }
 
-    .person-card .suit {
-      font-size: 2rem;
-      line-height: 1;
-      margin-bottom: 12px;
+    .member-photo-wrap {
+      width: 100%;
+      background: var(--green-50);
+    }
+    .member-photo {
+      width: 100%;
+      height: auto;
       display: block;
     }
+    .member-suit-fallback {
+      font-size: 2.5rem;
+      padding: 28px 0 16px;
+      display: block;
+    }
+
+    .card-info { padding: 14px 16px 20px; }
 
     .person-card .role {
       font-size: 0.72rem;
@@ -382,6 +390,10 @@
       letter-spacing: 1px;
       color: var(--green-700);
       margin-bottom: 6px;
+      min-height: 2.2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .person-card .name {
@@ -499,6 +511,299 @@
 
     .doc-footer a:hover { color: var(--green-900); text-decoration: underline; }
 
+    /* ── LEADERBOARD ── */
+    .leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--green-100);
+      padding: 16px 24px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .lb-row:hover {
+      box-shadow: 0 6px 20px rgba(15,46,15,0.09);
+      transform: translateY(-1px);
+    }
+
+    .lb-row.lb-winner {
+      border: 2px solid #D4A010;
+      background: linear-gradient(135deg, #fffdf0 0%, #fff9e0 100%);
+    }
+
+    .lb-rank {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 36px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .lb-row.lb-winner .lb-rank { color: #D4A010; }
+
+    .lb-medal {
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .lb-info { flex: 1; }
+
+    .lb-name {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .lb-role {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .lb-score {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--green-700);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .lb-row.lb-winner .lb-score { color: #D4A010; }
+
+    .lb-score-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-weight: 400;
+      display: block;
+      text-align: right;
+    }
+
+    .lb-finish-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #f5cc40, #D4A010);
+      color: #5a3e00;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 26px;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(212,160,16,0.3);
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    }
+    .lb-finish-btn:hover {
+      background: linear-gradient(135deg, #e8bb2a, #bf8f00);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(212,160,16,0.4);
+    }
+
+    .lb-layout {
+      display: flex;
+      gap: 36px;
+      align-items: flex-start;
+    }
+
+    .lb-table-wrap { flex: 1; min-width: 0; }
+
+    .lb-chart-wrap {
+      flex-shrink: 0;
+      width: 210px;
+      text-align: center;
+    }
+
+    .lb-chart-wrap svg { width: 100%; height: auto; }
+
+    .chart-title {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-top: 6px;
+    }
+
+    .lb-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .lb-layout { flex-direction: column; align-items: center; }
+      .lb-table-wrap { width: 100%; }
+      .lb-chart-wrap { width: 180px; }
+    }
+
+    /* ── PROTOKOLL ── */
+    .protokoll-intro {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .protokoll-add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green-800);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 36px;
+    }
+
+    .protokoll-add-btn:hover {
+      background: var(--green-900);
+      transform: translateY(-1px);
+    }
+
+    .protokoll-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .protokoll-empty {
+      background: #fff;
+      border-radius: 12px;
+      border: 1.5px dashed var(--green-200);
+      padding: 48px 32px;
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── PROTOKOLL MODAL ── */
+    #proto-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #proto-modal.open { display: flex; }
+
+    #proto-box {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 460px;
+      max-width: 94vw;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    }
+
+    #proto-box h3 {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      color: var(--green-800);
+      margin-bottom: 20px;
+    }
+
+    #proto-name, #proto-text {
+      width: 100%;
+      border: 1.5px solid var(--green-200);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+    }
+
+    #proto-name:focus, #proto-text:focus { border-color: var(--green-700); }
+
+    #proto-text { height: 120px; resize: vertical; }
+
+    .proto-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .proto-cancel {
+      padding: 10px 20px;
+      border: 1.5px solid var(--green-200);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .proto-submit {
+      padding: 10px 24px;
+      background: var(--green-800);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .proto-submit:hover { background: var(--green-900); }
+
+    .protokoll-entry {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--green-100);
+      padding: 20px 24px;
+    }
+
+    .protokoll-entry .proto-author {
+      font-weight: 600;
+      color: var(--green-800);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .protokoll-entry .proto-date {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .protokoll-entry .proto-body {
+      color: var(--ink);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
     /* ── SONSTIGES ── */
     .soon-box {
       background: #fff;
@@ -532,7 +837,30 @@
     @media (max-width: 420px) {
       .vorstand-grid, .member-grid { grid-template-columns: 1fr; }
     }
+
+    #google-signin-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 13px; margin-top: 8px;
+      background: #fff; border: 1.5px solid #ddd; border-radius: 8px;
+      font-family: var(--sans); font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; color: var(--ink);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    #google-signin-btn:hover { background: #f5f5f5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+    #user-info { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    #user-name { font-size: 0.78rem; color: var(--green-200); }
+    #signout-btn {
+      background: transparent; border: 1px solid var(--green-500);
+      color: var(--green-200); padding: 5px 12px; border-radius: 6px;
+      font-size: 0.75rem; cursor: pointer; font-family: var(--sans);
+      transition: background 0.2s;
+    }
+    #signout-btn:hover { background: rgba(255,255,255,0.1); }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -541,11 +869,16 @@
     <div id="pw-box">
       <img src="eichel-ober.gif" alt="Eichel Ober">
       <h2>Eichel Ober</h2>
-      <p>Bitte Passwort eingeben.<br>Wer ist de Coolsti?</p>
-      <input type="password" id="pw-input" placeholder="Passwort"
-             onkeydown="if(event.key==='Enter')checkPw()">
-      <button id="pw-btn" onclick="checkPw()">Einloggen</button>
-      <div id="pw-error">Falsches Passwort. Gar keis Problem.<br>Wer ist verantwortlich für den ZS?</div>
+      <p>Melde dich mit deinem Google-Konto an.</p>
+      <button id="google-signin-btn" onclick="signInWithGoogle()">
+        <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Mit Google anmelden
+      </button>
     </div>
   </div>
 
@@ -579,44 +912,91 @@
   </div>
 
   <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
+      authDomain: "website-eichle-ober-bf1e5.firebaseapp.com",
+      databaseURL: "https://website-eichle-ober-bf1e5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "website-eichle-ober-bf1e5",
+      storageBucket: "website-eichle-ober-bf1e5.firebasestorage.app",
+      messagingSenderId: "405255994774",
+      appId: "1:405255994774:web:5c590b8dd16ce9ebfd31b7"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+    var db   = firebase.database();
+
+    var ERLAUBTE_EMAILS = [
+      'eichelober@gmail.com',
+      'ella.baettig@gmail.com',
+      'noe.bertallo@icloud.com',
+      'lars.lumer@icloud.com',
+      'cpfenninger@outlook.com',
+      'le.nievergelt@gmail.com',
+      'silas.mueller4@gmail.com'
+    ];
+
+    /* Hide overlay immediately if session is still active */
     (function() {
-      if (sessionStorage.getItem('eo_auth') === '1') {
+      if (sessionStorage.getItem('eo_uid')) {
         document.getElementById('pw-overlay').style.display = 'none';
       }
     })();
 
-    function checkPw() {
-      if (document.getElementById('pw-input').value === 'Hampi') {
-        sessionStorage.setItem('eo_auth', '1');
-        document.getElementById('pw-overlay').style.display = 'none';
-        var call = document.getElementById('call-overlay');
-        call.classList.add('visible');
-        try { playRing(); } catch(e) {}
+    auth.onAuthStateChanged(function(user) {
+      if (!user) {
+        sessionStorage.removeItem('eo_uid');
+        sessionStorage.removeItem('eo_called');
+        document.getElementById('pw-overlay').style.display = 'flex';
+        document.getElementById('user-info').style.display = 'none';
       } else {
-        document.getElementById('pw-error').style.display = 'block';
-        document.getElementById('pw-input').value = '';
-        document.getElementById('pw-input').focus();
+        if (ERLAUBTE_EMAILS.indexOf(user.email.toLowerCase()) === -1) {
+          auth.signOut();
+          document.getElementById('pw-overlay').style.display = 'flex';
+          document.querySelector('#pw-box p').innerHTML =
+            '<span style="color:#b94040">Kein Zugang für <b>' + user.email + '</b>.<br>Melde dich mit einem erlaubten Konto an.</span>';
+          return;
+        }
+        sessionStorage.setItem('eo_uid', user.uid);
+        document.getElementById('pw-overlay').style.display = 'none';
+        document.getElementById('user-name').textContent = user.displayName || user.email;
+        document.getElementById('user-info').style.display = 'flex';
+        if (!sessionStorage.getItem('eo_called')) {
+          var call = document.getElementById('call-overlay');
+          call.classList.add('visible');
+          try { playRing(); } catch(e) {}
+        } else {
+          initFirebaseListeners();
+        }
       }
+    });
+
+    function signInWithGoogle() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(function(err) {
+        alert('Anmeldung fehlgeschlagen: ' + err.message);
+      });
     }
 
     function acceptCall() {
       stopRing();
+      sessionStorage.setItem('eo_called', '1');
       var call = document.getElementById('call-overlay');
       call.classList.add('accepting');
-      setTimeout(function() { call.style.display = 'none'; }, 500);
+      setTimeout(function() {
+        call.style.display = 'none';
+        initFirebaseListeners();
+      }, 500);
     }
 
     function declineCall() {
       stopRing();
-      sessionStorage.removeItem('eo_auth');
+      auth.signOut();
+      sessionStorage.removeItem('eo_called');
       var call = document.getElementById('call-overlay');
       call.classList.add('accepting');
       setTimeout(function() {
         call.classList.remove('visible', 'accepting');
         call.style.display = '';
-        document.getElementById('pw-overlay').style.display = 'flex';
-        document.getElementById('pw-input').value = '';
-        document.getElementById('pw-input').focus();
       }, 500);
     }
 
@@ -655,16 +1035,22 @@
         <h1>Eichel Ober</h1>
         <p>Verein mit Sitz in Uster</p>
       </div>
+      <div id="user-info" style="display:none">
+        <span id="user-name"></span>
+        <button id="signout-btn" onclick="firebase.auth().signOut()">Abmelden</button>
+      </div>
     </div>
   </header>
 
   <!-- ── Navigation ── -->
   <nav>
     <ul>
-      <li><a href="#vorstand">Vorstand &amp; Mitglieder</a></li>
-      <li><a href="#dokumente">Statuten &amp; Gründungsprotokoll</a></li>
+      <li><a href="#vorstand">Vorstand</a></li>
+      <li><a href="#dokumente">Statuten</a></li>
+      <li><a href="#protokoll">Protokoll</a></li>
       <li><a href="#sonstiges">Sonstiges</a></li>
       <li><a href="jass.html">🃏 Jass</a></li>
+      <li><a href="jasstafel.html">📊 Jasstafel</a></li>
     </ul>
   </nav>
 
@@ -676,38 +1062,62 @@
     <p class="group-label">Vorstand</p>
     <div class="vorstand-grid">
       <div class="person-card vorstand">
-        <span class="suit">♠</span>
-        <div class="role">Präsident/in</div>
-        <div class="name">Name</div>
+        <div class="member-photo-wrap">
+          <img src="img/Mitglieder/Noe.jpg" alt="Noé B." class="member-photo" onerror="memberImgErr(this,'♠')">
+        </div>
+        <div class="card-info">
+          <div class="role">Präsi</div>
+          <div class="name">Noé B.</div>
+        </div>
       </div>
       <div class="person-card vorstand">
-        <span class="suit">♣</span>
-        <div class="role">Vizepräsident/in</div>
-        <div class="name">Name</div>
+        <div class="member-photo-wrap">
+          <img src="img/Mitglieder/Ella.jpg" alt="Ella B." class="member-photo" onerror="memberImgErr(this,'♣')">
+        </div>
+        <div class="card-info">
+          <div class="role">Vize-Präsi</div>
+          <div class="name">Ella B.</div>
+        </div>
       </div>
       <div class="person-card vorstand">
-        <span class="suit">♦</span>
-        <div class="role">Aktuar/in</div>
-        <div class="name">Name</div>
+        <div class="member-photo-wrap">
+          <img src="img/Mitglieder/Lars.jpg" alt="Lars L." class="member-photo" onerror="memberImgErr(this,'♦')">
+        </div>
+        <div class="card-info">
+          <div class="role">Aktuar</div>
+          <div class="name">Lars L.</div>
+        </div>
       </div>
     </div>
 
     <p class="group-label">Mitglieder</p>
     <div class="member-grid">
       <div class="person-card">
-        <span class="suit">♥</span>
-        <div class="role">Mitglied</div>
-        <div class="name">Name</div>
+        <div class="member-photo-wrap">
+          <img src="img/Mitglieder/Leandro.jpg" alt="Leandro N." class="member-photo" onerror="memberImgErr(this,'♥')">
+        </div>
+        <div class="card-info">
+          <div class="role">Aussenminister</div>
+          <div class="name">Leandro N.</div>
+        </div>
       </div>
       <div class="person-card">
-        <span class="suit">♥</span>
-        <div class="role">Mitglied</div>
-        <div class="name">Name</div>
+        <div class="member-photo-wrap">
+          <img src="img/Mitglieder/Chanelle.jpg" alt="Chanelle P." class="member-photo" onerror="memberImgErr(this,'♥')">
+        </div>
+        <div class="card-info">
+          <div class="role">Senior Chief Executive Facility Managerin</div>
+          <div class="name">Chanelle P.</div>
+        </div>
       </div>
       <div class="person-card">
-        <span class="suit">♥</span>
-        <div class="role">Mitglied</div>
-        <div class="name">Name</div>
+        <div class="member-photo-wrap">
+          <img src="img/Mitglieder/Silas.jpg" alt="Silas M." class="member-photo" onerror="memberImgErr(this,'♥')">
+        </div>
+        <div class="card-info">
+          <div class="role">Bierzipfel</div>
+          <div class="name">Silas M.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -760,6 +1170,81 @@
     </div>
   </section>
 
+  <!-- ── Leaderboard ── -->
+  <section id="leaderboard">
+    <h2 class="section-title">Leaderboard</h2>
+    <div class="section-rule"></div>
+    <div id="lb-finish-bar" style="display:none; margin-bottom:20px;">
+      <button class="lb-finish-btn" onclick="finishGameFromLB()">🏁 Spiel abschliessen</button>
+    </div>
+
+    <div class="lb-layout">
+
+      <!-- Rangliste -->
+      <div class="lb-table-wrap">
+        <div class="leaderboard" id="lb-list"></div>
+        <p class="lb-note" id="lb-note"></p>
+      </div>
+
+      <!-- Eichel-Kuchen-Diagramm -->
+      <div class="lb-chart-wrap">
+        <svg id="acorn-svg" viewBox="0 0 220 365" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="body-clip">
+              <circle cx="110" cy="175" r="90"/>
+            </clipPath>
+          </defs>
+          <!-- Pie-Slices (clipped to acorn body) -->
+          <g id="pie-slices" clip-path="url(#body-clip)"></g>
+          <!-- Acorn body border -->
+          <circle cx="110" cy="175" r="90" fill="none" stroke="#7B5E3A" stroke-width="2.5"/>
+          <!-- Cap -->
+          <path d="M 28,100 Q 110,55 192,100 L 185,124 Q 110,138 35,124 Z" fill="#8B6A40"/>
+          <!-- Cap texture lines -->
+          <line x1="68" y1="63"  x2="52"  y2="124" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
+          <line x1="90" y1="57"  x2="78"  y2="125" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
+          <line x1="110" y1="55" x2="110" y2="126" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
+          <line x1="130" y1="57" x2="142" y2="125" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
+          <line x1="152" y1="63" x2="168" y2="124" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
+          <!-- Cap border -->
+          <path d="M 28,100 Q 110,55 192,100 L 185,124 Q 110,138 35,124 Z" fill="none" stroke="#5a3e20" stroke-width="1.5"/>
+          <!-- Stem -->
+          <path d="M 110,85 Q 126,65 120,44" fill="none" stroke="#5a3e20" stroke-width="4" stroke-linecap="round"/>
+          <!-- Legend -->
+          <g id="acorn-legend" transform="translate(10,274)"></g>
+        </svg>
+        <p class="chart-title">Gewonnene Runden</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Protokoll ── -->
+  <section id="protokoll">
+    <h2 class="section-title">Protokoll</h2>
+    <div class="section-rule"></div>
+    <p class="protokoll-intro">Hier kann jeder einen Beitrag hinterlassen — Notizen, Beschlüsse, Erlebnisse.</p>
+    <button class="protokoll-add-btn" onclick="openProto()">
+      ✏️ Beitrag hinzufügen
+    </button>
+    <div class="protokoll-entries" id="proto-entries">
+      <div class="protokoll-empty" id="proto-empty">Noch keine Einträge. Sei der Erste!</div>
+    </div>
+  </section>
+
+  <!-- Protokoll Modal -->
+  <div id="proto-modal">
+    <div id="proto-box">
+      <h3>Neuer Eintrag</h3>
+      <input type="text" id="proto-name" placeholder="Dein Name">
+      <textarea id="proto-text" placeholder="Was möchtest du festhalten?"></textarea>
+      <div class="proto-actions">
+        <button class="proto-cancel" onclick="closeProto()">Abbrechen</button>
+        <button class="proto-submit" onclick="submitProto()">Eintragen</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Sonstiges ── -->
   <section id="sonstiges">
     <h2 class="section-title">Sonstiges</h2>
@@ -772,12 +1257,276 @@
   </footer>
 
   <script>
+    function memberImgErr(img, suit) {
+      img.style.display = 'none';
+      var span = document.createElement('span');
+      span.className = 'member-suit-fallback';
+      span.textContent = suit;
+      img.parentElement.appendChild(span);
+    }
+
+    /* ── Shared state (populated by Firebase listeners) ── */
+    var protoEntries = [];
+    var fbRounds     = [];
+    var fbWins       = [0,0,0,0,0,0];
+
+    /* ── Protokoll ── */
+
+    function renderEntries() {
+      var container = document.getElementById('proto-entries');
+      var empty = document.getElementById('proto-empty');
+      var existing = container.querySelectorAll('.protokoll-entry');
+      existing.forEach(function(e) { e.remove(); });
+      if (protoEntries.length === 0) {
+        empty.style.display = '';
+      } else {
+        empty.style.display = 'none';
+        protoEntries.slice().reverse().forEach(function(e) {
+          var div = document.createElement('div');
+          div.className = 'protokoll-entry';
+          div.innerHTML =
+            '<div class="proto-author">' + escHtml(e.name) +
+            '<span class="proto-date">' + e.date + '</span></div>' +
+            '<div class="proto-body">' + escHtml(e.text) + '</div>';
+          container.appendChild(div);
+        });
+      }
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function openProto() {
+      document.getElementById('proto-modal').classList.add('open');
+      document.getElementById('proto-name').focus();
+    }
+
+    function closeProto() {
+      document.getElementById('proto-modal').classList.remove('open');
+      document.getElementById('proto-name').value = '';
+      document.getElementById('proto-text').value = '';
+    }
+
+    function submitProto() {
+      var name = document.getElementById('proto-name').value.trim();
+      var text = document.getElementById('proto-text').value.trim();
+      if (!name || !text) return;
+      var now = new Date();
+      var date = now.toLocaleDateString('de-CH', {day:'2-digit', month:'2-digit', year:'numeric'});
+      var newEntries = protoEntries.concat([{ name: name, text: text, date: date }]);
+      db.ref('protokoll').set(JSON.stringify(newEntries));
+      closeProto();
+    }
+
+    document.getElementById('proto-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeProto();
+    });
+
     function toggleDoc(id) {
       var body = document.getElementById(id);
       var chev = document.getElementById('chev-' + id);
       var open = body.classList.contains('open');
       body.classList.toggle('open', !open);
       chev.classList.toggle('open', !open);
+    }
+
+    /* ── Leaderboard (live from Jasstafel) ── */
+    var LB_PLAYERS = [
+      { name: 'Noé B.',      role: 'Präsi' },
+      { name: 'Ella B.',     role: 'Vize-Präsi' },
+      { name: 'Lars L.',     role: 'Aktuar' },
+      { name: 'Leandro N.', role: 'Aussenminister' },
+      { name: 'Chanelle P.',role: 'Senior Chief Executive Facility Managerin' },
+      { name: 'Silas M.',   role: 'Bierzipfel' }
+    ];
+
+    var PTS_LB = { stich: 5, schilte: 10, koenig: 20, eichelOber: 67, eichelOber25: 25, letzterStich: 50 };
+
+    var PLAYER_COLORS = ['#3a7d44','#5ba35a','#90c97e','#c5e8b4','#f0c040','#D4A010'];
+
+    function calcRoundScores(round) {
+      return LB_PLAYERS.map(function(_, i) {
+        var s = (round.stiche[i]   || 0) * PTS_LB.stich
+              + (round.schilten[i] || 0) * PTS_LB.schilte
+              + (round.koenige[i]  || 0) * PTS_LB.koenig;
+        if (round.eichelOber  === i) s += PTS_LB.eichelOber;
+        if (round.eichelOber25=== i) s += PTS_LB.eichelOber25;
+        if (round.letzterStich=== i) s += PTS_LB.letzterStich;
+        return s;
+      });
+    }
+
+    function loadLeaderboard() {
+      var rounds = fbRounds;
+      var wins   = fbWins;
+
+      /* Current game totals */
+      var totals = LB_PLAYERS.map(function() { return 0; });
+      rounds.forEach(function(round) {
+        calcRoundScores(round).forEach(function(s, i) { totals[i] += s; });
+      });
+
+      /* Show/hide "Spiel abschliessen" button */
+      var finishBar = document.getElementById('lb-finish-bar');
+      if (finishBar) finishBar.style.display = rounds.length > 0 ? '' : 'none';
+
+      var standing = LB_PLAYERS.map(function(p, i) {
+        return { idx: i, name: p.name, role: p.role, total: totals[i], wins: wins[i] || 0 };
+      });
+
+      var hasAnyWins = standing.some(function(p) { return p.wins > 0; });
+
+      if (hasAnyWins) {
+        /* Sort by wins (desc), then fewest current-game points (asc) */
+        standing.sort(function(a, b) {
+          if (b.wins !== a.wins) return b.wins - a.wins;
+          return a.total - b.total;
+        });
+      } else {
+        /* No wins recorded yet — sort by fewest current points */
+        standing.sort(function(a, b) { return a.total - b.total; });
+      }
+
+      var medals = ['🏆','🥈','🥉','🃏','🃏','🃏'];
+      var list = document.getElementById('lb-list');
+      var note = document.getElementById('lb-note');
+      list.innerHTML = '';
+
+      standing.forEach(function(p, i) {
+        list.appendChild(makeLbRow(i + 1, medals[i], p, i === 0 && (hasAnyWins || rounds.length > 0)));
+      });
+
+      var parts = [];
+      if (rounds.length > 0) parts.push(rounds.length + ' Runde' + (rounds.length === 1 ? '' : 'n') + ' im aktuellen Spiel');
+      if (hasAnyWins) parts.push('Siege aus abgeschlossenen Spielen');
+      note.textContent = parts.length ? parts.join(' · ') : 'Noch keine Daten. Spiel eine Runde in der Jasstafel!';
+
+      /* Pass wins in PLAYERS index order for correct colors in chart */
+      var winsForChart = LB_PLAYERS.map(function(_, i) {
+        var found = standing.filter(function(s) { return s.idx === i; })[0];
+        return found ? found.wins : 0;
+      });
+      renderAcornChart(winsForChart);
+    }
+
+    function finishGameFromLB() {
+      if (fbRounds.length === 0) return;
+
+      var totals = LB_PLAYERS.map(function() { return 0; });
+      fbRounds.forEach(function(round) {
+        calcRoundScores(round).forEach(function(s, i) { totals[i] += s; });
+      });
+
+      var minTotal = Math.min.apply(null, totals);
+      var winnerIdx = totals.indexOf(minTotal);
+      var winner = LB_PLAYERS[winnerIdx];
+
+      if (!confirm('🏆 ' + winner.name + ' gewinnt mit ' + minTotal + ' Punkten!\n\nSieg eintragen und Runden zurücksetzen?')) return;
+
+      var wins = fbWins.slice();
+      wins[winnerIdx] = (wins[winnerIdx] || 0) + 1;
+      db.ref('wins').set(JSON.stringify(wins));
+      db.ref('jasstafel').set(JSON.stringify([]));
+    }
+
+    function makeLbRow(rank, medal, p, isWinner) {
+      var div = document.createElement('div');
+      div.className = 'lb-row' + (isWinner ? ' lb-winner' : '');
+      var winsStr = p.wins > 0 ? p.wins + ' Sieg' + (p.wins === 1 ? '' : 'e') : '';
+      var scoreStr = p.total > 0 ? p.total + ' Pkt.' : (p.wins > 0 ? '' : '0 Pkt.');
+      var labelParts = [];
+      if (winsStr) labelParts.push(winsStr);
+      if (scoreStr) labelParts.push(scoreStr);
+      div.innerHTML =
+        '<div class="lb-rank">' + rank + '</div>' +
+        '<div class="lb-medal">' + medal + '</div>' +
+        '<div class="lb-info">' +
+          '<div class="lb-name">' + escHtml(p.name) + '</div>' +
+          '<div class="lb-role">' + escHtml(p.role) + '</div>' +
+        '</div>' +
+        '<div class="lb-score">' + (winsStr || '–') +
+          '<span class="lb-score-label">' + (scoreStr ? 'aktuell: ' + scoreStr : '') + '</span>' +
+        '</div>';
+      return div;
+    }
+
+    function polarToXY(cx, cy, r, deg) {
+      var rad = (deg - 90) * Math.PI / 180;
+      return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+    }
+
+    function renderAcornChart(wins) {
+      var total = wins.reduce(function(a, b) { return a + b; }, 0);
+      var slicesG = document.getElementById('pie-slices');
+      var legendG = document.getElementById('acorn-legend');
+      slicesG.innerHTML = '';
+      legendG.innerHTML = '';
+
+      var cx = 110, cy = 175, r = 90;
+      var NS = 'http://www.w3.org/2000/svg';
+
+      if (total === 0) {
+        var circle = document.createElementNS(NS, 'circle');
+        circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+        circle.setAttribute('fill', '#e0e0e0');
+        slicesG.appendChild(circle);
+      } else {
+        var startAngle = 0;
+        wins.forEach(function(w, i) {
+          if (w === 0) return;
+          var slice = w / total * 360;
+          var endAngle = startAngle + slice;
+          var large = slice > 180 ? 1 : 0;
+          var s = polarToXY(cx, cy, r, startAngle);
+          var e = polarToXY(cx, cy, r, endAngle);
+          var path = document.createElementNS(NS, 'path');
+          var d = 'M ' + cx + ',' + cy +
+                  ' L ' + s.x.toFixed(1) + ',' + s.y.toFixed(1) +
+                  ' A ' + r + ',' + r + ' 0 ' + large + ' 1 ' + e.x.toFixed(1) + ',' + e.y.toFixed(1) +
+                  ' Z';
+          path.setAttribute('d', d);
+          path.setAttribute('fill', PLAYER_COLORS[i % PLAYER_COLORS.length]);
+          path.setAttribute('stroke', '#fff');
+          path.setAttribute('stroke-width', '1.5');
+          slicesG.appendChild(path);
+          startAngle = endAngle;
+        });
+      }
+
+      /* Legend below the acorn */
+      var legendWins = wins.map(function(w, i) { return { i: i, w: w }; }).filter(function(x) { return x.w > 0; });
+      legendWins.forEach(function(item, li) {
+        var yOff = li * 14;
+        var rect = document.createElementNS(NS, 'rect');
+        rect.setAttribute('x', 0); rect.setAttribute('y', yOff);
+        rect.setAttribute('width', 10); rect.setAttribute('height', 10);
+        rect.setAttribute('fill', PLAYER_COLORS[item.i % PLAYER_COLORS.length]);
+        rect.setAttribute('rx', 2);
+        legendG.appendChild(rect);
+        var text = document.createElementNS(NS, 'text');
+        text.setAttribute('x', 14); text.setAttribute('y', yOff + 9);
+        text.setAttribute('font-size', '9');
+        text.setAttribute('fill', '#555');
+        var short = LB_PLAYERS[item.i].name + ' (' + item.w + ')';
+        text.textContent = short;
+        legendG.appendChild(text);
+      });
+    }
+
+    function initFirebaseListeners() {
+      db.ref('jasstafel').on('value', function(snap) {
+        try { fbRounds = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { fbRounds = []; }
+        loadLeaderboard();
+      });
+      db.ref('wins').on('value', function(snap) {
+        try { fbWins = snap.val() ? JSON.parse(snap.val()) : [0,0,0,0,0,0]; } catch(e) { fbWins = [0,0,0,0,0,0]; }
+        loadLeaderboard();
+      });
+      db.ref('protokoll').on('value', function(snap) {
+        try { protoEntries = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { protoEntries = []; }
+        renderEntries();
+      });
     }
   </script>
 

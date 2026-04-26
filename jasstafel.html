@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jasstafel – Eichel Ober</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --green-900: #0f2e0f;
+      --green-800: #1a4d1a;
+      --green-700: #2d6a2d;
+      --green-500: #4a9e4a;
+      --green-200: #c5dfc0;
+      --green-100: #eaf4e7;
+      --green-50:  #f4f9f2;
+      --cream: #fafaf7;
+      --ink: #1a1a1a;
+      --muted: #6b7566;
+      --serif: 'Libre Baskerville', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+      --gold: #D4A010;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--cream); color: var(--ink); font-size: 16px; line-height: 1.6; }
+
+    /* ── HEADER ── */
+    header { background: var(--green-800); padding: 22px 32px; }
+    .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 20px; }
+    .header-inner a { color: var(--green-200); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; transition: color 0.2s; white-space: nowrap; }
+    .header-inner a:hover { color: #fff; }
+    .header-inner h1 { font-family: var(--serif); font-size: 1.5rem; color: #fff; flex: 1; }
+
+    /* ── MAIN ── */
+    main { max-width: 1100px; margin: 36px auto; padding: 0 16px; }
+
+    /* ── MODE TABS ── */
+    .mode-tabs {
+      display: flex; gap: 4px;
+      background: var(--green-100);
+      border-radius: 12px; padding: 4px;
+      margin-bottom: 28px; width: fit-content;
+    }
+    .mode-tab {
+      padding: 9px 22px; border: none; border-radius: 9px;
+      font-family: var(--sans); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; background: transparent; color: var(--muted);
+      transition: background 0.18s, color 0.18s;
+    }
+    .mode-tab.active { background: #fff; color: var(--green-800); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+    /* ── GAST SETUP ── */
+    .gast-setup-box {
+      background: #fff; border-radius: 16px;
+      border: 1px solid var(--green-100); padding: 32px; max-width: 460px;
+    }
+    .gast-setup-box h3 { font-family: var(--serif); font-size: 1.2rem; color: var(--green-800); margin-bottom: 6px; }
+    .gast-setup-box > p { color: var(--muted); font-size: 0.85rem; margin-bottom: 22px; }
+    .gast-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .gast-name-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--green-100); color: var(--green-700);
+      font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .gast-name-input {
+      flex: 1; padding: 10px 14px;
+      border: 1.5px solid var(--green-200); border-radius: 8px;
+      font-family: var(--sans); font-size: 0.95rem;
+      outline: none; background: #fff; transition: border-color 0.2s;
+    }
+    .gast-name-input:focus { border-color: var(--green-700); }
+    .gast-setup-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+    /* ── TOP BAR ── */
+    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; flex-wrap: wrap; }
+    .top-bar h2 { font-family: var(--serif); font-size: 1.35rem; color: var(--green-800); }
+    .top-bar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 18px; border-radius: 8px;
+      font-family: var(--sans); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; border: none;
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+      white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--green-800); color: #fff; }
+    .btn-primary:hover { background: var(--green-900); }
+    .btn-outline { background: transparent; border: 1.5px solid var(--green-200); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--green-700); color: var(--green-700); }
+    .btn-finish { background: linear-gradient(135deg, #f5cc40, #D4A010); color: #5a3e00; font-weight: 700; box-shadow: 0 2px 8px rgba(212,160,16,0.3); }
+    .btn-finish:hover { background: linear-gradient(135deg, #e8bb2a, #bf8f00); box-shadow: 0 4px 14px rgba(212,160,16,0.4); }
+
+    /* ── SCORE TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 14px; box-shadow: 0 2px 16px rgba(15,46,15,0.08); border: 1px solid var(--green-100); -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; background: #fff; min-width: 400px; }
+    thead th { background: var(--green-800); color: #fff; padding: 13px 12px; text-align: center; font-family: var(--sans); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3px; }
+    thead th:first-child { text-align: left; border-radius: 13px 0 0 0; position: sticky; left: 0; z-index: 2; background: var(--green-800); }
+    thead th:last-child { border-radius: 0 13px 0 0; }
+    .player-name { display: block; font-size: 0.85rem; font-weight: 600; }
+    .player-role { display: block; font-size: 0.68rem; color: var(--green-200); font-weight: 400; margin-top: 2px; }
+    tbody tr { border-bottom: 1px solid var(--green-100); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr.detail-row { background: var(--green-50); }
+    tbody tr.detail-row:hover { background: var(--green-50); }
+    tbody tr:not(.detail-row):hover { background: #f8fdf6; }
+    td { padding: 12px 12px; text-align: center; font-size: 0.92rem; color: var(--ink); }
+    td:first-child { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.82rem; white-space: nowrap; position: sticky; left: 0; z-index: 1; background: #fff; }
+    tbody tr.detail-row td:first-child { background: var(--green-50); }
+    td.score-cell { font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--green-800); }
+    td.score-zero { color: var(--muted); font-weight: 400; }
+    tfoot tr { background: var(--green-900); }
+    tfoot td { padding: 15px 12px; color: #fff; font-family: var(--serif); font-size: 1.05rem; font-weight: 700; text-align: center; }
+    tfoot td:first-child { text-align: left; font-size: 0.8rem; font-family: var(--sans); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--green-200); background: var(--green-900); }
+    tfoot td.winner { color: var(--gold); }
+    .detail-row td { padding: 6px 12px 10px; }
+    .detail-row td:first-child { color: var(--muted); font-weight: 400; font-size: 0.75rem; }
+    .breakdown { font-size: 0.72rem; color: var(--muted); line-height: 1.9; text-align: center; }
+    .breakdown .b-line { display: flex; justify-content: center; gap: 4px; }
+    .breakdown .b-pts { color: var(--green-700); font-weight: 600; }
+    .breakdown .b-gold { color: var(--gold); font-weight: 700; }
+    .runde-toggle { background: none; border: none; cursor: pointer; font-size: 0.76rem; color: var(--green-700); font-family: var(--sans); font-weight: 600; display: flex; align-items: center; gap: 4px; padding: 0; white-space: nowrap; }
+    .runde-label { display: flex; align-items: center; gap: 8px; }
+    .del-round { background: none; border: none; cursor: pointer; color: #ccc; font-size: 0.82rem; padding: 0 2px; line-height: 1; transition: color 0.15s; }
+    .del-round:hover { color: #b94040; }
+    .empty-state { text-align: center; padding: 56px 32px; color: var(--muted); font-style: italic; font-size: 0.95rem; }
+
+    /* ── MODAL ── */
+    #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; align-items: flex-start; justify-content: center; padding: 20px 12px; overflow-y: auto; }
+    #modal-overlay.open { display: flex; }
+    #modal-box { background: var(--cream); border-radius: 16px; padding: 28px 20px; width: 100%; max-width: 600px; box-shadow: 0 24px 64px rgba(0,0,0,0.3); }
+    #modal-box h3 { font-family: var(--serif); font-size: 1.2rem; color: var(--green-800); margin-bottom: 18px; }
+    .legend { background: var(--green-50); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+    .legend-item { font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .legend-item strong { color: var(--green-800); }
+    .player-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .player-card { background: #fff; border: 1.5px solid var(--green-100); border-radius: 12px; padding: 14px 16px; transition: border-color 0.15s; }
+    .player-card-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+    .player-card-header .card-name { font-weight: 700; font-size: 0.95rem; color: var(--ink); }
+    .player-card-header .card-role { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .card-nums { display: flex; gap: 10px; margin-bottom: 12px; }
+    .card-num { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .card-num label { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 600; }
+    .num-input { width: 100%; max-width: 64px; padding: 8px 4px; border: 1.5px solid var(--green-200); border-radius: 8px; font-family: var(--sans); font-size: 1rem; text-align: center; outline: none; transition: border-color 0.2s; background: #fff; -moz-appearance: textfield; }
+    .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .num-input:focus { border-color: var(--green-700); }
+    .card-radios { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    .card-radio { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); cursor: pointer; user-select: none; }
+    .radio-input { width: 18px; height: 18px; accent-color: var(--green-700); cursor: pointer; flex-shrink: 0; }
+    .radio-gold { accent-color: var(--gold); }
+    .radio-orange { accent-color: #c8860a; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--green-900); color: #fff; padding: 14px 22px; border-radius: 12px; font-size: 0.92rem; font-weight: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 999; max-width: 90vw; text-align: center; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      header { padding: 16px; }
+      main { padding: 0 10px; margin: 20px auto; }
+      .top-bar h2 { font-size: 1.1rem; }
+      .btn { padding: 9px 14px; font-size: 0.82rem; }
+      #modal-box { padding: 20px 14px; border-radius: 12px; }
+      .card-nums { gap: 6px; }
+      .num-input { max-width: 54px; font-size: 0.95rem; }
+      .gast-setup-box { padding: 20px 16px; }
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html">← Zurück</a>
+      <h1>🃏 Jasstafel</h1>
+    </div>
+  </header>
+
+  <main>
+    <!-- Mode Tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-verein" onclick="switchMode('verein')">🏠 Vereinsspiel</button>
+      <button class="mode-tab" id="tab-gast" onclick="switchMode('gast')">👥 Gastspiel</button>
+    </div>
+
+    <!-- Gast Setup Screen -->
+    <div id="gast-setup" style="display:none">
+      <div class="gast-setup-box">
+        <h3>Spieler eingeben</h3>
+        <p>Mindestens 2, maximal 6 Spieler</p>
+        <div id="gast-inputs"></div>
+        <div class="gast-setup-actions">
+          <button class="btn btn-outline" id="gast-add-btn" onclick="addGastInput()">＋ Spieler hinzufügen</button>
+          <button class="btn btn-primary" onclick="startGastGame()">Spiel starten ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Area -->
+    <div id="game-area">
+      <div class="top-bar">
+        <h2 id="game-title">Punktestand</h2>
+        <div class="top-bar-actions">
+          <button class="btn btn-outline" onclick="resetAll()">🗑 Reset</button>
+          <button id="finish-btn" class="btn btn-finish" onclick="finishGame()" style="display:none">🏁 Spiel abschliessen</button>
+          <button class="btn btn-primary" onclick="openModal()">＋ Neue Runde</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="score-table">
+          <thead><tr id="table-head"></tr></thead>
+          <tbody id="rounds-body"></tbody>
+          <tfoot><tr id="table-foot"></tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal-overlay">
+    <div id="modal-box">
+      <h3>Neue Runde eintragen</h3>
+      <div class="legend">
+        <span class="legend-item">🃏 Stich <strong>+5</strong></span>
+        <span class="legend-item">🛡 Schilte <strong>+10</strong></span>
+        <span class="legend-item">👑 König <strong>+20</strong></span>
+        <span class="legend-item" style="color:var(--gold)">🌰 EO fangen <strong style="color:var(--gold)">+67</strong></span>
+        <span class="legend-item" style="color:#c8860a">🌰 EO spielen <strong style="color:#c8860a">+25</strong></span>
+        <span class="legend-item">⭐ Letzter Stich <strong>+50</strong></span>
+      </div>
+      <div class="player-cards" id="input-rows-wrap"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal()">Abbrechen</button>
+        <button class="btn btn-primary" onclick="submitRound()">Runde speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
+      authDomain: "website-eichle-ober-bf1e5.firebaseapp.com",
+      databaseURL: "https://website-eichle-ober-bf1e5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "website-eichle-ober-bf1e5",
+      storageBucket: "website-eichle-ober-bf1e5.firebasestorage.app",
+      messagingSenderId: "405255994774",
+      appId: "1:405255994774:web:5c590b8dd16ce9ebfd31b7"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+    var db   = firebase.database();
+
+    var ERLAUBTE_EMAILS = [
+      'eichelober@gmail.com',
+      'ella.baettig@gmail.com',
+      'noe.bertallo@icloud.com',
+      'lars.lumer@icloud.com',
+      'cpfenninger@outlook.com',
+      'le.nievergelt@gmail.com',
+      'silas.mueller4@gmail.com'
+    ];
+
+    var PLAYERS = [
+      { name: 'Noé B.',      role: 'Präsi' },
+      { name: 'Ella B.',     role: 'Vize-Präsi' },
+      { name: 'Lars L.',     role: 'Aktuar' },
+      { name: 'Leandro N.',  role: 'Aussenminister' },
+      { name: 'Chanelle P.', role: 'Sr. Facility Mgr.' },
+      { name: 'Silas M.',    role: 'Bierzipfel' },
+    ];
+
+    var PTS = { stich: 5, schilte: 10, koenig: 20, eichelOber: 67, eichelOber25: 25, letzterStich: 50 };
+
+    var mode       = 'verein';
+    var rounds     = [];
+    var gastPlayers = [];
+    var gastRounds  = [];
+    var gastInputCount = 2;
+
+    /* ── Auth guard ── */
+    auth.onAuthStateChanged(function(user) {
+      if (!user) { window.location.href = 'index.html'; return; }
+      if (ERLAUBTE_EMAILS.indexOf(user.email.toLowerCase()) === -1) { auth.signOut(); return; }
+      db.ref('jasstafel').on('value', function(snap) {
+        try { rounds = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { rounds = []; }
+        if (mode === 'verein') render();
+      });
+      buildGastInputs();
+    });
+
+    /* ── Mode switching ── */
+    function switchMode(newMode) {
+      mode = newMode;
+      document.getElementById('tab-verein').classList.toggle('active', mode === 'verein');
+      document.getElementById('tab-gast').classList.toggle('active', mode === 'gast');
+
+      if (mode === 'gast') {
+        document.getElementById('gast-setup').style.display = '';
+        document.getElementById('game-area').style.display = 'none';
+        buildGastInputs();
+      } else {
+        document.getElementById('gast-setup').style.display = 'none';
+        document.getElementById('game-area').style.display = '';
+        render();
+      }
+    }
+
+    /* ── Gast setup ── */
+    function buildGastInputs() {
+      var wrap = document.getElementById('gast-inputs');
+      wrap.innerHTML = '';
+      gastInputCount = Math.max(gastInputCount, 2);
+      for (var i = 0; i < gastInputCount; i++) {
+        var row = document.createElement('div');
+        row.className = 'gast-name-row';
+        row.innerHTML =
+          '<div class="gast-name-num">' + (i + 1) + '</div>' +
+          '<input class="gast-name-input" id="gast-name-' + i + '" type="text" placeholder="Spieler ' + (i + 1) + '"' +
+          (i < 2 ? ' required' : '') + '>';
+        wrap.appendChild(row);
+      }
+      document.getElementById('gast-add-btn').style.display = gastInputCount >= 6 ? 'none' : '';
+    }
+
+    function addGastInput() {
+      if (gastInputCount >= 6) return;
+      gastInputCount++;
+      buildGastInputs();
+      document.getElementById('gast-name-' + (gastInputCount - 1)).focus();
+    }
+
+    function startGastGame() {
+      var names = [];
+      for (var i = 0; i < gastInputCount; i++) {
+        var val = (document.getElementById('gast-name-' + i) || {}).value;
+        if (val && val.trim()) names.push(val.trim());
+      }
+      if (names.length < 2) { alert('Mindestens 2 Spieler eingeben.'); return; }
+      gastPlayers = names.map(function(n) { return { name: n, role: '' }; });
+      gastRounds  = [];
+      document.getElementById('gast-setup').style.display = 'none';
+      document.getElementById('game-area').style.display = '';
+      render();
+    }
+
+    /* ── Active game helpers ── */
+    function activePlayers() { return mode === 'gast' ? gastPlayers : PLAYERS; }
+    function activeRounds()  { return mode === 'gast' ? gastRounds  : rounds;  }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    /* ── Calc scores ── */
+    function calcScores(round, players) {
+      return players.map(function(_, i) {
+        return (round.stiche[i]   || 0) * PTS.stich
+             + (round.schilten[i] || 0) * PTS.schilte
+             + (round.koenige[i]  || 0) * PTS.koenig
+             + (round.eichelOber   === i ? PTS.eichelOber   : 0)
+             + (round.eichelOber25 === i ? PTS.eichelOber25 : 0)
+             + (round.letzterStich === i ? PTS.letzterStich : 0);
+      });
+    }
+
+    /* ── Render ── */
+    function render() {
+      var players = activePlayers();
+      var gameRounds = activeRounds();
+      var isGast = mode === 'gast';
+
+      /* Rebuild header */
+      var thead = document.getElementById('table-head');
+      thead.innerHTML = '<th>Runde</th>';
+      players.forEach(function(p) {
+        thead.innerHTML += '<th><span class="player-name">' + escHtml(p.name) + '</span>' +
+          (p.role ? '<span class="player-role">' + escHtml(p.role) + '</span>' : '') + '</th>';
+      });
+
+      /* Rebuild footer */
+      var tfoot = document.getElementById('table-foot');
+      tfoot.innerHTML = '<td>TOTAL</td>';
+      players.forEach(function(_, i) {
+        tfoot.innerHTML += '<td id="tot-' + i + '">0</td>';
+      });
+
+      /* Finish button — only in Vereinsspiel */
+      document.getElementById('finish-btn').style.display = (!isGast && gameRounds.length > 0) ? '' : 'none';
+      document.getElementById('game-title').textContent = isGast ? 'Gastspiel' : 'Punktestand';
+
+      /* Tbody */
+      var tbody = document.getElementById('rounds-body');
+      tbody.innerHTML = '';
+
+      if (gameRounds.length === 0) {
+        var empty = document.createElement('tr');
+        empty.innerHTML = '<td colspan="' + (players.length + 1) + '" class="empty-state">Noch keine Runden. Klick auf «Neue Runde».</td>';
+        tbody.appendChild(empty);
+        return;
+      }
+
+      var totals = players.map(function() { return 0; });
+
+      gameRounds.forEach(function(round, ri) {
+        var scores = calcScores(round, players);
+        scores.forEach(function(s, i) { totals[i] += s; });
+
+        var tr = document.createElement('tr');
+        var cells = '<td><span class="runde-label">' +
+          '<button class="runde-toggle" onclick="toggleDetail(' + ri + ')" id="toggle-' + ri + '">▶ Runde ' + (ri + 1) + '</button>' +
+          '<button class="del-round" onclick="deleteRound(' + ri + ')" title="Runde löschen">✕</button>' +
+          '</span></td>';
+        scores.forEach(function(s) {
+          cells += '<td class="score-cell' + (s === 0 ? ' score-zero' : '') + '">' + s + '</td>';
+        });
+        tr.innerHTML = cells;
+        tbody.appendChild(tr);
+
+        var dtr = document.createElement('tr');
+        dtr.className = 'detail-row';
+        dtr.id = 'detail-' + ri;
+        dtr.style.display = 'none';
+        var dcells = '<td style="padding-left:28px">Details</td>';
+        players.forEach(function(_, i) {
+          var lines = [];
+          if (round.stiche[i])          lines.push('<span class="b-line"><span>' + round.stiche[i] + ' Stiche</span><span class="b-pts">+' + round.stiche[i]*PTS.stich + '</span></span>');
+          if (round.schilten[i])        lines.push('<span class="b-line"><span>' + round.schilten[i] + ' Schilten</span><span class="b-pts">+' + round.schilten[i]*PTS.schilte + '</span></span>');
+          if (round.koenige[i])         lines.push('<span class="b-line"><span>' + round.koenige[i] + ' Könige</span><span class="b-pts">+' + round.koenige[i]*PTS.koenig + '</span></span>');
+          if (round.eichelOber   === i) lines.push('<span class="b-line"><span>EO gefangen</span><span class="b-gold">+67</span></span>');
+          if (round.eichelOber25 === i) lines.push('<span class="b-line"><span>EO gespielt</span><span class="b-gold">+25</span></span>');
+          if (round.letzterStich === i) lines.push('<span class="b-line"><span>Letzter Stich</span><span class="b-pts">+50</span></span>');
+          if (lines.length === 0)       lines.push('<span style="color:#ccc">—</span>');
+          dcells += '<td><div class="breakdown">' + lines.join('') + '</div></td>';
+        });
+        dtr.innerHTML = dcells;
+        tbody.appendChild(dtr);
+      });
+
+      var minScore = Math.min.apply(null, totals);
+      players.forEach(function(_, i) {
+        var el = document.getElementById('tot-' + i);
+        if (el) { el.textContent = totals[i]; el.className = (totals[i] === minScore) ? 'winner' : ''; }
+      });
+    }
+
+    /* ── Toggle detail ── */
+    function toggleDetail(ri) {
+      var dtr = document.getElementById('detail-' + ri);
+      var btn = document.getElementById('toggle-' + ri);
+      var open = dtr.style.display !== 'none';
+      dtr.style.display = open ? 'none' : '';
+      btn.textContent = (open ? '▶' : '▼') + ' Runde ' + (ri + 1);
+    }
+
+    /* ── Delete round ── */
+    function deleteRound(ri) {
+      if (!confirm('Runde ' + (ri + 1) + ' wirklich löschen?')) return;
+      if (mode === 'gast') { gastRounds.splice(ri, 1); render(); }
+      else { rounds.splice(ri, 1); save(); }
+    }
+
+    /* ── Reset ── */
+    function resetAll() {
+      if (!confirm('Alle Runden löschen und neu starten?')) return;
+      if (mode === 'gast') {
+        gastRounds = [];
+        render();
+        /* offer to go back to setup */
+        showToast('Runden gelöscht. Neue Spieler? Tab wechseln.');
+      } else {
+        rounds = [];
+        save();
+      }
+    }
+
+    /* ── Spiel abschliessen (Vereinsspiel only) ── */
+    function finishGame() {
+      if (rounds.length === 0) return;
+      var totals = PLAYERS.map(function() { return 0; });
+      rounds.forEach(function(round) {
+        calcScores(round, PLAYERS).forEach(function(s, i) { totals[i] += s; });
+      });
+      var minTotal = Math.min.apply(null, totals);
+      var winnerIdx = totals.indexOf(minTotal);
+      var winner = PLAYERS[winnerIdx];
+      if (!confirm('🏆 ' + winner.name + ' gewinnt mit ' + minTotal + ' Punkten!\n\nSieg ins Leaderboard eintragen und Runden zurücksetzen?')) return;
+      db.ref('wins').once('value', function(snap) {
+        var wins;
+        try { wins = snap.val() ? JSON.parse(snap.val()) : [0,0,0,0,0,0]; } catch(e) { wins = [0,0,0,0,0,0]; }
+        wins[winnerIdx] = (wins[winnerIdx] || 0) + 1;
+        db.ref('wins').set(JSON.stringify(wins));
+        rounds = [];
+        save();
+        showToast('🏆 ' + winner.name + ' hat gewonnen! Leaderboard aktualisiert.');
+      });
+    }
+
+    /* ── Save ── */
+    function save() { db.ref('jasstafel').set(JSON.stringify(rounds)); }
+
+    /* ── Toast ── */
+    function showToast(msg) {
+      var t = document.createElement('div');
+      t.className = 'toast'; t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.classList.add('show'); }, 10);
+      setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 400); }, 3500);
+    }
+
+    /* ── Modal ── */
+    function buildInputRows(players) {
+      var wrap = document.getElementById('input-rows-wrap');
+      wrap.innerHTML = '';
+      players.forEach(function(p, i) {
+        var card = document.createElement('div');
+        card.className = 'player-card';
+        card.innerHTML =
+          '<div class="player-card-header">' +
+            '<span class="card-name">' + escHtml(p.name) + '</span>' +
+            (p.role ? '<span class="card-role">' + escHtml(p.role) + '</span>' : '') +
+          '</div>' +
+          '<div class="card-nums">' +
+            '<div class="card-num"><label>Stiche</label><input class="num-input" type="number" id="s-' + i + '" min="0" max="36" value="0" inputmode="numeric"></div>' +
+            '<div class="card-num"><label>Schilten</label><input class="num-input" type="number" id="sc-' + i + '" min="0" max="9" value="0" inputmode="numeric"></div>' +
+            '<div class="card-num"><label>Könige</label><input class="num-input" type="number" id="k-' + i + '" min="0" max="4" value="0" inputmode="numeric"></div>' +
+          '</div>' +
+          '<div class="card-radios">' +
+            '<label class="card-radio" style="color:var(--gold)"><input class="radio-input radio-gold" type="radio" name="eichel" value="' + i + '"> 🌰 EO +67</label>' +
+            '<label class="card-radio" style="color:#c8860a"><input class="radio-input radio-orange" type="radio" name="eichel25" value="' + i + '"> 🌰 EO +25</label>' +
+            '<label class="card-radio"><input class="radio-input" type="radio" name="letzter" value="' + i + '"> ⭐ Letzter Stich</label>' +
+          '</div>';
+        wrap.appendChild(card);
+      });
+    }
+
+    function openModal() {
+      buildInputRows(activePlayers());
+      document.getElementById('modal-overlay').classList.add('open');
+      document.getElementById('s-0').focus();
+    }
+
+    function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+    function submitRound() {
+      var players = activePlayers();
+      var stiche   = players.map(function(_, i) { return parseInt(document.getElementById('s-'  + i).value) || 0; });
+      var schilten = players.map(function(_, i) { return parseInt(document.getElementById('sc-' + i).value) || 0; });
+      var koenige  = players.map(function(_, i) { return parseInt(document.getElementById('k-'  + i).value) || 0; });
+      var eoEl   = document.querySelector('input[name="eichel"]:checked');
+      var eo25El = document.querySelector('input[name="eichel25"]:checked');
+      var lsEl   = document.querySelector('input[name="letzter"]:checked');
+      var roundData = {
+        stiche: stiche, schilten: schilten, koenige: koenige,
+        eichelOber:   eoEl   ? parseInt(eoEl.value)   : -1,
+        eichelOber25: eo25El ? parseInt(eo25El.value) : -1,
+        letzterStich: lsEl   ? parseInt(lsEl.value)   : -1,
+      };
+      if (mode === 'gast') { gastRounds.push(roundData); render(); }
+      else { rounds.push(roundData); save(); render(); }
+      closeModal();
+    }
+
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+  </script>
+
+</body>
+</html>
