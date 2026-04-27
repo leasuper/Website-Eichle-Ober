@@ -567,6 +567,75 @@
       #member-card { width: 100vw; border-radius: 0; max-height: 100vh; }
       #member-modal { align-items: flex-end; }
     }
+
+    /* ── MOBILE NAV ── */
+    #mob-nav-toggle {
+      display: none;
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(17,17,9,0.80);
+      border: 1px solid rgba(240,236,224,0.10);
+      border-radius: 100px;
+      padding: 9px 20px 9px 16px;
+      z-index: 800;
+      cursor: pointer;
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(240,236,224,0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: color 0.2s, border-color 0.2s;
+      align-items: center; gap: 9px;
+      white-space: nowrap;
+    }
+    #mob-nav-toggle:hover { color: var(--muted); border-color: rgba(240,236,224,0.18); }
+    #mob-nav-toggle svg { flex-shrink: 0; opacity: 0.6; }
+
+    #mob-nav-overlay {
+      display: none; position: fixed; inset: 0; z-index: 798;
+    }
+    #mob-nav-overlay.open { display: block; }
+
+    #mob-nav-sheet {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(11,11,9,0.97);
+      border-top: 1px solid var(--line);
+      border-radius: 16px 16px 0 0;
+      padding: 16px 28px 40px;
+      z-index: 799;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      flex-direction: column;
+    }
+    #mob-nav-sheet.open {
+      display: flex;
+      animation: sheetUp 0.22s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    @keyframes sheetUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .mob-nav-handle {
+      width: 32px; height: 3px;
+      background: var(--line);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+      flex-shrink: 0;
+    }
+    .mob-nav-link {
+      font-family: var(--serif); font-size: 1.05rem; font-weight: 800;
+      color: var(--muted);
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      display: block; text-decoration: none;
+      transition: color 0.15s;
+      letter-spacing: -0.01em;
+    }
+    .mob-nav-link:last-child { border-bottom: none; }
+    .mob-nav-link:active { color: var(--gold); }
+
+    @media (max-width: 768px) {
+      #mob-nav-toggle { display: flex; }
+    }
   </style>
 </head>
 <body>
@@ -1390,6 +1459,40 @@
     function esc(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+
+    function toggleMobNav() {
+      var sheet   = document.getElementById('mob-nav-sheet');
+      var overlay = document.getElementById('mob-nav-overlay');
+      var open    = sheet.classList.contains('open');
+      sheet.classList.toggle('open', !open);
+      overlay.classList.toggle('open', !open);
+    }
+    function closeMobNav() {
+      document.getElementById('mob-nav-sheet').classList.remove('open');
+      document.getElementById('mob-nav-overlay').classList.remove('open');
+    }
   </script>
+
+  <!-- ── Mobile Nav ── -->
+  <div id="mob-nav-overlay" onclick="closeMobNav()"></div>
+  <div id="mob-nav-sheet">
+    <div class="mob-nav-handle"></div>
+    <a class="mob-nav-link" href="#mitglieder" onclick="closeMobNav()">Mitglieder</a>
+    <a class="mob-nav-link" href="#rangliste" onclick="closeMobNav()">Rangliste</a>
+    <a class="mob-nav-link" href="#protokoll" onclick="closeMobNav()">Protokoll</a>
+    <a class="mob-nav-link" href="#diskussion" onclick="closeMobNav()">Diskussion</a>
+    <a class="mob-nav-link" href="#dokumente" onclick="closeMobNav()">Statuten</a>
+    <a class="mob-nav-link" href="#ablage" onclick="closeMobNav()">Ablage</a>
+    <a class="mob-nav-link" href="jass.html">🃏 Jass spielen</a>
+    <a class="mob-nav-link" href="jasstafel.html">📊 Jasstafel</a>
+  </div>
+  <div id="mob-nav-toggle" onclick="toggleMobNav()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <rect x="0" y="1"   width="14" height="1.5" rx="0.75"/>
+      <rect x="0" y="6.2" width="14" height="1.5" rx="0.75"/>
+      <rect x="0" y="11.5" width="14" height="1.5" rx="0.75"/>
+    </svg>
+    Menu
+  </div>
 </body>
 </html>
