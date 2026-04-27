@@ -438,10 +438,10 @@
     #member-card {
       background: var(--bg2); border: 1px solid var(--line);
       max-width: 440px; width: 94vw; border-radius: 4px; overflow: hidden;
-      position: relative;
+      position: relative; max-height: 90vh; overflow-y: auto;
     }
     .mc-photo {
-      width: 100%; height: 300px; object-fit: cover; display: block;
+      width: 100%; height: 300px; object-fit: cover; object-position: top center; display: block;
       filter: grayscale(10%); transition: filter 0.3s;
     }
     .mc-close {
@@ -475,23 +475,97 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
+      /* Nav */
       nav { grid-template-columns: auto auto; padding: 14px 20px; }
       .nav-status { display: none; }
       .nav-links { display: none; }
       #clock { display: none; }
-      .hero { padding: 60px 20px 80px; }
-      .hero-meta { flex-direction: column; align-items: flex-start; }
-      .hero-stats { gap: 24px; }
-      .sec { padding: 60px 20px; }
-      .actions-row { grid-template-columns: 1fr 1fr; }
-      .lb-big { grid-template-columns: 1fr; }
-      .member-row, .member-row-header { grid-template-columns: 40px 1fr 100px 36px; }
+      #user-name-nav { display: none; }
+
+      /* Ticker */
+      .ticker-wrap { margin-top: 54px; }
+
+      /* Hero */
+      .hero { padding: 48px 20px 64px; min-height: 70vh; }
+      .hero-eyebrow { margin-bottom: 24px; }
+      .hero-eyebrow::after { display: none; }
+      .hero-headline { margin-bottom: 36px; }
+      .hero-meta { flex-direction: column; align-items: flex-start; gap: 28px; }
+      .hero-stats { gap: 28px; }
+
+      /* Sections */
+      .sec { padding: 48px 20px; }
+      .sec-header { margin-bottom: 32px; }
+
+      /* Member table — 3 columns: # | name+avatar | arrow */
+      .member-row-header { grid-template-columns: 36px 1fr 36px; }
+      .member-row        { grid-template-columns: 36px 1fr 36px; padding: 14px 0; }
       .mr-role { display: none; }
+      /* hide badge column (4th child) */
+      .member-row > div:nth-child(4),
+      .member-row-header > div:nth-child(4) { display: none; }
+
+      /* Leaderboard */
+      .lb-big { grid-template-columns: 1fr; }
+      .lb-card { padding: 24px 20px; }
+      .lbc-name { font-size: 1.4rem; }
+      .lb-actions { flex-direction: column; }
+
+      /* Actions */
+      .actions-row { grid-template-columns: 1fr 1fr; }
+      .action-tile { padding: 22px 18px 24px; }
+
+      /* Feed */
+      .feed-item { grid-template-columns: 64px 1fr; gap: 14px; }
+      .feed-tag { display: none; }
+      .disk-replies { margin-top: 10px; padding-top: 10px; }
+
+      /* Member profile modal */
+      .mc-photo { height: 220px; }
+      .mc-body { padding: 20px 22px 24px; }
+      .mc-name { font-size: 1.5rem; }
+
+      /* Modals */
+      .modal-box { padding: 32px 24px; }
+      .modal-title { font-size: 1.3rem; margin-bottom: 24px; }
+
+      /* Dokumente */
+      .doc-row { padding: 18px 0; }
+      .doc-body-wrap iframe { height: 380px; }
+
+      /* Footer */
       footer { padding: 40px 20px; }
+      .footer-suits { display: none; }
+      .footer-big { font-size: clamp(1.6rem, 7vw, 3rem); margin-bottom: 32px; }
     }
-    @media (max-width: 480px) {
+
+    @media (max-width: 420px) {
+      /* Hero */
+      .hero-headline { font-size: clamp(2.8rem, 13vw, 4.5rem); line-height: 0.9; }
+      .hero-stats { flex-direction: column; gap: 12px; }
+      .hero-stat { text-align: left; }
+      .hero-stat-num { font-size: 2rem; }
+
+      /* Actions — single column */
       .actions-row { grid-template-columns: 1fr; }
-      .hero-headline { font-size: clamp(3rem, 14vw, 5rem); }
+
+      /* Member table — 2 columns only: name | arrow */
+      .member-row-header { grid-template-columns: 1fr 36px; }
+      .member-row        { grid-template-columns: 1fr 36px; }
+      .member-row > div:nth-child(1),
+      .member-row-header > div:nth-child(1) { display: none; }
+
+      /* Feed — stack vertically */
+      .feed-item { grid-template-columns: 1fr; gap: 4px; }
+      .feed-date { font-size: 0.6rem; }
+
+      /* Profile modal */
+      .mc-photo { height: 180px; }
+      .mc-body { padding: 16px 18px 20px; }
+      .mc-name { font-size: 1.25rem; }
+      .mc-bio li { font-size: 0.82rem; }
+      #member-card { width: 100vw; border-radius: 0; max-height: 100vh; }
+      #member-modal { align-items: flex-end; }
     }
   </style>
 </head>
