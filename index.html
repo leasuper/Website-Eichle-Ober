@@ -335,6 +335,24 @@
     .disk-form-input:focus { border-bottom-color: var(--gold); }
     textarea.disk-form-input { height: 56px; resize: vertical; }
     .disk-form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+    .disk-actions { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+    .disk-react-btn {
+      background: none; border: 1px solid var(--line); color: var(--muted);
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
+      padding: 4px 10px; border-radius: 100px; cursor: pointer; transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .disk-react-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .disk-react-btn.active-like { border-color: #4caf6e; color: #4caf6e; background: rgba(76,175,110,0.06); }
+    .disk-react-btn.active-dislike { border-color: #e05a4e; color: #e05a4e; background: rgba(224,90,78,0.06); }
+    .disk-edit-btn {
+      background: none; border: none; color: rgba(240,236,224,0.22); font-size: 0.72rem;
+      cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: color 0.2s;
+      font-family: var(--mono); letter-spacing: 0.06em;
+    }
+    .disk-edit-btn:hover { color: var(--gold); }
+    .disk-edit-form { display: none; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .disk-edit-form.open { display: flex; }
 
     /* ── ADMIN DELETE ── */
     .admin-del {
@@ -713,6 +731,7 @@
 
     var ADMINS = ['le.nievergelt@gmail.com', 'eichleober@gmail.com'];
     var isAdmin = false;
+    var currentUser = null;
 
     (function() {
       if (sessionStorage.getItem('eo_uid')) {
@@ -722,6 +741,7 @@
 
     auth.onAuthStateChanged(function(user) {
       if (!user) {
+        currentUser = null;
         sessionStorage.removeItem('eo_uid');
         sessionStorage.removeItem('eo_called');
         document.getElementById('pw-overlay').style.display = 'flex';
@@ -735,6 +755,7 @@
             'Kein Zugang für <b>' + user.email + '</b>.';
           return;
         }
+        currentUser = user;
         isAdmin = ADMINS.indexOf(user.email.toLowerCase()) !== -1;
         sessionStorage.setItem('eo_uid', user.uid);
         document.getElementById('pw-overlay').style.display = 'none';
@@ -1060,7 +1081,6 @@
   <div id="disk-modal" class="modal">
     <div class="modal-box">
       <div class="modal-title">Neuer Beitrag</div>
-      <input class="modal-input" type="text" id="disk-author" placeholder="Dein Name">
       <textarea class="modal-input" id="disk-text" placeholder="Worüber möchtest du reden?"></textarea>
       <div class="modal-actions">
         <button class="btn-ghost" onclick="closeDiskModal()">Abbrechen</button>
@@ -1321,37 +1341,64 @@
       feed.querySelectorAll('.disk-post-wrap').forEach(function(e){ e.remove(); });
       if (!diskPosts.length) { empty.style.display = ''; return; }
       empty.style.display = 'none';
+      var uid = currentUser ? currentUser.uid : null;
       diskPosts.slice().reverse().forEach(function(post) {
-        var pid  = JSON.stringify(post.id);
-        var cmts = post.comments || [];
-        var delPostBtn = isAdmin
-          ? '<button class="admin-del" onclick="deleteDiskPost('+pid+')" title="Beitrag löschen">✕</button>'
-          : '';
+        var pid      = JSON.stringify(post.id);
+        var cmts     = post.comments || [];
+        var likes    = post.likes    || [];
+        var dislikes = post.dislikes || [];
+        var iLike    = uid && likes.indexOf(uid)    !== -1;
+        var iDislike = uid && dislikes.indexOf(uid) !== -1;
+        var isOwner  = uid && post.authorUid === uid;
+
+        var delPostBtn  = isAdmin ? '<button class="admin-del" onclick="deleteDiskPost('+pid+')" title="Beitrag löschen">✕</button>' : '';
+        var editPostBtn = isOwner ? '<button class="disk-edit-btn" onclick="editDiskPost('+pid+')">Bearbeiten</button>' : '';
+
         var commentsHtml = cmts.map(function(c, ci) {
-          var delCmtBtn = isAdmin
-            ? '<button class="admin-del" onclick="deleteDiskComment('+pid+','+ci+')" title="Kommentar löschen">✕</button>'
-            : '';
+          var delCmtBtn  = isAdmin ? '<button class="admin-del" onclick="deleteDiskComment('+pid+','+ci+')" title="Kommentar löschen">✕</button>' : '';
+          var editCmtBtn = (uid && c.authorUid === uid) ? '<button class="disk-edit-btn" onclick="editDiskComment('+pid+','+ci+')">Bearbeiten</button>' : '';
+          var ceditId    = 'disk-cedit-'+post.id+'-'+ci;
           return '<div class="disk-comment">' +
             '<div class="disk-comment-dot"></div>' +
             '<div class="disk-comment-content">' +
-              '<span class="disk-comment-author">' + esc(c.author) + '</span>' + delCmtBtn +
+              '<span class="disk-comment-author">' + esc(c.author) + '</span>' + delCmtBtn + editCmtBtn +
               '<span class="disk-comment-date">' + esc(c.date) + '</span>' +
               '<div class="disk-comment-text">' + esc(c.text) + '</div>' +
+              '<div class="disk-edit-form" id="'+ceditId+'">' +
+                '<textarea class="disk-form-input" placeholder="Kommentar bearbeiten…"></textarea>' +
+                '<div class="disk-form-actions">' +
+                  '<button class="btn-ghost" style="padding:5px 12px;font-size:.63rem" onclick="closeDiskEditForm(\''+ceditId+'\')">Abbrechen</button>' +
+                  '<button class="btn-g"     style="padding:5px 12px;font-size:.63rem" onclick="saveDiskComment('+pid+','+ci+')">Speichern</button>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
           '</div>';
         }).join('');
+
+        var editPostId = 'disk-edit-'+post.id;
         var wrap = document.createElement('div');
         wrap.className = 'disk-post-wrap';
         wrap.innerHTML =
           '<div class="feed-item">' +
             '<div class="feed-date">' + esc(post.date) + '</div>' +
             '<div class="feed-body">' +
-              '<span class="feed-author">' + esc(post.author) + '</span>' + delPostBtn + ' — ' + esc(post.text) +
+              '<span class="feed-author">' + esc(post.author) + '</span>' + delPostBtn + editPostBtn + ' — ' +
+              '<span id="disk-post-view-'+post.id+'">' + esc(post.text) + '</span>' +
+              '<div class="disk-edit-form" id="'+editPostId+'">' +
+                '<textarea class="disk-form-input" placeholder="Beitrag bearbeiten…"></textarea>' +
+                '<div class="disk-form-actions">' +
+                  '<button class="btn-ghost" style="padding:5px 12px;font-size:.63rem" onclick="closeDiskEditForm(\''+editPostId+'\')">Abbrechen</button>' +
+                  '<button class="btn-g"     style="padding:5px 12px;font-size:.63rem" onclick="saveDiskPost('+pid+')">Speichern</button>' +
+                '</div>' +
+              '</div>' +
+              '<div class="disk-actions">' +
+                '<button class="disk-react-btn'+(iLike?' active-like':'')+'" onclick="likePost('+pid+')">&#128077; '+likes.length+'</button>' +
+                '<button class="disk-react-btn'+(iDislike?' active-dislike':'')+'" onclick="dislikePost('+pid+')">&#128078; '+dislikes.length+'</button>' +
+              '</div>' +
               '<div class="disk-replies">' +
                 commentsHtml +
                 '<button class="disk-reply-btn" onclick="toggleCommentForm('+pid+')">Antworten</button>' +
                 '<div class="disk-comment-form" id="disk-cform-'+post.id+'">' +
-                  '<input class="disk-form-input" type="text" placeholder="Dein Name" id="disk-cin-'+post.id+'">' +
                   '<textarea class="disk-form-input" placeholder="Deine Antwort…" id="disk-ctxt-'+post.id+'"></textarea>' +
                   '<div class="disk-form-actions">' +
                     '<button class="btn-ghost" style="padding:6px 14px;font-size:.65rem" onclick="toggleCommentForm('+pid+')">Abbrechen</button>' +
@@ -1366,38 +1413,115 @@
       });
     }
 
-    function openDiskModal()  { document.getElementById('disk-modal').classList.add('open'); document.getElementById('disk-author').focus(); }
+    function openDiskModal()  { document.getElementById('disk-modal').classList.add('open'); document.getElementById('disk-text').focus(); }
     function closeDiskModal() {
       document.getElementById('disk-modal').classList.remove('open');
-      document.getElementById('disk-author').value = '';
-      document.getElementById('disk-text').value   = '';
+      document.getElementById('disk-text').value = '';
     }
     function submitDiskPost() {
-      var author = document.getElementById('disk-author').value.trim();
+      if (!currentUser) return;
+      var author = currentUser.displayName || currentUser.email.split('@')[0];
       var text   = document.getElementById('disk-text').value.trim();
-      if (!author || !text) return;
+      if (!text) return;
       var date = new Date().toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric'});
-      db.ref('diskussion').set(JSON.stringify(diskPosts.concat([{id:Date.now(),author:author,text:text,date:date,comments:[]}])));
+      db.ref('diskussion').set(JSON.stringify(diskPosts.concat([{
+        id: Date.now(), author: author, authorUid: currentUser.uid,
+        text: text, date: date, comments: [], likes: [], dislikes: []
+      }])));
       closeDiskModal();
     }
     function toggleCommentForm(postId) {
-      var form   = document.getElementById('disk-cform-'+postId);
+      var form = document.getElementById('disk-cform-'+postId);
       if (!form) return;
       var isOpen = form.classList.contains('open');
       document.querySelectorAll('.disk-comment-form.open').forEach(function(f){ f.classList.remove('open'); });
-      if (!isOpen) { form.classList.add('open'); var inp = document.getElementById('disk-cin-'+postId); if(inp) inp.focus(); }
+      if (!isOpen) { form.classList.add('open'); var ta = document.getElementById('disk-ctxt-'+postId); if(ta) ta.focus(); }
     }
     function submitComment(postId) {
-      var author = (document.getElementById('disk-cin-'+postId)||{}).value||'';
+      if (!currentUser) return;
+      var author = currentUser.displayName || currentUser.email.split('@')[0];
       var text   = (document.getElementById('disk-ctxt-'+postId)||{}).value||'';
-      author = author.trim(); text = text.trim();
-      if (!author || !text) return;
+      text = text.trim();
+      if (!text) return;
       var date = new Date().toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric'});
       var newPosts = diskPosts.map(function(p){
-        if (p.id===postId) return Object.assign({},p,{comments:(p.comments||[]).concat([{author:author,text:text,date:date}])});
+        if (p.id===postId) return Object.assign({},p,{comments:(p.comments||[]).concat([{
+          id: Date.now(), author: author, authorUid: currentUser.uid, text: text, date: date
+        }])});
         return p;
       });
       db.ref('diskussion').set(JSON.stringify(newPosts));
+    }
+    function likePost(postId) {
+      if (!currentUser) return;
+      var uid = currentUser.uid;
+      var newPosts = diskPosts.map(function(p) {
+        if (p.id !== postId) return p;
+        var likes    = (p.likes||[]).slice();
+        var dislikes = (p.dislikes||[]).filter(function(u){ return u !== uid; });
+        var idx = likes.indexOf(uid);
+        if (idx === -1) likes.push(uid); else likes.splice(idx, 1);
+        return Object.assign({},p,{likes:likes, dislikes:dislikes});
+      });
+      db.ref('diskussion').set(JSON.stringify(newPosts));
+    }
+    function dislikePost(postId) {
+      if (!currentUser) return;
+      var uid = currentUser.uid;
+      var newPosts = diskPosts.map(function(p) {
+        if (p.id !== postId) return p;
+        var dislikes = (p.dislikes||[]).slice();
+        var likes    = (p.likes||[]).filter(function(u){ return u !== uid; });
+        var idx = dislikes.indexOf(uid);
+        if (idx === -1) dislikes.push(uid); else dislikes.splice(idx, 1);
+        return Object.assign({},p,{likes:likes, dislikes:dislikes});
+      });
+      db.ref('diskussion').set(JSON.stringify(newPosts));
+    }
+    function closeDiskEditForm(id) { document.getElementById(id).classList.remove('open'); }
+    function editDiskPost(postId) {
+      var post = diskPosts.find(function(p){ return p.id===postId; });
+      var form = document.getElementById('disk-edit-'+postId);
+      if (!post || !form) return;
+      form.querySelector('textarea').value = post.text;
+      form.classList.add('open');
+      form.querySelector('textarea').focus();
+    }
+    function saveDiskPost(postId) {
+      var form = document.getElementById('disk-edit-'+postId);
+      if (!form) return;
+      var newText = form.querySelector('textarea').value.trim();
+      if (!newText) return;
+      var newPosts = diskPosts.map(function(p){
+        return p.id===postId ? Object.assign({},p,{text:newText}) : p;
+      });
+      db.ref('diskussion').set(JSON.stringify(newPosts));
+      form.classList.remove('open');
+    }
+    function editDiskComment(postId, ci) {
+      var post = diskPosts.find(function(p){ return p.id===postId; });
+      var form = document.getElementById('disk-cedit-'+postId+'-'+ci);
+      if (!post || !form) return;
+      var c = (post.comments||[])[ci];
+      if (!c) return;
+      form.querySelector('textarea').value = c.text;
+      form.classList.add('open');
+      form.querySelector('textarea').focus();
+    }
+    function saveDiskComment(postId, ci) {
+      var form = document.getElementById('disk-cedit-'+postId+'-'+ci);
+      if (!form) return;
+      var newText = form.querySelector('textarea').value.trim();
+      if (!newText) return;
+      var newPosts = diskPosts.map(function(p){
+        if (p.id!==postId) return p;
+        var newCmts = (p.comments||[]).map(function(c,i){
+          return i===ci ? Object.assign({},c,{text:newText}) : c;
+        });
+        return Object.assign({},p,{comments:newCmts});
+      });
+      db.ref('diskussion').set(JSON.stringify(newPosts));
+      form.classList.remove('open');
     }
     function deleteDiskPost(postId) {
       if (!isAdmin || !confirm('Beitrag löschen?')) return;
