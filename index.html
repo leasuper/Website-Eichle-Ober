@@ -6,1058 +6,453 @@
   <title>Eichel Ober – Verein mit Sitz in Uster</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --green-900: #0f2e0f;
-      --green-800: #1a4d1a;
-      --green-700: #2d6a2d;
-      --green-500: #4a9e4a;
-      --green-200: #c5dfc0;
-      --green-100: #eaf4e7;
-      --green-50:  #f4f9f2;
-      --cream: #fafaf7;
-      --ink: #1a1a1a;
-      --muted: #6b7566;
-      --serif: 'Libre Baskerville', Georgia, serif;
-      --sans: 'DM Sans', system-ui, sans-serif;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--sans);
-      background: var(--cream);
-      color: var(--ink);
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    /* ── PASSWORT ── */
-    #pw-overlay {
-      position: fixed; inset: 0;
-      background: var(--green-800);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;
-    }
-
-    #pw-box {
-      background: var(--cream);
-      border-radius: 16px;
-      padding: 52px 44px 44px;
-      text-align: center;
-      width: 340px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-    }
-
-    #pw-box img {
-      height: 72px; margin-bottom: 20px;
-      border-radius: 8px;
-    }
-
-    #pw-box h2 {
-      font-family: var(--serif);
-      color: var(--green-800);
-      font-size: 1.5rem;
-      margin-bottom: 6px;
-    }
-
-    #pw-box p {
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 28px;
-      line-height: 1.5;
-    }
-
-    #pw-input {
-      width: 100%; padding: 12px 16px;
-      border: 1.5px solid var(--green-200);
-      border-radius: 8px;
-      font-family: var(--sans);
-      font-size: 1rem;
-      outline: none;
-      margin-bottom: 12px;
-      background: #fff;
-      transition: border-color 0.2s;
-    }
-
-    #pw-input:focus { border-color: var(--green-700); }
-
-    #pw-btn {
-      width: 100%; padding: 13px;
-      background: var(--green-800); color: #fff;
-      border: none; border-radius: 8px;
-      font-family: var(--sans);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-
-    #pw-btn:hover { background: var(--green-900); }
-
-    #pw-error {
-      color: #b94040;
-      font-size: 0.83rem;
-      margin-top: 12px;
-      display: none;
-      line-height: 1.5;
-    }
-
-    /* ── ANRUF-SCREEN ── */
-    #call-overlay {
-      position: fixed; inset: 0;
-      background: linear-gradient(160deg, #1c1c1e 0%, #2c2c2e 100%);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9998;
-    }
-
-    #call-overlay.visible { display: flex; animation: callFadeIn 0.4s ease; }
-
-    @keyframes callFadeIn {
-      from { opacity: 0; transform: scale(1.04); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-
-    #call-box {
-      text-align: center;
-      padding: 40px 32px 48px;
-      width: 320px;
-    }
-
-    #call-avatar-ring {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      margin: 0 auto 24px;
-      position: relative;
-    }
-
-    #call-avatar-ring::before,
-    #call-avatar-ring::after {
-      content: '';
-      position: absolute;
-      inset: -10px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.15);
-      animation: pulse 2s ease-out infinite;
-    }
-
-    #call-avatar-ring::after {
-      inset: -22px;
-      animation-delay: 0.6s;
-    }
-
-    @keyframes pulse {
-      0%   { opacity: 0.6; transform: scale(1); }
-      100% { opacity: 0; transform: scale(1.12); }
-    }
-
-    #call-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      border: 3px solid rgba(255,255,255,0.2);
-    }
-
-    #call-name {
-      font-family: var(--serif);
-      font-size: 1.75rem;
-      color: #fff;
-      margin-bottom: 6px;
-      letter-spacing: 0.3px;
-    }
-
-    #call-status {
-      font-family: var(--sans);
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.55);
-      margin-bottom: 56px;
-    }
-
-    #call-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 56px;
-    }
-
-    .call-btn-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .call-btn {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s, filter 0.15s;
-    }
-
-    .call-btn:hover { transform: scale(1.08); filter: brightness(1.15); }
-    .call-btn:active { transform: scale(0.96); }
-
-    .call-btn.decline { background: #ff3b30; }
-    .call-btn.accept  { background: #34c759; }
-
-    .call-label {
-      font-family: var(--sans);
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.7);
-    }
-
-    #call-overlay.accepting {
-      animation: callFadeOut 0.5s ease forwards;
-    }
-
-    @keyframes callFadeOut {
-      to { opacity: 0; transform: scale(0.96); }
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: var(--green-800);
-      padding: 36px 48px 32px;
-    }
-
-    .header-inner {
-      max-width: 960px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .logo {
-      height: 72px;
-      width: auto;
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-
-    .header-text h1 {
-      font-family: var(--serif);
-      font-size: 2rem;
-      color: #fff;
-      letter-spacing: 0.5px;
-      line-height: 1.2;
-    }
-
-    .header-text p {
-      color: var(--green-200);
-      font-size: 0.88rem;
-      margin-top: 5px;
-      font-style: italic;
-    }
-
-    /* ── NAV ── */
-    nav {
-      background: var(--green-900);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    nav ul {
-      max-width: 960px;
-      margin: 0 auto;
-      list-style: none;
-      display: flex;
-      padding: 0 24px;
-    }
-
-    nav ul li a {
-      display: block;
-      padding: 15px 22px;
-      color: var(--green-200);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      transition: color 0.2s;
-      position: relative;
-    }
-
-    nav ul li a::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 22px; right: 22px;
-      height: 2px;
-      background: var(--green-500);
-      transform: scaleX(0);
-      transition: transform 0.2s;
-    }
-
-    nav ul li a:hover { color: #fff; }
-    nav ul li a:hover::after { transform: scaleX(1); }
-
-    /* ── SECTIONS ── */
-    section {
-      max-width: 960px;
-      margin: 72px auto;
-      padding: 0 32px;
-    }
-
-    .section-title {
-      font-family: var(--serif);
-      font-size: 1.5rem;
-      color: var(--green-800);
-      margin-bottom: 8px;
-    }
-
-    .section-rule {
-      width: 48px;
-      height: 3px;
-      background: var(--green-500);
-      border-radius: 2px;
-      margin-bottom: 36px;
-    }
-
-    /* ── VORSTAND ── */
-    .group-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .vorstand-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
-    .member-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .person-card {
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      text-align: center;
-      border: 1px solid var(--green-100);
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-
-    .person-card:hover {
-      box-shadow: 0 8px 24px rgba(15,46,15,0.10);
-      transform: translateY(-2px);
-    }
-
-    .person-card.vorstand { border-top: 3px solid var(--green-700); }
-
-    .member-photo-wrap {
-      width: 100%;
-      background: var(--green-50);
-    }
-    .member-photo {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .member-suit-fallback {
-      font-size: 2.5rem;
-      padding: 28px 0 16px;
-      display: block;
-    }
-
-    .card-info { padding: 14px 16px 20px; }
-
-    .person-card .role {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--green-700);
-      margin-bottom: 6px;
-      min-height: 2.2em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .person-card .name {
-      font-family: var(--serif);
-      font-size: 1rem;
-      color: var(--ink);
-    }
-
-    /* ── DOKUMENTE ── */
-    .doc-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .doc-card {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid var(--green-100);
-      overflow: hidden;
-    }
-
-    .doc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.15s;
-    }
-
-    .doc-header:hover { background: var(--green-50); }
-
-    .doc-header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .doc-icon-wrap {
-      width: 44px;
-      height: 44px;
-      background: var(--green-100);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-
-    .doc-info h3 {
-      font-family: var(--serif);
-      font-size: 1rem;
-      color: var(--ink);
-      margin-bottom: 2px;
-    }
-
-    .doc-info p {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .doc-chevron {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--green-100);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--green-700);
-      font-size: 0.75rem;
-      transition: transform 0.3s, background 0.2s;
-      flex-shrink: 0;
-    }
-
-    .doc-chevron.open {
-      transform: rotate(180deg);
-      background: var(--green-200);
-    }
-
-    .doc-body {
-      display: none;
-      border-top: 1px solid var(--green-100);
-    }
-
-    .doc-body.open { display: block; }
-
-    .doc-body iframe {
-      width: 100%;
-      height: 580px;
-      border: none;
-      display: block;
-    }
-
-    .doc-footer {
-      display: flex;
-      justify-content: flex-end;
-      padding: 12px 20px;
-      background: var(--green-50);
-      border-top: 1px solid var(--green-100);
-    }
-
-    .doc-footer a {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--green-700);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .doc-footer a:hover { color: var(--green-900); text-decoration: underline; }
-
-    /* ── LEADERBOARD ── */
-    .leaderboard {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .lb-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid var(--green-100);
-      padding: 16px 24px;
-      transition: box-shadow 0.2s, transform 0.2s;
-    }
-
-    .lb-row:hover {
-      box-shadow: 0 6px 20px rgba(15,46,15,0.09);
-      transform: translateY(-1px);
-    }
-
-    .lb-row.lb-winner {
-      border: 2px solid #D4A010;
-      background: linear-gradient(135deg, #fffdf0 0%, #fff9e0 100%);
-    }
-
-    .lb-rank {
-      font-family: var(--serif);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--muted);
-      width: 36px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .lb-row.lb-winner .lb-rank { color: #D4A010; }
-
-    .lb-medal {
-      font-size: 1.6rem;
-      flex-shrink: 0;
-    }
-
-    .lb-info { flex: 1; }
-
-    .lb-name {
-      font-family: var(--serif);
-      font-size: 1.05rem;
-      color: var(--ink);
-      font-weight: 700;
-    }
-
-    .lb-role {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .lb-score {
-      font-family: var(--serif);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--green-700);
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .lb-row.lb-winner .lb-score { color: #D4A010; }
-
-    .lb-score-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      font-family: var(--sans);
-      font-weight: 400;
-      display: block;
-      text-align: right;
-    }
-
-    .lb-finish-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #f5cc40, #D4A010);
-      color: #5a3e00;
-      border: none;
-      border-radius: 10px;
-      padding: 13px 26px;
-      font-family: var(--sans);
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 2px 10px rgba(212,160,16,0.3);
-      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
-    }
-    .lb-finish-btn:hover {
-      background: linear-gradient(135deg, #e8bb2a, #bf8f00);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(212,160,16,0.4);
-    }
-
-    .lb-layout {
-      display: flex;
-      gap: 36px;
-      align-items: flex-start;
-    }
-
-    .lb-table-wrap { flex: 1; min-width: 0; }
-
-    .lb-chart-wrap {
-      flex-shrink: 0;
-      width: 210px;
-      text-align: center;
-    }
-
-    .lb-chart-wrap svg { width: 100%; height: auto; }
-
-    .chart-title {
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      margin-top: 6px;
-    }
-
-    .lb-note {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    @media (max-width: 640px) {
-      .lb-layout { flex-direction: column; align-items: center; }
-      .lb-table-wrap { width: 100%; }
-      .lb-chart-wrap { width: 180px; }
-    }
-
-    /* ── PROTOKOLL ── */
-    .protokoll-intro {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 28px;
-      line-height: 1.6;
-    }
-
-    .protokoll-add-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--green-800);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 14px 28px;
-      font-family: var(--sans);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.2s, transform 0.15s;
-      margin-bottom: 36px;
-    }
-
-    .protokoll-add-btn:hover {
-      background: var(--green-900);
-      transform: translateY(-1px);
-    }
-
-    .protokoll-entries {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .protokoll-empty {
-      background: #fff;
-      border-radius: 12px;
-      border: 1.5px dashed var(--green-200);
-      padding: 48px 32px;
-      text-align: center;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    /* ── PROTOKOLL MODAL ── */
-    #proto-modal {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 500;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #proto-modal.open { display: flex; }
-
-    #proto-box {
-      background: var(--cream);
-      border-radius: 16px;
-      padding: 40px 36px;
-      width: 460px;
-      max-width: 94vw;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-    }
-
-    #proto-box h3 {
-      font-family: var(--serif);
-      font-size: 1.3rem;
-      color: var(--green-800);
-      margin-bottom: 20px;
-    }
-
-    #proto-name, #proto-text {
-      width: 100%;
-      border: 1.5px solid var(--green-200);
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-family: var(--sans);
-      font-size: 0.95rem;
-      outline: none;
-      background: #fff;
-      transition: border-color 0.2s;
-      box-sizing: border-box;
-      margin-bottom: 12px;
-    }
-
-    #proto-name:focus, #proto-text:focus { border-color: var(--green-700); }
-
-    #proto-text { height: 120px; resize: vertical; }
-
-    .proto-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 4px;
-    }
-
-    .proto-cancel {
-      padding: 10px 20px;
-      border: 1.5px solid var(--green-200);
-      border-radius: 8px;
-      background: transparent;
-      color: var(--muted);
-      font-family: var(--sans);
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    .proto-submit {
-      padding: 10px 24px;
-      background: var(--green-800);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-family: var(--sans);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .proto-submit:hover { background: var(--green-900); }
-
-    .protokoll-entry {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid var(--green-100);
-      padding: 20px 24px;
-    }
-
-    .protokoll-entry .proto-author {
-      font-weight: 600;
-      color: var(--green-800);
-      font-size: 0.9rem;
-      margin-bottom: 6px;
-    }
-
-    .protokoll-entry .proto-date {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-left: 8px;
-    }
-
-    .protokoll-entry .proto-body {
-      color: var(--ink);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
-    /* ── DISKUSSION ── */
-    .disk-post {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid var(--green-100);
-      margin-bottom: 16px;
-      overflow: hidden;
-    }
-
-    .disk-post-header {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      padding: 20px 24px 0;
-    }
-
-    .disk-post-author {
-      font-weight: 600;
-      color: var(--green-800);
-      font-size: 0.9rem;
-    }
-
-    .disk-post-date {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .disk-post-body {
-      padding: 8px 24px 16px;
-      color: var(--ink);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
-    .disk-comments {
-      border-top: 1px solid var(--green-100);
-      background: var(--green-50);
-      padding: 14px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .disk-comment {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .disk-comment-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--green-500);
-      margin-top: 7px;
-      flex-shrink: 0;
-    }
-
-    .disk-comment-content { flex: 1; }
-
-    .disk-comment-author {
-      font-weight: 600;
-      font-size: 0.82rem;
-      color: var(--green-700);
-    }
-
-    .disk-comment-date {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-left: 6px;
-    }
-
-    .disk-comment-text {
-      font-size: 0.88rem;
-      color: var(--ink);
-      line-height: 1.5;
-      margin-top: 2px;
-      white-space: pre-wrap;
-    }
-
-    .disk-reply-btn {
-      background: none;
-      border: none;
-      color: var(--green-700);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 4px 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-family: var(--sans);
-      margin-top: 2px;
-    }
-
-    .disk-reply-btn:hover { color: var(--green-900); }
-
-    .disk-comment-form {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .disk-comment-form.open { display: flex; }
-
-    .disk-comment-form input,
-    .disk-comment-form textarea {
-      border: 1.5px solid var(--green-200);
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-family: var(--sans);
-      font-size: 0.88rem;
-      outline: none;
-      background: #fff;
-      transition: border-color 0.2s;
-    }
-
-    .disk-comment-form input:focus,
-    .disk-comment-form textarea:focus { border-color: var(--green-700); }
-
-    .disk-comment-form textarea { height: 68px; resize: vertical; }
-
-    .disk-comment-form-actions {
-      display: flex; gap: 8px; justify-content: flex-end;
-    }
-
-    .disk-comment-cancel {
-      padding: 7px 16px;
-      border: 1.5px solid var(--green-200);
-      border-radius: 8px;
-      background: transparent;
-      color: var(--muted);
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      cursor: pointer;
-    }
-
-    .disk-comment-submit {
-      padding: 7px 18px;
-      background: var(--green-700);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .disk-comment-submit:hover { background: var(--green-900); }
-
-    #disk-modal {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 500;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #disk-modal.open { display: flex; }
-
-    #disk-box {
-      background: var(--cream);
-      border-radius: 16px;
-      padding: 40px 36px;
-      width: 460px;
-      max-width: 94vw;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
-    }
-
-    #disk-box h3 {
-      font-family: var(--serif);
-      font-size: 1.3rem;
-      color: var(--green-800);
-      margin-bottom: 20px;
-    }
-
-    #disk-author, #disk-text {
-      width: 100%;
-      border: 1.5px solid var(--green-200);
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-family: var(--sans);
-      font-size: 0.95rem;
-      outline: none;
-      background: #fff;
-      transition: border-color 0.2s;
-      box-sizing: border-box;
-      margin-bottom: 12px;
-    }
-
-    #disk-author:focus, #disk-text:focus { border-color: var(--green-700); }
-    #disk-text { height: 120px; resize: vertical; }
-
-    /* ── SONSTIGES ── */
-    .soon-box {
-      background: #fff;
-      border-radius: 12px;
-      border: 1.5px dashed var(--green-200);
-      padding: 56px 32px;
-      text-align: center;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--green-900);
-      color: var(--green-200);
-      text-align: center;
-      padding: 22px;
-      font-size: 0.82rem;
-      margin-top: 80px;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 680px) {
-      header { padding: 24px 20px; }
-      .header-inner { flex-direction: column; text-align: center; }
-      nav ul { flex-direction: column; padding: 0; }
-      nav ul li a { padding: 12px 20px; font-size: 0.8rem; }
-      section { padding: 0 20px; margin: 52px auto; }
-      .vorstand-grid, .member-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 420px) {
-      .vorstand-grid, .member-grid { grid-template-columns: 1fr; }
-    }
-
-    #google-signin-btn {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%; padding: 13px; margin-top: 8px;
-      background: #fff; border: 1.5px solid #ddd; border-radius: 8px;
-      font-family: var(--sans); font-size: 0.95rem; font-weight: 600;
-      cursor: pointer; color: var(--ink);
-      transition: background 0.2s, box-shadow 0.2s;
-    }
-    #google-signin-btn:hover { background: #f5f5f5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-
-    #user-info { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-    #user-name { font-size: 0.78rem; color: var(--green-200); }
-    #signout-btn {
-      background: transparent; border: 1px solid var(--green-500);
-      color: var(--green-200); padding: 5px 12px; border-radius: 6px;
-      font-size: 0.75rem; cursor: pointer; font-family: var(--sans);
-      transition: background 0.2s;
-    }
-    #signout-btn:hover { background: rgba(255,255,255,0.1); }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg:    #0b0b09;
+      --bg2:   #111109;
+      --bg3:   #161612;
+      --ink:   #f0ece0;
+      --muted: rgba(240,236,224,0.38);
+      --faint: rgba(240,236,224,0.10);
+      --gold:  #f0a830;
+      --gold2: #c8841a;
+      --line:  rgba(240,236,224,0.08);
+      --serif: 'Syne', sans-serif;
+      --sans:  'DM Sans', system-ui, sans-serif;
+      --mono:  'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink); overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── PW OVERLAY ── */
+    #pw-overlay {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #pw-box {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 48px 40px;
+      text-align: center;
+      width: 360px;
+    }
+    #pw-box img { height: 64px; border-radius: 6px; margin-bottom: 24px; opacity: 0.9; }
+    #pw-box h2 {
+      font-family: var(--serif); font-size: 1.8rem; font-weight: 800;
+      color: var(--ink); margin-bottom: 8px;
+    }
+    #pw-box p {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.08em; margin-bottom: 32px; line-height: 1.6;
+    }
+    #google-signin-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 13px;
+      background: var(--ink); color: #0b0b09;
+      border: none; border-radius: 3px;
+      font-family: var(--mono); font-size: 0.75rem;
+      font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: background 0.2s;
+    }
+    #google-signin-btn:hover { background: var(--gold); }
+
+    /* ── CALL OVERLAY ── */
+    #call-overlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #1c1c1e 0%, #2c2c2e 100%);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9998;
+    }
+    #call-overlay.visible { display: flex; animation: callFadeIn 0.4s ease; }
+    @keyframes callFadeIn { from { opacity:0; transform:scale(1.04); } to { opacity:1; transform:scale(1); } }
+    #call-box { text-align: center; padding: 40px 32px 48px; width: 320px; }
+    #call-avatar-ring {
+      width: 120px; height: 120px; border-radius: 50%;
+      margin: 0 auto 24px; position: relative;
+    }
+    #call-avatar-ring::before, #call-avatar-ring::after {
+      content: ''; position: absolute; inset: -10px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      animation: ringPulse 2s ease-out infinite;
+    }
+    #call-avatar-ring::after { inset: -22px; animation-delay: 0.6s; }
+    @keyframes ringPulse { 0% { opacity:0.6; transform:scale(1); } 100% { opacity:0; transform:scale(1.12); } }
+    #call-avatar {
+      width: 120px; height: 120px; border-radius: 50%;
+      object-fit: cover; display: block;
+      border: 3px solid rgba(255,255,255,0.2);
+    }
+    #call-name { font-family: var(--serif); font-size: 1.75rem; color: #fff; margin-bottom: 6px; }
+    #call-status { font-size: 0.9rem; color: rgba(255,255,255,0.55); margin-bottom: 56px; }
+    #call-buttons { display: flex; justify-content: center; gap: 56px; }
+    .call-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .call-btn {
+      width: 68px; height: 68px; border-radius: 50%; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .call-btn:hover { transform: scale(1.08); filter: brightness(1.15); }
+    .call-btn.decline { background: #ff3b30; }
+    .call-btn.accept  { background: #34c759; }
+    .call-label { font-size: 0.78rem; color: rgba(255,255,255,0.7); }
+    #call-overlay.accepting { animation: callFadeOut 0.5s ease forwards; }
+    @keyframes callFadeOut { to { opacity:0; transform:scale(0.96); } }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: center; padding: 18px 36px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(11,11,9,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom-color: var(--line);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--serif); font-weight: 800;
+      font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .nav-logo img { height: 26px; width: 26px; border-radius: 4px; object-fit: cover; opacity: 0.9; }
+    .nav-status {
+      justify-self: center;
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(240,168,48,0.08);
+      border: 1px solid rgba(240,168,48,0.2);
+      border-radius: 100px; padding: 5px 14px 5px 10px;
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--gold); letter-spacing: 0.08em;
+    }
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold); animation: dotPulse 2s ease infinite;
+    }
+    @keyframes dotPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.8); } }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-links { display: flex; gap: 20px; list-style: none; }
+    .nav-links a {
+      font-family: var(--sans); font-size: 0.8rem; font-weight: 400;
+      color: var(--muted); transition: color 0.2s; letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    #clock { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
+    #user-name-nav { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    #signout-btn {
+      background: none; border: 1px solid var(--line);
+      color: var(--muted); font-family: var(--mono); font-size: 0.7rem;
+      padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    #signout-btn:hover { border-color: var(--muted); color: var(--ink); }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      overflow: hidden; white-space: nowrap;
+      padding: 11px 0; border-bottom: 1px solid var(--line);
+      background: var(--bg); margin-top: 62px;
+    }
+    .ticker-track { display: inline-block; animation: ticker 32s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 20px;
+      font-family: var(--mono); font-size: 0.7rem;
+      color: var(--muted); letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 0 32px;
+    }
+    .ticker-sep { color: var(--gold); font-size: 1rem; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 36px 100px; min-height: 80vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 32px; display: flex; align-items: center; gap: 16px;
+    }
+    .hero-eyebrow::after { content:''; display:block; height:1px; width:64px; background:var(--muted); opacity:0.4; }
+    .hero-headline {
+      font-family: var(--serif); font-weight: 800;
+      font-size: clamp(4rem, 11vw, 9.5rem);
+      line-height: 0.88; letter-spacing: -0.03em;
+      color: var(--ink); margin-bottom: 48px; max-width: 900px;
+    }
+    .hl-gold { color: var(--gold); }
+    .hero-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+    .hero-desc {
+      font-family: var(--sans); font-size: 1rem; line-height: 1.65;
+      color: var(--muted); font-weight: 300; max-width: 380px;
+    }
+    .hero-stats { display: flex; gap: 40px; flex-shrink: 0; }
+    .hero-stat { text-align: right; }
+    .hero-stat-num { font-family: var(--serif); font-size: 2.5rem; font-weight: 800; color: var(--ink); line-height: 1; }
+    .hero-stat-label { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap { overflow: hidden; border-top: 1px solid var(--line); padding: 20px 0; }
+    .marquee-track { display: inline-block; white-space: nowrap; animation: ticker 22s linear infinite; }
+    .marquee-text {
+      display: inline; font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800;
+      letter-spacing: -0.02em; color: transparent;
+      -webkit-text-stroke: 1px rgba(240,236,224,0.15); padding: 0 40px;
+    }
+    .marquee-text.filled { color: var(--ink); -webkit-text-stroke: 0; }
+
+    /* ── SECTION ── */
+    .sec { padding: 80px 36px; border-top: 1px solid var(--line); }
+    .sec-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 48px; }
+    .sec-title {
+      font-family: var(--serif); font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+    }
+    .sec-count { font-family: var(--mono); font-size: 0.68rem; color: var(--faint); letter-spacing: 0.1em; }
+
+    /* ── MEMBER TABLE ── */
+    .member-row-header {
+      display: grid; grid-template-columns: 48px 220px 1fr 120px 40px;
+      padding: 0 0 12px; border-bottom: 1px solid var(--line);
+    }
+    .mrh-col { font-family: var(--mono); font-size: 0.62rem; color: var(--faint); letter-spacing: 0.15em; text-transform: uppercase; }
+    .member-row {
+      display: grid; grid-template-columns: 48px 220px 1fr 120px 40px;
+      align-items: center; padding: 18px 0;
+      border-bottom: 1px solid var(--line); cursor: default;
+      transition: background 0.15s, padding 0.15s; border-radius: 4px;
+    }
+    .member-row:hover { background: rgba(240,236,224,0.03); padding-left: 12px; padding-right: 12px; margin: 0 -12px; }
+    .mr-num { font-family: var(--mono); font-size: 0.72rem; color: var(--faint); letter-spacing: 0.08em; }
+    .mr-name { font-family: var(--serif); font-weight: 700; font-size: 1.05rem; color: var(--ink); display: flex; align-items: center; gap: 12px; }
+    .mr-avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; opacity: 0.85; filter: grayscale(15%); border: 1px solid var(--line); }
+    .mr-role { font-family: var(--sans); font-size: 0.82rem; color: var(--muted); font-weight: 300; }
+    .mr-badge {
+      display: inline-block;
+      background: rgba(240,168,48,0.1); border: 1px solid rgba(240,168,48,0.2);
+      color: var(--gold); font-family: var(--mono); font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 100px;
+    }
+    .mr-badge.normal { background: rgba(240,236,224,0.04); border-color: var(--line); color: var(--muted); }
+    .mr-arrow { text-align: right; color: var(--faint); font-size: 0.9rem; transition: color 0.2s, transform 0.2s; }
+    .member-row:hover .mr-arrow { color: var(--gold); transform: translate(3px,-3px); }
+
+    /* ── LEADERBOARD ── */
+    .lb-big { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .lb-card { background: var(--bg2); padding: 32px; position: relative; overflow: hidden; transition: background 0.25s; cursor: default; }
+    .lb-card:hover { background: var(--bg3); }
+    .lb-card.gold-bg { background: rgba(240,168,48,0.07); }
+    .lb-card.gold-bg:hover { background: rgba(240,168,48,0.11); }
+    .lbc-rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 20px; }
+    .lbc-rank.is-first { color: var(--gold); }
+    .lbc-name { font-family: var(--serif); font-size: 1.8rem; font-weight: 800; line-height: 1; color: var(--ink); margin-bottom: 6px; }
+    .lbc-role { font-family: var(--sans); font-size: 0.78rem; color: var(--muted); font-weight: 300; margin-bottom: 28px; }
+    .lbc-stats { display: flex; gap: 28px; }
+    .lbc-stat-n { font-family: var(--serif); font-size: 2rem; font-weight: 800; color: var(--gold); line-height: 1; }
+    .lbc-stat-l { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+    .lbc-trophy { position: absolute; right: 24px; top: 20px; font-size: 2rem; opacity: 0.5; }
+    .lb-actions { margin-top: 2px; display: flex; gap: 2px; }
+
+    /* ── QUICK ACTIONS ── */
+    .actions-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .action-tile {
+      background: var(--bg2); padding: 28px 24px 32px;
+      text-decoration: none; display: block;
+      transition: background 0.2s; cursor: pointer;
+      border: none; color: var(--ink); text-align: left;
+      font-family: var(--sans); width: 100%;
+    }
+    .action-tile:hover { background: var(--bg3); }
+    .at-icon { font-size: 1.5rem; margin-bottom: 16px; display: block; }
+    .at-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; display: block; }
+    .at-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--ink); display: block; }
+    .at-arrow { display: block; margin-top: 24px; color: var(--gold); font-size: 0.9rem; }
+
+    /* ── FEED (Protokoll + Diskussion) ── */
+    .feed { display: flex; flex-direction: column; }
+    .feed-item {
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: 24px; align-items: start;
+      padding: 20px 0; border-bottom: 1px solid var(--line);
+    }
+    .feed-date { font-family: var(--mono); font-size: 0.65rem; color: var(--faint); letter-spacing: 0.08em; padding-top: 3px; }
+    .feed-body { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); font-weight: 300; line-height: 1.5; }
+    .feed-author { font-weight: 500; color: var(--ink); }
+    .feed-tag {
+      font-family: var(--mono); font-size: 0.6rem; color: var(--muted);
+      border: 1px solid var(--line); padding: 3px 8px; border-radius: 100px;
+      letter-spacing: 0.08em; white-space: nowrap;
+    }
+    .feed-empty {
+      font-family: var(--mono); font-size: 0.75rem; color: var(--faint);
+      letter-spacing: 0.1em; padding: 32px 0; text-align: center;
+    }
+    .sec-btn {
+      background: none; border: 1px solid var(--line); color: var(--muted);
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 6px 14px; border-radius: 100px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .sec-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── DISKUSSION REPLIES ── */
+    .disk-replies { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .disk-comment { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+    .disk-comment-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-top: 7px; flex-shrink: 0; opacity: 0.5; }
+    .disk-comment-content { flex: 1; }
+    .disk-comment-author { font-weight: 500; color: var(--ink); font-size: 0.85rem; }
+    .disk-comment-date { font-family: var(--mono); font-size: 0.65rem; color: var(--faint); margin-left: 6px; }
+    .disk-comment-text { font-size: 0.85rem; color: var(--muted); margin-top: 2px; white-space: pre-wrap; }
+    .disk-reply-btn {
+      background: none; border: 1px solid var(--line); color: var(--muted);
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
+      cursor: pointer; transition: all 0.2s; margin-top: 6px;
+    }
+    .disk-reply-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .disk-comment-form { display: none; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .disk-comment-form.open { display: flex; }
+    .disk-form-input {
+      background: transparent; border: none; border-bottom: 1px solid var(--line);
+      color: var(--ink); font-family: var(--sans); font-size: 0.88rem;
+      padding: 8px 0; outline: none; transition: border-color 0.2s; width: 100%;
+    }
+    .disk-form-input::placeholder { color: var(--muted); }
+    .disk-form-input:focus { border-bottom-color: var(--gold); }
+    textarea.disk-form-input { height: 56px; resize: vertical; }
+    .disk-form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+
+    /* ── ADMIN DELETE ── */
+    .admin-del {
+      background: none; border: none; color: rgba(240,236,224,0.18);
+      font-size: 0.68rem; cursor: pointer; padding: 1px 5px; border-radius: 3px;
+      transition: color 0.2s, background 0.2s; font-family: var(--mono);
+      letter-spacing: 0.05em; margin-left: 6px; vertical-align: middle;
+    }
+    .admin-del:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); }
+
+    /* ── DOKUMENTE ── */
+    .doc-row {
+      display: grid; grid-template-columns: 1fr auto;
+      align-items: center; padding: 24px 0;
+      border-bottom: 1px solid var(--line); gap: 24px;
+      cursor: pointer; transition: padding 0.2s;
+    }
+    .doc-row:first-child { border-top: 1px solid var(--line); }
+    .doc-row:hover { padding-left: 12px; }
+    .dr-name { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .dr-meta { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; }
+    .dr-arrow { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); transition: color 0.2s, transform 0.2s; flex-shrink: 0; }
+    .doc-row:hover .dr-arrow { color: var(--gold); transform: rotate(90deg); }
+    .doc-body-wrap { display: none; }
+    .doc-body-wrap.open { display: block; }
+    .doc-body-wrap iframe { width: 100%; height: 540px; border: none; display: block; background: var(--bg2); }
+    .doc-dl {
+      display: inline-block; margin: 12px 0;
+      font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      border: 1px solid var(--line); padding: 8px 16px; border-radius: 100px;
+      transition: all 0.2s;
+    }
+    .doc-dl:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--line); padding: 48px 36px 40px; }
+    .footer-big {
+      font-family: var(--serif); font-size: clamp(2rem, 6vw, 5rem);
+      font-weight: 800; line-height: 0.9; letter-spacing: -0.02em;
+      color: var(--ink); margin-bottom: 48px;
+    }
+    .footer-big .fb-sub {
+      font-size: 0.4em; font-weight: 400; color: var(--muted);
+      display: block; margin-top: 12px; font-family: var(--sans); letter-spacing: 0;
+    }
+    .footer-meta { display: flex; justify-content: space-between; align-items: flex-end; }
+    .footer-copy { font-family: var(--mono); font-size: 0.65rem; color: var(--faint); letter-spacing: 0.1em; }
+    .footer-suits { font-size: 1.2rem; letter-spacing: 12px; color: rgba(240,168,48,0.15); }
+
+    /* ── MODALS ── */
+    .modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(11,11,9,0.88); z-index: 2000;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .modal.open { display: flex; }
+    .modal-box {
+      background: var(--bg2); border: 1px solid var(--line);
+      max-width: 480px; width: 94vw; padding: 44px; border-radius: 4px;
+    }
+    .modal-title { font-family: var(--serif); font-size: 1.6rem; font-weight: 800; color: var(--ink); margin-bottom: 32px; }
+    .modal-input {
+      width: 100%; background: transparent; border: none;
+      border-bottom: 1px solid var(--line); color: var(--ink);
+      font-family: var(--sans); font-size: 0.95rem;
+      padding: 10px 0; outline: none; margin-bottom: 20px;
+      transition: border-color 0.2s; display: block;
+    }
+    .modal-input::placeholder { color: var(--muted); }
+    .modal-input:focus { border-bottom-color: var(--gold); }
+    textarea.modal-input { height: 90px; resize: vertical; }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+    .btn-g {
+      background: var(--gold); color: var(--bg);
+      font-family: var(--mono); font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 11px 24px; border: none; border-radius: 3px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-g:hover { background: var(--gold2); }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      font-family: var(--mono); font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 11px 20px; border: 1px solid var(--line); border-radius: 3px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity:0; transform:translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { grid-template-columns: auto auto; padding: 14px 20px; }
+      .nav-status { display: none; }
+      .nav-links { display: none; }
+      #clock { display: none; }
+      .hero { padding: 60px 20px 80px; }
+      .hero-meta { flex-direction: column; align-items: flex-start; }
+      .hero-stats { gap: 24px; }
+      .sec { padding: 60px 20px; }
+      .actions-row { grid-template-columns: 1fr 1fr; }
+      .lb-big { grid-template-columns: 1fr; }
+      .member-row, .member-row-header { grid-template-columns: 40px 1fr 100px 36px; }
+      .mr-role { display: none; }
+      footer { padding: 40px 20px; }
+    }
+    @media (max-width: 480px) {
+      .actions-row { grid-template-columns: 1fr; }
+      .hero-headline { font-size: clamp(3rem, 14vw, 5rem); }
+    }
+  </style>
 </head>
 <body>
 
@@ -1068,7 +463,7 @@
       <h2>Eichel Ober</h2>
       <p>Melde dich mit deinem Google-Konto an.</p>
       <button id="google-signin-btn" onclick="signInWithGoogle()">
-        <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
@@ -1132,7 +527,9 @@
       'silas.mueller4@gmail.com'
     ];
 
-    /* Hide overlay immediately if session is still active */
+    var ADMINS = ['le.nievergelt@gmail.com', 'eichleober@gmail.com'];
+    var isAdmin = false;
+
     (function() {
       if (sessionStorage.getItem('eo_uid')) {
         document.getElementById('pw-overlay').style.display = 'none';
@@ -1144,19 +541,21 @@
         sessionStorage.removeItem('eo_uid');
         sessionStorage.removeItem('eo_called');
         document.getElementById('pw-overlay').style.display = 'flex';
-        document.getElementById('user-info').style.display = 'none';
+        document.getElementById('signout-btn').style.display = 'none';
+        document.getElementById('user-name-nav').textContent = '';
       } else {
         if (ERLAUBTE_EMAILS.indexOf(user.email.toLowerCase()) === -1) {
           auth.signOut();
           document.getElementById('pw-overlay').style.display = 'flex';
           document.querySelector('#pw-box p').innerHTML =
-            '<span style="color:#b94040">Kein Zugang für <b>' + user.email + '</b>.<br>Melde dich mit einem erlaubten Konto an.</span>';
+            'Kein Zugang für <b>' + user.email + '</b>.';
           return;
         }
+        isAdmin = ADMINS.indexOf(user.email.toLowerCase()) !== -1;
         sessionStorage.setItem('eo_uid', user.uid);
         document.getElementById('pw-overlay').style.display = 'none';
-        document.getElementById('user-name').textContent = user.displayName || user.email;
-        document.getElementById('user-info').style.display = 'flex';
+        document.getElementById('user-name-nav').textContent = (user.displayName || user.email).split(' ')[0];
+        document.getElementById('signout-btn').style.display = '';
         if (!sessionStorage.getItem('eo_called')) {
           var call = document.getElementById('call-overlay');
           call.classList.add('visible');
@@ -1170,7 +569,7 @@
     function signInWithGoogle() {
       var provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).catch(function(err) {
-        alert('Anmeldung fehlgeschlagen: ' + err.message);
+        document.querySelector('#pw-box p').textContent = 'Anmeldung fehlgeschlagen: ' + err.message;
       });
     }
 
@@ -1179,10 +578,7 @@
       sessionStorage.setItem('eo_called', '1');
       var call = document.getElementById('call-overlay');
       call.classList.add('accepting');
-      setTimeout(function() {
-        call.style.display = 'none';
-        initFirebaseListeners();
-      }, 500);
+      setTimeout(function() { call.style.display = 'none'; initFirebaseListeners(); }, 500);
     }
 
     function declineCall() {
@@ -1191,32 +587,25 @@
       sessionStorage.removeItem('eo_called');
       var call = document.getElementById('call-overlay');
       call.classList.add('accepting');
-      setTimeout(function() {
-        call.classList.remove('visible', 'accepting');
-        call.style.display = '';
-      }, 500);
+      setTimeout(function() { call.classList.remove('visible','accepting'); call.style.display = ''; }, 500);
     }
 
     var audioCtx, ringInterval;
     function playRing() {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       function beep() {
-        var freqs = [880, 1108, 1320];
-        freqs.forEach(function(f, i) {
-          var osc = audioCtx.createOscillator();
-          var gain = audioCtx.createGain();
+        [880,1108,1320].forEach(function(f,i) {
+          var osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
           osc.connect(gain); gain.connect(audioCtx.destination);
-          osc.type = 'sine';
-          osc.frequency.value = f;
+          osc.type = 'sine'; osc.frequency.value = f;
           var t = audioCtx.currentTime + i * 0.07;
           gain.gain.setValueAtTime(0, t);
-          gain.gain.linearRampToValueAtTime(0.12, t + 0.02);
-          gain.gain.linearRampToValueAtTime(0, t + 0.18);
-          osc.start(t); osc.stop(t + 0.2);
+          gain.gain.linearRampToValueAtTime(0.12, t+0.02);
+          gain.gain.linearRampToValueAtTime(0, t+0.18);
+          osc.start(t); osc.stop(t+0.2);
         });
       }
-      beep();
-      ringInterval = setInterval(beep, 1800);
+      beep(); ringInterval = setInterval(beep, 1800);
     }
     function stopRing() {
       if (ringInterval) clearInterval(ringInterval);
@@ -1224,643 +613,547 @@
     }
   </script>
 
-  <!-- ── Header ── -->
-  <header>
-    <div class="header-inner">
-      <img src="eichel-ober.gif" alt="Eichel Ober" class="logo">
-      <div class="header-text">
-        <h1>Eichel Ober</h1>
-        <p>Verein mit Sitz in Uster</p>
-      </div>
-      <div id="user-info" style="display:none">
-        <span id="user-name"></span>
-        <button id="signout-btn" onclick="firebase.auth().signOut()">Abmelden</button>
-      </div>
+  <!-- ── Nav ── -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">
+      <img src="eichel-ober.gif" alt="">
+      Eichel Ober
+    </a>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      Aktiv · 6 Mitglieder
     </div>
-  </header>
-
-  <!-- ── Navigation ── -->
-  <nav>
-    <ul>
-      <li><a href="#vorstand">Vorstand</a></li>
-      <li><a href="#dokumente">Statuten</a></li>
-      <li><a href="#protokoll">Protokoll</a></li>
-      <li><a href="#diskussion">Diskussion</a></li>
-      <li><a href="#sonstiges">Sonstiges</a></li>
-      <li><a href="jass.html">🃏 Jass</a></li>
-      <li><a href="jasstafel.html">📊 Jasstafel</a></li>
-    </ul>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#mitglieder">Mitglieder</a></li>
+        <li><a href="#rangliste">Rangliste</a></li>
+        <li><a href="#protokoll">Protokoll</a></li>
+        <li><a href="#diskussion">Diskussion</a></li>
+        <li><a href="#dokumente">Statuten</a></li>
+        <li><a href="jass.html">🃏 Jass</a></li>
+        <li><a href="jasstafel.html">📊 Jasstafel</a></li>
+      </ul>
+      <span id="clock">--:--:--</span>
+      <span id="user-name-nav"></span>
+      <button id="signout-btn" style="display:none" onclick="firebase.auth().signOut()">Abmelden</button>
+    </div>
   </nav>
 
-  <!-- ── Vorstand & Mitglieder ── -->
-  <section id="vorstand">
-    <h2 class="section-title">Vorstand &amp; Mitglieder</h2>
-    <div class="section-rule"></div>
-
-    <p class="group-label">Vorstand</p>
-    <div class="vorstand-grid">
-      <div class="person-card vorstand">
-        <div class="member-photo-wrap">
-          <img src="img/Mitglieder/Noe.jpg" alt="Noé B." class="member-photo" onerror="memberImgErr(this,'♠')">
-        </div>
-        <div class="card-info">
-          <div class="role">Präsi</div>
-          <div class="name">Noé B.</div>
-        </div>
-      </div>
-      <div class="person-card vorstand">
-        <div class="member-photo-wrap">
-          <img src="img/Mitglieder/Ella.jpg" alt="Ella B." class="member-photo" onerror="memberImgErr(this,'♣')">
-        </div>
-        <div class="card-info">
-          <div class="role">Vize-Präsi</div>
-          <div class="name">Ella B.</div>
-        </div>
-      </div>
-      <div class="person-card vorstand">
-        <div class="member-photo-wrap">
-          <img src="img/Mitglieder/Lars.jpg" alt="Lars L." class="member-photo" onerror="memberImgErr(this,'♦')">
-        </div>
-        <div class="card-info">
-          <div class="role">Aktuar</div>
-          <div class="name">Lars L.</div>
-        </div>
-      </div>
+  <!-- ── Ticker ── -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span class="ticker-item">♣ Eichel Ober<span class="ticker-sep">·</span>Verein mit Sitz in Uster<span class="ticker-sep">·</span>Gegründet 2026<span class="ticker-sep">·</span>6 Mitglieder<span class="ticker-sep">·</span>Guggitaler Jass<span class="ticker-sep">·</span>Stich · Schilten · Könige · Eichel Ober · Letzter Stich · Alles<span class="ticker-sep">·</span></span>
+      <span class="ticker-item">♣ Eichel Ober<span class="ticker-sep">·</span>Verein mit Sitz in Uster<span class="ticker-sep">·</span>Gegründet 2026<span class="ticker-sep">·</span>6 Mitglieder<span class="ticker-sep">·</span>Guggitaler Jass<span class="ticker-sep">·</span>Stich · Schilten · Könige · Eichel Ober · Letzter Stich · Alles<span class="ticker-sep">·</span></span>
     </div>
+  </div>
 
-    <p class="group-label">Mitglieder</p>
-    <div class="member-grid">
-      <div class="person-card">
-        <div class="member-photo-wrap">
-          <img src="img/Mitglieder/Leandro.jpg" alt="Leandro N." class="member-photo" onerror="memberImgErr(this,'♥')">
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <div class="hero-eyebrow reveal">Uster, Schweiz — Est. 2026</div>
+    <h1 class="hero-headline reveal reveal-delay-1">
+      Sechs Leute.<br>
+      Eine <span class="hl-gold">Eichel.</span><br>
+      Kein Erbarmen.
+    </h1>
+    <div class="hero-meta reveal reveal-delay-2">
+      <p class="hero-desc">
+        Der Verein Eichel Ober pflegt das Schweizer Jassen auf hohem Niveau — und mit noch höherem Kalorienverbrauch durch Lachanfälle.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num" id="stat-wins">—</div>
+          <div class="hero-stat-label">Gesamtsiege</div>
         </div>
-        <div class="card-info">
-          <div class="role">Aussenminister</div>
-          <div class="name">Leandro N.</div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" id="stat-rounds">—</div>
+          <div class="hero-stat-label">Gespielte Runden</div>
         </div>
-      </div>
-      <div class="person-card">
-        <div class="member-photo-wrap">
-          <img src="img/Mitglieder/Chanelle.jpg" alt="Chanelle P." class="member-photo" onerror="memberImgErr(this,'♥')">
-        </div>
-        <div class="card-info">
-          <div class="role">Senior Chief Executive Facility Managerin</div>
-          <div class="name">Chanelle P.</div>
-        </div>
-      </div>
-      <div class="person-card">
-        <div class="member-photo-wrap">
-          <img src="img/Mitglieder/Silas.jpg" alt="Silas M." class="member-photo" onerror="memberImgErr(this,'♥')">
-        </div>
-        <div class="card-info">
-          <div class="role">Bierzipfel</div>
-          <div class="name">Silas M.</div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">6</div>
+          <div class="hero-stat-label">Mitglieder</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Dokumente ── -->
-  <section id="dokumente">
-    <h2 class="section-title">Statuten &amp; Gründungsprotokoll</h2>
-    <div class="section-rule"></div>
+  <!-- ── Marquee ── -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-text filled">Eichel Ober</span>
+      <span class="marquee-text">Eichel Ober</span>
+      <span class="marquee-text filled">Eichel Ober</span>
+      <span class="marquee-text">Eichel Ober</span>
+      <span class="marquee-text filled">Eichel Ober</span>
+      <span class="marquee-text">Eichel Ober</span>
+      <span class="marquee-text filled">Eichel Ober</span>
+      <span class="marquee-text">Eichel Ober</span>
+    </div>
+  </div>
 
-    <div class="doc-list">
+  <!-- ── Mitglieder ── -->
+  <section class="sec reveal" id="mitglieder">
+    <div class="sec-header">
+      <div class="sec-title">Vorstand &amp; Mitglieder</div>
+      <div class="sec-count">(06)</div>
+    </div>
+    <div class="member-row-header">
+      <div class="mrh-col">#</div>
+      <div class="mrh-col">Name</div>
+      <div class="mrh-col">Rolle</div>
+      <div class="mrh-col">Status</div>
+      <div class="mrh-col"></div>
+    </div>
+    <div id="member-list"></div>
+  </section>
 
-      <div class="doc-card">
-        <div class="doc-header" onclick="toggleDoc('statuten')">
-          <div class="doc-header-left">
-            <div class="doc-icon-wrap">📄</div>
-            <div class="doc-info">
-              <h3>Statuten</h3>
-              <p>Vereinsstatuten Eichel Ober</p>
-            </div>
-          </div>
-          <div class="doc-chevron" id="chev-statuten">▾</div>
-        </div>
-        <div class="doc-body" id="statuten">
-          <iframe src="Statuten_Eichel_Ober.pdf" title="Statuten"></iframe>
-          <div class="doc-footer">
-            <a href="Statuten_Eichel_Ober.pdf" download>⬇ PDF herunterladen</a>
-          </div>
-        </div>
+  <!-- ── Rangliste ── -->
+  <section class="sec reveal" id="rangliste">
+    <div class="sec-header">
+      <div class="sec-title">Rangliste</div>
+      <div class="sec-count" id="lb-subtitle">—</div>
+    </div>
+    <div class="lb-big" id="lb-grid"></div>
+    <div class="lb-actions">
+      <div id="lb-finish-tile" style="display:none;flex:1">
+        <button class="action-tile" style="width:100%" onclick="finishGameFromLB()">
+          <span class="at-icon">🏁</span>
+          <span class="at-label">Spiel</span>
+          <span class="at-title">Abschliessen →</span>
+        </button>
       </div>
-
-      <div class="doc-card">
-        <div class="doc-header" onclick="toggleDoc('protokoll')">
-          <div class="doc-header-left">
-            <div class="doc-icon-wrap">📋</div>
-            <div class="doc-info">
-              <h3>Gründungsprotokoll</h3>
-              <p>Protokoll der Gründungsversammlung</p>
-            </div>
-          </div>
-          <div class="doc-chevron" id="chev-protokoll">▾</div>
-        </div>
-        <div class="doc-body" id="protokoll">
-          <iframe src="Gr%C3%BCndungsprotokoll_Eichel_Ober.pdf" title="Gründungsprotokoll"></iframe>
-          <div class="doc-footer">
-            <a href="Gr%C3%BCndungsprotokoll_Eichel_Ober.pdf" download>⬇ PDF herunterladen</a>
-          </div>
-        </div>
-      </div>
-
+      <a class="action-tile" href="jasstafel.html" style="flex:1">
+        <span class="at-icon">📊</span>
+        <span class="at-label">Tool</span>
+        <span class="at-title">Jasstafel öffnen →</span>
+      </a>
     </div>
   </section>
 
-  <!-- ── Leaderboard ── -->
-  <section id="leaderboard">
-    <h2 class="section-title">Leaderboard</h2>
-    <div class="section-rule"></div>
-    <div id="lb-finish-bar" style="display:none; margin-bottom:20px;">
-      <button class="lb-finish-btn" onclick="finishGameFromLB()">🏁 Spiel abschliessen</button>
-    </div>
-
-    <div class="lb-layout">
-
-      <!-- Rangliste -->
-      <div class="lb-table-wrap">
-        <div class="leaderboard" id="lb-list"></div>
-        <p class="lb-note" id="lb-note"></p>
+  <!-- ── Quick Actions ── -->
+  <section class="sec reveal" style="padding-top:0;padding-bottom:0;border:none">
+    <div class="actions-row">
+      <a class="action-tile" href="jass.html">
+        <span class="at-icon">🃏</span>
+        <span class="at-label">Spielen</span>
+        <span class="at-title">Guggitaler Jass</span>
+        <span class="at-arrow">→</span>
+      </a>
+      <button class="action-tile" onclick="openProto()">
+        <span class="at-icon">✏️</span>
+        <span class="at-label">Aufzeichnungen</span>
+        <span class="at-title">Protokoll schreiben</span>
+        <span class="at-arrow">→</span>
+      </button>
+      <button class="action-tile" onclick="openDiskModal()">
+        <span class="at-icon">💬</span>
+        <span class="at-label">Forum</span>
+        <span class="at-title">Diskussion starten</span>
+        <span class="at-arrow">→</span>
+      </button>
+      <div class="action-tile" onclick="document.getElementById('dokumente').scrollIntoView({behavior:'smooth'})">
+        <span class="at-icon">📄</span>
+        <span class="at-label">Unterlagen</span>
+        <span class="at-title">Statuten &amp; Protokoll</span>
+        <span class="at-arrow">→</span>
       </div>
-
-      <!-- Eichel-Kuchen-Diagramm -->
-      <div class="lb-chart-wrap">
-        <svg id="acorn-svg" viewBox="0 0 220 365" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <clipPath id="body-clip">
-              <circle cx="110" cy="175" r="90"/>
-            </clipPath>
-          </defs>
-          <!-- Pie-Slices (clipped to acorn body) -->
-          <g id="pie-slices" clip-path="url(#body-clip)"></g>
-          <!-- Acorn body border -->
-          <circle cx="110" cy="175" r="90" fill="none" stroke="#7B5E3A" stroke-width="2.5"/>
-          <!-- Cap -->
-          <path d="M 28,100 Q 110,55 192,100 L 185,124 Q 110,138 35,124 Z" fill="#8B6A40"/>
-          <!-- Cap texture lines -->
-          <line x1="68" y1="63"  x2="52"  y2="124" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
-          <line x1="90" y1="57"  x2="78"  y2="125" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
-          <line x1="110" y1="55" x2="110" y2="126" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
-          <line x1="130" y1="57" x2="142" y2="125" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
-          <line x1="152" y1="63" x2="168" y2="124" stroke="#5a3e20" stroke-width="1.5" opacity="0.35"/>
-          <!-- Cap border -->
-          <path d="M 28,100 Q 110,55 192,100 L 185,124 Q 110,138 35,124 Z" fill="none" stroke="#5a3e20" stroke-width="1.5"/>
-          <!-- Stem -->
-          <path d="M 110,85 Q 126,65 120,44" fill="none" stroke="#5a3e20" stroke-width="4" stroke-linecap="round"/>
-          <!-- Legend -->
-          <g id="acorn-legend" transform="translate(10,274)"></g>
-        </svg>
-        <p class="chart-title">Gewonnene Runden</p>
-      </div>
-
     </div>
   </section>
 
   <!-- ── Protokoll ── -->
-  <section id="protokoll">
-    <h2 class="section-title">Protokoll</h2>
-    <div class="section-rule"></div>
-    <p class="protokoll-intro">Hier kann jeder einen Beitrag hinterlassen — Notizen, Beschlüsse, Erlebnisse.</p>
-    <button class="protokoll-add-btn" onclick="openProto()">
-      ✏️ Beitrag hinzufügen
-    </button>
-    <div class="protokoll-entries" id="proto-entries">
-      <div class="protokoll-empty" id="proto-empty">Noch keine Einträge. Sei der Erste!</div>
+  <section class="sec reveal" id="protokoll">
+    <div class="sec-header">
+      <div class="sec-title">Protokoll</div>
+      <button class="sec-btn" onclick="openProto()">+ Eintrag</button>
+    </div>
+    <div class="feed" id="proto-feed">
+      <div class="feed-empty" id="proto-empty">Noch keine Einträge — sei der Erste.</div>
     </div>
   </section>
-
-  <!-- Protokoll Modal -->
-  <div id="proto-modal">
-    <div id="proto-box">
-      <h3>Neuer Eintrag</h3>
-      <input type="text" id="proto-name" placeholder="Dein Name">
-      <textarea id="proto-text" placeholder="Was möchtest du festhalten?"></textarea>
-      <div class="proto-actions">
-        <button class="proto-cancel" onclick="closeProto()">Abbrechen</button>
-        <button class="proto-submit" onclick="submitProto()">Eintragen</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ── Diskussion ── -->
-  <section id="diskussion">
-    <h2 class="section-title">Diskussion</h2>
-    <div class="section-rule"></div>
-    <p class="protokoll-intro">Stellt Fragen, plant Treffen, tauscht euch aus — Antworten direkt unter dem Beitrag.</p>
-    <button class="protokoll-add-btn" onclick="openDiskModal()">
-      💬 Beitrag starten
-    </button>
-    <div id="disk-entries">
-      <div class="protokoll-empty" id="disk-empty">Noch keine Beiträge. Starte die Diskussion!</div>
+  <section class="sec reveal" id="diskussion">
+    <div class="sec-header">
+      <div class="sec-title">Diskussion</div>
+      <button class="sec-btn" onclick="openDiskModal()">+ Beitrag</button>
+    </div>
+    <div class="feed" id="disk-feed">
+      <div class="feed-empty" id="disk-empty">Noch keine Beiträge — starte die Diskussion.</div>
     </div>
   </section>
 
-  <!-- Diskussion Modal -->
-  <div id="disk-modal">
-    <div id="disk-box">
-      <h3>Neuer Beitrag</h3>
-      <input type="text" id="disk-author" placeholder="Dein Name">
-      <textarea id="disk-text" placeholder="Worüber möchtest du reden?"></textarea>
-      <div class="proto-actions">
-        <button class="proto-cancel" onclick="closeDiskModal()">Abbrechen</button>
-        <button class="proto-submit" onclick="submitDiskPost()">Posten</button>
+  <!-- ── Dokumente ── -->
+  <section class="sec reveal" id="dokumente">
+    <div class="sec-header">
+      <div class="sec-title">Dokumente</div>
+      <div class="sec-count">(02)</div>
+    </div>
+    <div>
+      <div class="doc-row" onclick="toggleDoc('statuten-body')">
+        <div>
+          <div class="dr-name">Statuten</div>
+          <div class="dr-meta">PDF · Vereinsstatuten Eichel Ober</div>
+        </div>
+        <div class="dr-arrow">↓</div>
+      </div>
+      <div class="doc-body-wrap" id="statuten-body">
+        <iframe src="Statuten_Eichel_Ober.pdf" title="Statuten"></iframe>
+        <div style="text-align:right;padding:12px 0">
+          <a class="doc-dl" href="Statuten_Eichel_Ober.pdf" download>↓ Herunterladen</a>
+        </div>
+      </div>
+
+      <div class="doc-row" onclick="toggleDoc('gruendung-body')">
+        <div>
+          <div class="dr-name">Gründungsprotokoll</div>
+          <div class="dr-meta">PDF · Protokoll der Gründungsversammlung</div>
+        </div>
+        <div class="dr-arrow">↓</div>
+      </div>
+      <div class="doc-body-wrap" id="gruendung-body">
+        <iframe src="Gr%C3%BCndungsprotokoll_Eichel_Ober.pdf" title="Gründungsprotokoll"></iframe>
+        <div style="text-align:right;padding:12px 0">
+          <a class="doc-dl" href="Gr%C3%BCndungsprotokoll_Eichel_Ober.pdf" download>↓ Herunterladen</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="reveal">
+    <div class="footer-big">
+      Wer verliert,<br>zahlt die Runde.
+      <span class="fb-sub">© 2026 Verein Eichel Ober, Uster</span>
+    </div>
+    <div class="footer-meta">
+      <div class="footer-copy">EICHEL OBER · USTER · CH · EST. 2026</div>
+      <div class="footer-suits">♠ ♥ ♦ ♣</div>
+    </div>
+  </footer>
+
+  <!-- ── Protokoll Modal ── -->
+  <div id="proto-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">Neuer Eintrag</div>
+      <input class="modal-input" type="text" id="proto-name" placeholder="Dein Name">
+      <textarea class="modal-input" id="proto-text" placeholder="Was möchtest du festhalten?"></textarea>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeProto()">Abbrechen</button>
+        <button class="btn-g" onclick="submitProto()">Eintragen →</button>
       </div>
     </div>
   </div>
 
-  <!-- ── Sonstiges ── -->
-  <section id="sonstiges">
-    <h2 class="section-title">Sonstiges</h2>
-    <div class="section-rule"></div>
-    <div class="soon-box">Demnächst…</div>
-  </section>
-
-  <footer>
-    <p>&copy; 2025 Verein Eichel Ober, Uster</p>
-  </footer>
+  <!-- ── Diskussion Modal ── -->
+  <div id="disk-modal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">Neuer Beitrag</div>
+      <input class="modal-input" type="text" id="disk-author" placeholder="Dein Name">
+      <textarea class="modal-input" id="disk-text" placeholder="Worüber möchtest du reden?"></textarea>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeDiskModal()">Abbrechen</button>
+        <button class="btn-g" onclick="submitDiskPost()">Posten →</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    function memberImgErr(img, suit) {
-      img.style.display = 'none';
-      var span = document.createElement('span');
-      span.className = 'member-suit-fallback';
-      span.textContent = suit;
-      img.parentElement.appendChild(span);
+    /* ── Clock ── */
+    function updateClock() {
+      var now = new Date();
+      document.getElementById('clock').textContent =
+        String(now.getHours()).padStart(2,'0') + ':' +
+        String(now.getMinutes()).padStart(2,'0') + ':' +
+        String(now.getSeconds()).padStart(2,'0');
+    }
+    updateClock(); setInterval(updateClock, 1000);
+
+    /* ── Scroll nav ── */
+    window.addEventListener('scroll', function() {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* ── Scroll reveal ── */
+    var revealObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(function(el) { revealObs.observe(el); });
+
+    /* ── Shared state ── */
+    var protoEntries = [], diskPosts = [], fbRounds = [], fbWins = [0,0,0,0,0,0];
+
+    var PLAYERS = [
+      { name:'Noé B.',      role:'Präsi',                                  vorstand:true  },
+      { name:'Ella B.',     role:'Vize-Präsi',                             vorstand:true  },
+      { name:'Lars L.',     role:'Aktuar',                                 vorstand:true  },
+      { name:'Leandro N.',  role:'Aussenminister',                         vorstand:false },
+      { name:'Chanelle P.', role:'Senior Chief Executive Facility Managerin', vorstand:false },
+      { name:'Silas M.',    role:'Bierzipfel',                             vorstand:false }
+    ];
+
+    var AVATARS = [
+      'img/Mitglieder/Noe.jpg',
+      'img/Mitglieder/Ella.jpg',
+      'img/Mitglieder/Lars.jpg',
+      'img/Mitglieder/Leandro.jpg',
+      'img/Mitglieder/Chanelle.jpg',
+      'img/Mitglieder/Silas.jpg'
+    ];
+
+    var PTS = { stich:5, schilte:10, koenig:20, eichelOber:67, eichelOber25:25, letzterStich:50 };
+
+    /* ── Members ── */
+    function renderMembers() {
+      var list = document.getElementById('member-list');
+      PLAYERS.forEach(function(p, i) {
+        var row = document.createElement('div');
+        row.className = 'member-row';
+        var badge = p.vorstand
+          ? '<span class="mr-badge">Vorstand</span>'
+          : '<span class="mr-badge normal">Mitglied</span>';
+        row.innerHTML =
+          '<div class="mr-num">0'+(i+1)+'</div>' +
+          '<div class="mr-name"><img class="mr-avatar" src="'+AVATARS[i]+'" alt="" onerror="this.style.display=\'none\'">' + esc(p.name) + '</div>' +
+          '<div class="mr-role">' + esc(p.role) + '</div>' +
+          '<div>' + badge + '</div>' +
+          '<div class="mr-arrow">↗</div>';
+        list.appendChild(row);
+      });
+    }
+    renderMembers();
+
+    /* ── Stats ── */
+    function renderStats() {
+      var totalWins = fbWins.reduce(function(a,b){return a+b;},0);
+      document.getElementById('stat-wins').textContent   = totalWins   || '—';
+      document.getElementById('stat-rounds').textContent = fbRounds.length || '—';
     }
 
-    /* ── Shared state (populated by Firebase listeners) ── */
-    var protoEntries = [];
-    var diskPosts    = [];
-    var fbRounds     = [];
-    var fbWins       = [0,0,0,0,0,0];
+    /* ── Leaderboard ── */
+    function calcTotals() {
+      var t = PLAYERS.map(function(){return 0;});
+      fbRounds.forEach(function(r) {
+        PLAYERS.forEach(function(_,i) {
+          var s = (r.stiche[i]||0)*PTS.stich + (r.schilten[i]||0)*PTS.schilte + (r.koenige[i]||0)*PTS.koenig;
+          if (r.eichelOber===i)   s += PTS.eichelOber;
+          if (r.eichelOber25===i) s += PTS.eichelOber25;
+          if (r.letzterStich===i) s += PTS.letzterStich;
+          t[i] += s;
+        });
+      });
+      return t;
+    }
+
+    function renderLB() {
+      var totals  = calcTotals();
+      var standing = PLAYERS.map(function(p,i){ return {i:i, name:p.name, role:p.role, total:totals[i], wins:fbWins[i]||0}; });
+      var hasWins  = standing.some(function(p){ return p.wins > 0; });
+      standing.sort(function(a,b){ return hasWins ? (b.wins!==a.wins ? b.wins-a.wins : a.total-b.total) : a.total-b.total; });
+
+      var totalWins = fbWins.reduce(function(a,b){return a+b;},0);
+      document.getElementById('lb-subtitle').textContent = totalWins + ' Gesamtsiege';
+
+      var grid = document.getElementById('lb-grid');
+      grid.innerHTML = '';
+      standing.forEach(function(p, i) {
+        var card = document.createElement('div');
+        card.className = 'lb-card' + (i===0 ? ' gold-bg' : '');
+        card.innerHTML =
+          '<div class="lbc-rank' + (i===0?' is-first':'') + '">' + (i===0?'🏆 ':'') + 'Platz ' + (i+1) + '</div>' +
+          '<div class="lbc-name">' + esc(p.name) + '</div>' +
+          '<div class="lbc-role">' + esc(p.role) + '</div>' +
+          '<div class="lbc-stats">' +
+            '<div><div class="lbc-stat-n">' + (p.wins||'—') + '</div><div class="lbc-stat-l">Siege</div></div>' +
+            '<div><div class="lbc-stat-n">' + p.total + '</div><div class="lbc-stat-l">Pkt. aktuell</div></div>' +
+          '</div>';
+        if (i===0 && p.wins>0) card.innerHTML += '<div class="lbc-trophy">🏆</div>';
+        grid.appendChild(card);
+      });
+
+      var ft = document.getElementById('lb-finish-tile');
+      if (ft) ft.style.display = fbRounds.length > 0 ? '' : 'none';
+    }
+
+    function finishGameFromLB() {
+      if (!fbRounds.length) return;
+      var totals = calcTotals();
+      var minTotal  = Math.min.apply(null, totals);
+      var winnerIdx = totals.indexOf(minTotal);
+      if (!confirm('🏆 ' + PLAYERS[winnerIdx].name + ' gewinnt mit ' + minTotal + ' Punkten!\n\nSieg eintragen und Runden zurücksetzen?')) return;
+      var wins = fbWins.slice();
+      wins[winnerIdx] = (wins[winnerIdx]||0) + 1;
+      db.ref('wins').set(JSON.stringify(wins));
+      db.ref('jasstafel').set(JSON.stringify([]));
+    }
 
     /* ── Protokoll ── */
-
-    function renderEntries() {
-      var container = document.getElementById('proto-entries');
+    function renderProto() {
+      var feed  = document.getElementById('proto-feed');
       var empty = document.getElementById('proto-empty');
-      var existing = container.querySelectorAll('.protokoll-entry');
-      existing.forEach(function(e) { e.remove(); });
-      if (protoEntries.length === 0) {
-        empty.style.display = '';
-      } else {
-        empty.style.display = 'none';
-        protoEntries.slice().reverse().forEach(function(e) {
-          var div = document.createElement('div');
-          div.className = 'protokoll-entry';
-          div.innerHTML =
-            '<div class="proto-author">' + escHtml(e.name) +
-            '<span class="proto-date">' + e.date + '</span></div>' +
-            '<div class="proto-body">' + escHtml(e.text) + '</div>';
-          container.appendChild(div);
-        });
-      }
+      feed.querySelectorAll('.feed-item').forEach(function(e){ e.remove(); });
+      if (!protoEntries.length) { empty.style.display = ''; return; }
+      empty.style.display = 'none';
+      protoEntries.slice().reverse().forEach(function(e, ri) {
+        var origIdx = protoEntries.length - 1 - ri;
+        var delBtn = isAdmin
+          ? '<button class="admin-del" onclick="deleteProtoEntry('+origIdx+')" title="Löschen">✕</button>'
+          : '';
+        var item = document.createElement('div');
+        item.className = 'feed-item';
+        item.innerHTML =
+          '<div class="feed-date">' + esc(e.date) + '</div>' +
+          '<div class="feed-body"><span class="feed-author">' + esc(e.name) + '</span>' + delBtn + ' — ' + esc(e.text) + '</div>' +
+          '<div class="feed-tag">Protokoll</div>';
+        feed.appendChild(item);
+      });
     }
 
-    function escHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    function openProto() {
-      document.getElementById('proto-modal').classList.add('open');
-      document.getElementById('proto-name').focus();
-    }
-
+    function openProto()  { document.getElementById('proto-modal').classList.add('open'); document.getElementById('proto-name').focus(); }
     function closeProto() {
       document.getElementById('proto-modal').classList.remove('open');
       document.getElementById('proto-name').value = '';
       document.getElementById('proto-text').value = '';
     }
-
     function submitProto() {
       var name = document.getElementById('proto-name').value.trim();
       var text = document.getElementById('proto-text').value.trim();
       if (!name || !text) return;
-      var now = new Date();
-      var date = now.toLocaleDateString('de-CH', {day:'2-digit', month:'2-digit', year:'numeric'});
-      var newEntries = protoEntries.concat([{ name: name, text: text, date: date }]);
-      db.ref('protokoll').set(JSON.stringify(newEntries));
+      var date = new Date().toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric'});
+      db.ref('protokoll').set(JSON.stringify(protoEntries.concat([{name:name,text:text,date:date}])));
       closeProto();
     }
-
-    document.getElementById('proto-modal').addEventListener('click', function(e) {
-      if (e.target === this) closeProto();
-    });
+    function deleteProtoEntry(idx) {
+      if (!isAdmin || !confirm('Eintrag löschen?')) return;
+      db.ref('protokoll').set(JSON.stringify(protoEntries.filter(function(_,i){ return i!==idx; })));
+    }
+    document.getElementById('proto-modal').addEventListener('click', function(e){ if(e.target===this) closeProto(); });
 
     /* ── Diskussion ── */
-
-    function renderDiskussion() {
-      var container = document.getElementById('disk-entries');
+    function renderDisk() {
+      var feed  = document.getElementById('disk-feed');
       var empty = document.getElementById('disk-empty');
-      container.querySelectorAll('.disk-post').forEach(function(e) { e.remove(); });
-      if (diskPosts.length === 0) { empty.style.display = ''; return; }
+      feed.querySelectorAll('.disk-post-wrap').forEach(function(e){ e.remove(); });
+      if (!diskPosts.length) { empty.style.display = ''; return; }
       empty.style.display = 'none';
       diskPosts.slice().reverse().forEach(function(post) {
-        var div = document.createElement('div');
-        div.className = 'disk-post';
-        div.id = 'disk-post-' + post.id;
-        var cmtsHtml = renderCommentsHtml(post.comments || []);
-        var pid = JSON.stringify(post.id);
-        div.innerHTML =
-          '<div class="disk-post-header">' +
-            '<span class="disk-post-author">' + escHtml(post.author) + '</span>' +
-            '<span class="disk-post-date">' + escHtml(post.date) + '</span>' +
-          '</div>' +
-          '<div class="disk-post-body">' + escHtml(post.text) + '</div>' +
-          '<div class="disk-comments">' +
-            cmtsHtml +
-            '<button class="disk-reply-btn" onclick="toggleCommentForm(' + pid + ')">💬 Antworten</button>' +
-            '<div class="disk-comment-form" id="disk-cform-' + post.id + '">' +
-              '<input type="text" placeholder="Dein Name" id="disk-cin-' + post.id + '">' +
-              '<textarea placeholder="Deine Antwort…" id="disk-ctxt-' + post.id + '"></textarea>' +
-              '<div class="disk-comment-form-actions">' +
-                '<button class="disk-comment-cancel" onclick="toggleCommentForm(' + pid + ')">Abbrechen</button>' +
-                '<button class="disk-comment-submit" onclick="submitComment(' + pid + ')">Senden</button>' +
-              '</div>' +
+        var pid  = JSON.stringify(post.id);
+        var cmts = post.comments || [];
+        var delPostBtn = isAdmin
+          ? '<button class="admin-del" onclick="deleteDiskPost('+pid+')" title="Beitrag löschen">✕</button>'
+          : '';
+        var commentsHtml = cmts.map(function(c, ci) {
+          var delCmtBtn = isAdmin
+            ? '<button class="admin-del" onclick="deleteDiskComment('+pid+','+ci+')" title="Kommentar löschen">✕</button>'
+            : '';
+          return '<div class="disk-comment">' +
+            '<div class="disk-comment-dot"></div>' +
+            '<div class="disk-comment-content">' +
+              '<span class="disk-comment-author">' + esc(c.author) + '</span>' + delCmtBtn +
+              '<span class="disk-comment-date">' + esc(c.date) + '</span>' +
+              '<div class="disk-comment-text">' + esc(c.text) + '</div>' +
             '</div>' +
           '</div>';
-        container.appendChild(div);
+        }).join('');
+        var wrap = document.createElement('div');
+        wrap.className = 'disk-post-wrap';
+        wrap.innerHTML =
+          '<div class="feed-item">' +
+            '<div class="feed-date">' + esc(post.date) + '</div>' +
+            '<div class="feed-body">' +
+              '<span class="feed-author">' + esc(post.author) + '</span>' + delPostBtn + ' — ' + esc(post.text) +
+              '<div class="disk-replies">' +
+                commentsHtml +
+                '<button class="disk-reply-btn" onclick="toggleCommentForm('+pid+')">Antworten</button>' +
+                '<div class="disk-comment-form" id="disk-cform-'+post.id+'">' +
+                  '<input class="disk-form-input" type="text" placeholder="Dein Name" id="disk-cin-'+post.id+'">' +
+                  '<textarea class="disk-form-input" placeholder="Deine Antwort…" id="disk-ctxt-'+post.id+'"></textarea>' +
+                  '<div class="disk-form-actions">' +
+                    '<button class="btn-ghost" style="padding:6px 14px;font-size:.65rem" onclick="toggleCommentForm('+pid+')">Abbrechen</button>' +
+                    '<button class="btn-g"     style="padding:6px 14px;font-size:.65rem" onclick="submitComment('+pid+')">Senden</button>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="feed-tag">' + (cmts.length ? cmts.length+' Antwort'+(cmts.length>1?'en':'') : 'Diskussion') + '</div>' +
+          '</div>';
+        feed.appendChild(wrap);
       });
     }
 
-    function renderCommentsHtml(comments) {
-      return comments.map(function(c) {
-        return '<div class="disk-comment">' +
-          '<div class="disk-comment-dot"></div>' +
-          '<div class="disk-comment-content">' +
-            '<div><span class="disk-comment-author">' + escHtml(c.author) + '</span>' +
-            '<span class="disk-comment-date">' + escHtml(c.date) + '</span></div>' +
-            '<div class="disk-comment-text">' + escHtml(c.text) + '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    }
-
-    function openDiskModal() {
-      document.getElementById('disk-modal').classList.add('open');
-      document.getElementById('disk-author').focus();
-    }
-
+    function openDiskModal()  { document.getElementById('disk-modal').classList.add('open'); document.getElementById('disk-author').focus(); }
     function closeDiskModal() {
       document.getElementById('disk-modal').classList.remove('open');
       document.getElementById('disk-author').value = '';
-      document.getElementById('disk-text').value = '';
+      document.getElementById('disk-text').value   = '';
     }
-
     function submitDiskPost() {
       var author = document.getElementById('disk-author').value.trim();
       var text   = document.getElementById('disk-text').value.trim();
       if (!author || !text) return;
-      var now  = new Date();
-      var date = now.toLocaleDateString('de-CH', {day:'2-digit', month:'2-digit', year:'numeric'});
-      var post = { id: Date.now(), author: author, text: text, date: date, comments: [] };
-      db.ref('diskussion').set(JSON.stringify(diskPosts.concat([post])));
+      var date = new Date().toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric'});
+      db.ref('diskussion').set(JSON.stringify(diskPosts.concat([{id:Date.now(),author:author,text:text,date:date,comments:[]}])));
       closeDiskModal();
     }
-
     function toggleCommentForm(postId) {
-      var form = document.getElementById('disk-cform-' + postId);
+      var form   = document.getElementById('disk-cform-'+postId);
       if (!form) return;
       var isOpen = form.classList.contains('open');
-      document.querySelectorAll('.disk-comment-form.open').forEach(function(f) { f.classList.remove('open'); });
-      if (!isOpen) {
-        form.classList.add('open');
-        var inp = document.getElementById('disk-cin-' + postId);
-        if (inp) inp.focus();
-      }
+      document.querySelectorAll('.disk-comment-form.open').forEach(function(f){ f.classList.remove('open'); });
+      if (!isOpen) { form.classList.add('open'); var inp = document.getElementById('disk-cin-'+postId); if(inp) inp.focus(); }
     }
-
     function submitComment(postId) {
-      var author = (document.getElementById('disk-cin-'  + postId) || {}).value || '';
-      var text   = (document.getElementById('disk-ctxt-' + postId) || {}).value || '';
+      var author = (document.getElementById('disk-cin-'+postId)||{}).value||'';
+      var text   = (document.getElementById('disk-ctxt-'+postId)||{}).value||'';
       author = author.trim(); text = text.trim();
       if (!author || !text) return;
-      var now  = new Date();
-      var date = now.toLocaleDateString('de-CH', {day:'2-digit', month:'2-digit', year:'numeric'});
-      var newPosts = diskPosts.map(function(p) {
-        if (p.id === postId) {
-          return Object.assign({}, p, { comments: (p.comments || []).concat([{ author: author, text: text, date: date }]) });
-        }
+      var date = new Date().toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric'});
+      var newPosts = diskPosts.map(function(p){
+        if (p.id===postId) return Object.assign({},p,{comments:(p.comments||[]).concat([{author:author,text:text,date:date}])});
         return p;
       });
       db.ref('diskussion').set(JSON.stringify(newPosts));
     }
+    function deleteDiskPost(postId) {
+      if (!isAdmin || !confirm('Beitrag löschen?')) return;
+      db.ref('diskussion').set(JSON.stringify(diskPosts.filter(function(p){ return p.id!==postId; })));
+    }
+    function deleteDiskComment(postId, ci) {
+      if (!isAdmin || !confirm('Kommentar löschen?')) return;
+      var newPosts = diskPosts.map(function(p){
+        if (p.id===postId) return Object.assign({},p,{comments:(p.comments||[]).filter(function(_,i){ return i!==ci; })});
+        return p;
+      });
+      db.ref('diskussion').set(JSON.stringify(newPosts));
+    }
+    document.getElementById('disk-modal').addEventListener('click', function(e){ if(e.target===this) closeDiskModal(); });
 
-    document.getElementById('disk-modal').addEventListener('click', function(e) {
-      if (e.target === this) closeDiskModal();
-    });
-
+    /* ── Dokumente ── */
     function toggleDoc(id) {
-      var body = document.getElementById(id);
-      var chev = document.getElementById('chev-' + id);
-      var open = body.classList.contains('open');
-      body.classList.toggle('open', !open);
-      chev.classList.toggle('open', !open);
+      document.getElementById(id).classList.toggle('open');
     }
 
-    /* ── Leaderboard (live from Jasstafel) ── */
-    var LB_PLAYERS = [
-      { name: 'Noé B.',      role: 'Präsi' },
-      { name: 'Ella B.',     role: 'Vize-Präsi' },
-      { name: 'Lars L.',     role: 'Aktuar' },
-      { name: 'Leandro N.', role: 'Aussenminister' },
-      { name: 'Chanelle P.',role: 'Senior Chief Executive Facility Managerin' },
-      { name: 'Silas M.',   role: 'Bierzipfel' }
-    ];
-
-    var PTS_LB = { stich: 5, schilte: 10, koenig: 20, eichelOber: 67, eichelOber25: 25, letzterStich: 50 };
-
-    var PLAYER_COLORS = ['#3a7d44','#5ba35a','#90c97e','#c5e8b4','#f0c040','#D4A010'];
-
-    function calcRoundScores(round) {
-      return LB_PLAYERS.map(function(_, i) {
-        var s = (round.stiche[i]   || 0) * PTS_LB.stich
-              + (round.schilten[i] || 0) * PTS_LB.schilte
-              + (round.koenige[i]  || 0) * PTS_LB.koenig;
-        if (round.eichelOber  === i) s += PTS_LB.eichelOber;
-        if (round.eichelOber25=== i) s += PTS_LB.eichelOber25;
-        if (round.letzterStich=== i) s += PTS_LB.letzterStich;
-        return s;
-      });
-    }
-
-    function loadLeaderboard() {
-      var rounds = fbRounds;
-      var wins   = fbWins;
-
-      /* Current game totals */
-      var totals = LB_PLAYERS.map(function() { return 0; });
-      rounds.forEach(function(round) {
-        calcRoundScores(round).forEach(function(s, i) { totals[i] += s; });
-      });
-
-      /* Show/hide "Spiel abschliessen" button */
-      var finishBar = document.getElementById('lb-finish-bar');
-      if (finishBar) finishBar.style.display = rounds.length > 0 ? '' : 'none';
-
-      var standing = LB_PLAYERS.map(function(p, i) {
-        return { idx: i, name: p.name, role: p.role, total: totals[i], wins: wins[i] || 0 };
-      });
-
-      var hasAnyWins = standing.some(function(p) { return p.wins > 0; });
-
-      if (hasAnyWins) {
-        /* Sort by wins (desc), then fewest current-game points (asc) */
-        standing.sort(function(a, b) {
-          if (b.wins !== a.wins) return b.wins - a.wins;
-          return a.total - b.total;
-        });
-      } else {
-        /* No wins recorded yet — sort by fewest current points */
-        standing.sort(function(a, b) { return a.total - b.total; });
-      }
-
-      var medals = ['🏆','🥈','🥉','🃏','🃏','🃏'];
-      var list = document.getElementById('lb-list');
-      var note = document.getElementById('lb-note');
-      list.innerHTML = '';
-
-      standing.forEach(function(p, i) {
-        list.appendChild(makeLbRow(i + 1, medals[i], p, i === 0 && (hasAnyWins || rounds.length > 0)));
-      });
-
-      var parts = [];
-      if (rounds.length > 0) parts.push(rounds.length + ' Runde' + (rounds.length === 1 ? '' : 'n') + ' im aktuellen Spiel');
-      if (hasAnyWins) parts.push('Siege aus abgeschlossenen Spielen');
-      note.textContent = parts.length ? parts.join(' · ') : 'Noch keine Daten. Spiel eine Runde in der Jasstafel!';
-
-      /* Pass wins in PLAYERS index order for correct colors in chart */
-      var winsForChart = LB_PLAYERS.map(function(_, i) {
-        var found = standing.filter(function(s) { return s.idx === i; })[0];
-        return found ? found.wins : 0;
-      });
-      renderAcornChart(winsForChart);
-    }
-
-    function finishGameFromLB() {
-      if (fbRounds.length === 0) return;
-
-      var totals = LB_PLAYERS.map(function() { return 0; });
-      fbRounds.forEach(function(round) {
-        calcRoundScores(round).forEach(function(s, i) { totals[i] += s; });
-      });
-
-      var minTotal = Math.min.apply(null, totals);
-      var winnerIdx = totals.indexOf(minTotal);
-      var winner = LB_PLAYERS[winnerIdx];
-
-      if (!confirm('🏆 ' + winner.name + ' gewinnt mit ' + minTotal + ' Punkten!\n\nSieg eintragen und Runden zurücksetzen?')) return;
-
-      var wins = fbWins.slice();
-      wins[winnerIdx] = (wins[winnerIdx] || 0) + 1;
-      db.ref('wins').set(JSON.stringify(wins));
-      db.ref('jasstafel').set(JSON.stringify([]));
-    }
-
-    function makeLbRow(rank, medal, p, isWinner) {
-      var div = document.createElement('div');
-      div.className = 'lb-row' + (isWinner ? ' lb-winner' : '');
-      var winsStr = p.wins > 0 ? p.wins + ' Sieg' + (p.wins === 1 ? '' : 'e') : '';
-      var scoreStr = p.total > 0 ? p.total + ' Pkt.' : (p.wins > 0 ? '' : '0 Pkt.');
-      var labelParts = [];
-      if (winsStr) labelParts.push(winsStr);
-      if (scoreStr) labelParts.push(scoreStr);
-      div.innerHTML =
-        '<div class="lb-rank">' + rank + '</div>' +
-        '<div class="lb-medal">' + medal + '</div>' +
-        '<div class="lb-info">' +
-          '<div class="lb-name">' + escHtml(p.name) + '</div>' +
-          '<div class="lb-role">' + escHtml(p.role) + '</div>' +
-        '</div>' +
-        '<div class="lb-score">' + (winsStr || '–') +
-          '<span class="lb-score-label">' + (scoreStr ? 'aktuell: ' + scoreStr : '') + '</span>' +
-        '</div>';
-      return div;
-    }
-
-    function polarToXY(cx, cy, r, deg) {
-      var rad = (deg - 90) * Math.PI / 180;
-      return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-    }
-
-    function renderAcornChart(wins) {
-      var total = wins.reduce(function(a, b) { return a + b; }, 0);
-      var slicesG = document.getElementById('pie-slices');
-      var legendG = document.getElementById('acorn-legend');
-      slicesG.innerHTML = '';
-      legendG.innerHTML = '';
-
-      var cx = 110, cy = 175, r = 90;
-      var NS = 'http://www.w3.org/2000/svg';
-
-      if (total === 0) {
-        var circle = document.createElementNS(NS, 'circle');
-        circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
-        circle.setAttribute('fill', '#e0e0e0');
-        slicesG.appendChild(circle);
-      } else {
-        var startAngle = 0;
-        wins.forEach(function(w, i) {
-          if (w === 0) return;
-          var slice = w / total * 360;
-          var endAngle = startAngle + slice;
-          var large = slice > 180 ? 1 : 0;
-          var s = polarToXY(cx, cy, r, startAngle);
-          var e = polarToXY(cx, cy, r, endAngle);
-          var path = document.createElementNS(NS, 'path');
-          var d = 'M ' + cx + ',' + cy +
-                  ' L ' + s.x.toFixed(1) + ',' + s.y.toFixed(1) +
-                  ' A ' + r + ',' + r + ' 0 ' + large + ' 1 ' + e.x.toFixed(1) + ',' + e.y.toFixed(1) +
-                  ' Z';
-          path.setAttribute('d', d);
-          path.setAttribute('fill', PLAYER_COLORS[i % PLAYER_COLORS.length]);
-          path.setAttribute('stroke', '#fff');
-          path.setAttribute('stroke-width', '1.5');
-          slicesG.appendChild(path);
-          startAngle = endAngle;
-        });
-      }
-
-      /* Legend below the acorn */
-      var legendWins = wins.map(function(w, i) { return { i: i, w: w }; }).filter(function(x) { return x.w > 0; });
-      legendWins.forEach(function(item, li) {
-        var yOff = li * 14;
-        var rect = document.createElementNS(NS, 'rect');
-        rect.setAttribute('x', 0); rect.setAttribute('y', yOff);
-        rect.setAttribute('width', 10); rect.setAttribute('height', 10);
-        rect.setAttribute('fill', PLAYER_COLORS[item.i % PLAYER_COLORS.length]);
-        rect.setAttribute('rx', 2);
-        legendG.appendChild(rect);
-        var text = document.createElementNS(NS, 'text');
-        text.setAttribute('x', 14); text.setAttribute('y', yOff + 9);
-        text.setAttribute('font-size', '9');
-        text.setAttribute('fill', '#555');
-        var short = LB_PLAYERS[item.i].name + ' (' + item.w + ')';
-        text.textContent = short;
-        legendG.appendChild(text);
-      });
-    }
-
+    /* ── Firebase listeners ── */
     function initFirebaseListeners() {
       db.ref('jasstafel').on('value', function(snap) {
         try { fbRounds = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { fbRounds = []; }
-        loadLeaderboard();
+        renderLB(); renderStats();
       });
       db.ref('wins').on('value', function(snap) {
         try { fbWins = snap.val() ? JSON.parse(snap.val()) : [0,0,0,0,0,0]; } catch(e) { fbWins = [0,0,0,0,0,0]; }
-        loadLeaderboard();
+        renderLB(); renderStats();
       });
       db.ref('protokoll').on('value', function(snap) {
         try { protoEntries = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { protoEntries = []; }
-        renderEntries();
+        renderProto();
       });
       db.ref('diskussion').on('value', function(snap) {
         try { diskPosts = snap.val() ? JSON.parse(snap.val()) : []; } catch(e) { diskPosts = []; }
-        renderDiskussion();
+        renderDisk();
       });
     }
-  </script>
 
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
 </body>
 </html>
