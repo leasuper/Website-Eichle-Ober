@@ -426,6 +426,47 @@
     }
     .btn-ghost:hover { border-color: var(--muted); color: var(--ink); }
 
+    /* ── MEMBER PROFILE MODAL ── */
+    #member-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(11,11,9,0.92); z-index: 3000;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(14px);
+    }
+    #member-modal.open { display: flex; animation: modalIn 0.3s ease; }
+    @keyframes modalIn { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:scale(1); } }
+    #member-card {
+      background: var(--bg2); border: 1px solid var(--line);
+      max-width: 440px; width: 94vw; border-radius: 4px; overflow: hidden;
+      position: relative;
+    }
+    .mc-photo {
+      width: 100%; height: 300px; object-fit: cover; display: block;
+      filter: grayscale(10%); transition: filter 0.3s;
+    }
+    .mc-close {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(11,11,9,0.7); border: 1px solid var(--line);
+      color: var(--muted); font-family: var(--mono); font-size: 0.75rem;
+      width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; backdrop-filter: blur(4px);
+    }
+    .mc-close:hover { color: var(--ink); border-color: var(--muted); }
+    .mc-body { padding: 28px 32px 32px; }
+    .mc-top { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .mc-name { font-family: var(--serif); font-size: 1.8rem; font-weight: 800; color: var(--ink); }
+    .mc-role { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+    .mc-bio { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .mc-bio li {
+      font-family: var(--sans); font-size: 0.88rem; color: var(--muted); font-weight: 300;
+      line-height: 1.5; display: flex; gap: 10px; align-items: flex-start;
+    }
+    .mc-bio li::before {
+      content: '→'; color: var(--gold); font-family: var(--mono);
+      font-size: 0.75rem; flex-shrink: 0; margin-top: 2px;
+    }
+
     /* ── SCROLL REVEAL ── */
     .reveal { opacity:0; transform:translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
@@ -843,6 +884,22 @@
     </div>
   </div>
 
+  <!-- ── Member Profile Modal ── -->
+  <div id="member-modal">
+    <div id="member-card">
+      <img id="mc-photo" class="mc-photo" src="" alt="">
+      <button class="mc-close" onclick="closeMember()">✕</button>
+      <div class="mc-body">
+        <div class="mc-top">
+          <div id="mc-name" class="mc-name"></div>
+          <span id="mc-badge" class="mr-badge"></span>
+        </div>
+        <div id="mc-role" class="mc-role"></div>
+        <ul id="mc-bio" class="mc-bio"></ul>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Diskussion Modal ── -->
   <div id="disk-modal" class="modal">
     <div class="modal-box">
@@ -890,6 +947,51 @@
       { name:'Silas M.',    role:'Bierzipfel',                             vorstand:false }
     ];
 
+    var MEMBER_BIO = [
+      /* Noé */ [
+        'Als Präsident trägt er die Last des Vereins — und die tiefe Angst vor Sössli.',
+        'Offiziell verantwortlich für alles, inoffiziell traumatisiert von jedem Würstchen-Anblick.',
+        'Führt den Verein mit eiserner Hand und einem noch eiserneren Magen — ausser bei Sössli.',
+        'Seine Präsidialentscheide sind unbestreitbar. Seine Sössliphobie ebenfalls.',
+        'Wenn Noé fehlt, läuft nichts. Wenn Sössli auftauchen, läuft auch Noé — weg.'
+      ],
+      /* Ella */ [
+        'Vize-Präsidentin mit Vollzeitjob: die Suche nach ihrem Kind Lotter.',
+        'Offiziell die Nummer Zwei — was erklärt, warum ihre Nummer Eins (Lotter) unauffindbar ist.',
+        'Ihr Kalender ist voll mit «Lotter suchen» — für Vereinsgeschäfte bleibt da wenig Platz.',
+        'Macht ihren Job hoffentlich besser als sie auf Lotter aufpasst.',
+        'Immer bereit, Verantwortung zu übernehmen — nur nicht für Lotter.'
+      ],
+      /* Lars */ [
+        'Als Aktuar schreibt er Protokolle — irgendwann, wenn er mal rechtzeitig auftaucht.',
+        'Offiziell zuständig für Ordnung und Struktur. Inoffiziell chronisch zu spät.',
+        'Sein Zeitgefühl ist ein Kunstwerk: abstrakt, unverständlich, aber irgendwie beeindruckend.',
+        '«Ich komme gleich» ist seine beliebteste Lüge — gefolgt von «Ich hatte alles im Griff».',
+        'Die Protokolle sind meistens vollständig. Ob rechtzeitig — eine ganz andere Frage.'
+      ],
+      /* Leandro */ [
+        'Als Aussenminister pflegt er internationale Beziehungen — vor allem mit Skimarken-Vertretern.',
+        'Seine Locken sind offiziell ein Wahrzeichen; inoffiziell braucht er 40 Minuten fürs Styling.',
+        'Kann in 3 Sekunden erklären, warum Völkl besser ist als Rossignol — und in 3 Stunden das Gegenteil.',
+        'Auf der Piste kennt ihn jeder. In der Ebene ist er etwas verloren.',
+        'Der einzige Aussenminister, der Botschaften am liebsten in Skigebieten eröffnen würde.'
+      ],
+      /* Chanelle */ [
+        'Senior Chief Executive Facility Managerin — ein Titel, der so lang ist wie ihr letzter Crashout.',
+        'Spitzname «Schneller»: ob sie schnell wird oder schnell die Nerven verliert, ist situationsabhängig.',
+        'Verwaltet den Verein mit der Energie von jemandem, der kurz vor einem Crashout steht.',
+        'Ihre Crashouts sind legendär — und meistens vollkommen berechtigt.',
+        'Wenn Chanelle Vollgas gibt, läuft der Verein. Wenn sie crasht, laufen alle schnell weg.'
+      ],
+      /* Silas */ [
+        'Bierzipfel von Beruf, Citystepper mit Aura aus Berufung.',
+        'Betritt jeden Raum mit einer Energie, die man nur als «Aura-Overload» bezeichnen kann.',
+        'Offiziell fürs Bier zuständig — inoffiziell für die Stimmung, die Moves und das Wohlbefinden.',
+        'Sein Bierzipfel-Amt nimmt er so ernst wie seine Schritttechnik — also sehr.',
+        'Wenn Silas durch die City steppt, drehen sich die Leute um. Beim Jassen drehen sich die Karten.'
+      ]
+    ];
+
     var AVATARS = [
       'img/Mitglieder/Noe.jpg',
       'img/Mitglieder/Ella.jpg',
@@ -907,6 +1009,8 @@
       PLAYERS.forEach(function(p, i) {
         var row = document.createElement('div');
         row.className = 'member-row';
+        row.style.cursor = 'pointer';
+        row.onclick = (function(idx){ return function(){ showMember(idx); }; })(i);
         var badge = p.vorstand
           ? '<span class="mr-badge">Vorstand</span>'
           : '<span class="mr-badge normal">Mitglied</span>';
@@ -920,6 +1024,33 @@
       });
     }
     renderMembers();
+
+    function showMember(idx) {
+      var p = PLAYERS[idx];
+      document.getElementById('mc-photo').src = AVATARS[idx];
+      document.getElementById('mc-photo').alt = p.name;
+      document.getElementById('mc-name').textContent = p.name;
+      document.getElementById('mc-role').textContent = p.role;
+      var badge = document.getElementById('mc-badge');
+      badge.textContent = p.vorstand ? 'Vorstand' : 'Mitglied';
+      badge.className = 'mr-badge' + (p.vorstand ? '' : ' normal');
+      var bio = document.getElementById('mc-bio');
+      bio.innerHTML = '';
+      MEMBER_BIO[idx].forEach(function(line) {
+        var li = document.createElement('li');
+        li.textContent = line;
+        bio.appendChild(li);
+      });
+      document.getElementById('member-modal').classList.add('open');
+    }
+
+    function closeMember() {
+      document.getElementById('member-modal').classList.remove('open');
+    }
+
+    document.getElementById('member-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeMember();
+    });
 
     /* ── Stats ── */
     function renderStats() {
