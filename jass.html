@@ -546,95 +546,147 @@ function JassGame({authUser, roomCode, mySeat}) {
   }
 
   // ── PLAYING / TRICK RESULT ──
-  const trickNum   = Math.min(G.tricksDone+1, CPP);
-  const otherSeats = [0,1,2,3].filter(s=>s!==mySeat);
+  const trickNum  = Math.min(G.tricksDone+1, CPP);
+  const topSeat   = (mySeat + 2) % NUM_P;
+  const rightSeat = (mySeat + 1) % NUM_P;
+  const leftSeat  = (mySeat + 3) % NUM_P;
+
+  // offset from my seat: 0=me(bottom) 1=right 2=top 3=left
+  const seatOff = s => ((s - mySeat) + NUM_P) % NUM_P;
+
+  // absolute position of each player's card on the felt
+  const cardPos = s => {
+    const off = seatOff(s);
+    if(off===0) return {position:'absolute',bottom:'12%',left:'50%',transform:'translateX(-50%)'};
+    if(off===1) return {position:'absolute',right:'8%', top:'50%', transform:'translateY(-50%)'};
+    if(off===2) return {position:'absolute',top:'12%',  left:'50%',transform:'translateX(-50%)'};
+                return {position:'absolute',left:'8%',  top:'50%', transform:'translateY(-50%)'};
+  };
+
+  const OpponentStrip = ({seat, vertical}) => {
+    const active = G.cur===seat && G.phase==='playing';
+    const count  = G.handSizes[seat];
+    return (
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
+        <span style={{
+          fontSize:'.58rem', fontWeight:active?700:400,
+          color:active?'#4a9e4a':'#555',
+          writingMode: vertical?'vertical-rl':'horizontal-tb',
+          transform: vertical?'rotate(180deg)':'none',
+          whiteSpace:'nowrap',
+        }}>
+          {G.seatNames[seat]}{active?' 🤔':''}
+        </span>
+        <div style={{display:'flex',flexDirection:vertical?'column':'row',gap:2,flexWrap:'wrap',justifyContent:'center',maxWidth:vertical?undefined:120}}>
+          {Array.from({length:count},(_,i)=><CardBack key={i} w={vertical?12:14} h={vertical?19:22}/>)}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div style={{maxWidth:900,margin:'0 auto',padding:'10px 12px 24px',minHeight:'100vh',display:'flex',flexDirection:'column',gap:8}}>
+    <div style={{display:'grid',gridTemplateRows:'auto 1fr auto',height:'100vh',padding:'8px',gap:6,background:'#111'}}>
 
-      {/* Top bar */}
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="index.html" style={{color:'#444',textDecoration:'none',fontSize:'.78rem'}}>← Zurück</a>
-        <span style={{fontSize:'.8rem',color:'#555'}}>Raum {roomCode}</span>
-        <span style={{fontSize:'.75rem',color:'#444'}}>Spiel {G.rndIdx+1}/{ROUNDS.length}</span>
-      </div>
+      {/* ── Row 1: top player + scoreboard ── */}
+      <div style={{display:'flex',alignItems:'flex-end',gap:8}}>
+        {/* Back */}
+        <a href="index.html" style={{color:'#333',textDecoration:'none',fontSize:'.75rem',flexShrink:0,paddingBottom:4}}>←</a>
 
-      {/* Scores */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:6}}>
-        {G.seatNames.map((name,i)=>(
-          <div key={i} style={{background:i===mySeat?'rgba(74,158,74,.12)':'rgba(255,255,255,.03)',border:i===mySeat?'1px solid rgba(74,158,74,.35)':'1px solid #1e1e1e',borderRadius:8,padding:'7px 4px',textAlign:'center'}}>
-            <div style={{fontSize:'.62rem',color:'#4a9e4a',marginBottom:2}}>{name}</div>
-            <div style={{fontSize:'1.35rem',fontWeight:700}}>{G.totals[i]}</div>
-            <div style={{fontSize:'.58rem',color:'#444',marginTop:1}}>{G.handSizes[i]} Karten</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Round info */}
-      <div style={{background:'rgba(255,255,255,.04)',borderRadius:8,padding:'8px 12px',display:'flex',alignItems:'center',gap:10}}>
-        <span style={{fontSize:'1.2rem'}}>{rnd.icon}</span>
-        <div style={{flex:1}}>
-          <div style={{fontWeight:700,fontSize:'.85rem'}}>{rnd.name}</div>
-          <div style={{fontSize:'.7rem',color:'#555',marginTop:1}}>{rnd.desc}</div>
+        {/* Top player – centred */}
+        <div style={{flex:1,display:'flex',justifyContent:'center'}}>
+          <OpponentStrip seat={topSeat} vertical={false}/>
         </div>
-        <div style={{textAlign:'right',flexShrink:0}}>
-          <div style={{fontSize:'.68rem',color:'#444'}}>Stich {trickNum}/9</div>
-          {(isLastTrick||isLastTrickResult)&&<div style={{fontSize:'.68rem',color:'#e8c050',fontWeight:700}}>⚡ Letzter!</div>}
+
+        {/* Scoreboard */}
+        <div style={{background:'rgba(15,15,15,.95)',border:'1px solid #222',borderRadius:10,padding:'8px 12px',flexShrink:0,minWidth:130}}>
+          <div style={{fontSize:'.55rem',color:'#444',textTransform:'uppercase',letterSpacing:.8,marginBottom:5}}>
+            {rnd.icon} {rnd.name} · Stich {trickNum}/9{(isLastTrick||isLastTrickResult)?' ⚡':''}
+          </div>
+          {G.seatNames.map((name,i)=>(
+            <div key={i} style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,padding:'2px 0'}}>
+              <span style={{fontSize:'.74rem',color:i===mySeat?'#eee':'#777',fontWeight:i===mySeat?700:400}}>
+                {i===mySeat?'Du':name}
+              </span>
+              <span style={{fontSize:'.82rem',fontWeight:700,color:G.cur===i&&G.phase==='playing'?'#4a9e4a':'#888'}}>
+                {G.totals[i]}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Other players */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6}}>
-        {otherSeats.map(seat=>(
-          <div key={seat} style={{background:'rgba(255,255,255,.03)',borderRadius:8,padding:'8px 10px'}}>
-            <div style={{fontSize:'.66rem',color:'#4a9e4a',marginBottom:5,display:'flex',alignItems:'center',gap:4}}>
-              <span>{G.seatNames[seat]}</span>
-              {G.cur===seat&&G.phase==='playing'&&<span style={{opacity:.7}}>🤔</span>}
-            </div>
-            <div style={{display:'flex',flexWrap:'wrap',gap:2}}>
-              {Array.from({length:G.handSizes[seat]},(_,ci)=><CardBack key={ci} w={16} h={25}/>)}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* ── Row 2: left | felt table | right ── */}
+      <div style={{display:'flex',gap:6,alignItems:'stretch',minHeight:0}}>
 
-      {/* Table */}
-      <div style={{background:'rgba(255,255,255,.03)',border:'1px solid #1e1e1e',borderRadius:12,padding:'14px 18px',flex:1,minHeight:150}}>
-        <div style={{fontSize:'.62rem',color:'#333',textTransform:'uppercase',letterSpacing:1.5,marginBottom:10,textAlign:'center'}}>Tisch</div>
-        <div style={{display:'flex',justifyContent:'center',alignItems:'flex-end',gap:14,flexWrap:'wrap',minHeight:100}}>
+        {/* Left player */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'0 2px'}}>
+          <OpponentStrip seat={leftSeat} vertical={true}/>
+        </div>
+
+        {/* Green felt table */}
+        <div style={{
+          flex:1, position:'relative',
+          background:'radial-gradient(ellipse at center,#1e6b1e 0%,#0d3d0d 100%)',
+          borderRadius:22,
+          border:'3px solid #0a2a0a',
+          boxShadow:'inset 0 0 50px rgba(0,0,0,.4),0 4px 20px rgba(0,0,0,.5)',
+          overflow:'hidden',
+        }}>
+          {/* Felt texture */}
+          <div style={{position:'absolute',inset:0,borderRadius:19,background:'repeating-linear-gradient(45deg,rgba(0,0,0,.025) 0,rgba(0,0,0,.025) 1px,transparent 1px,transparent 6px)',pointerEvents:'none'}}/>
+
+          {/* Empty slots */}
+          {[0,1,2,3].map(off=>{
+            const fakeSeat=(mySeat+off)%NUM_P;
+            const alreadyPlayed=G.trick.some(t=>t.player===fakeSeat);
+            if(alreadyPlayed) return null;
+            const pos=cardPos(fakeSeat);
+            return <div key={off} style={{...pos,width:62,height:95,border:'1px dashed rgba(255,255,255,.07)',borderRadius:9}}/>;
+          })}
+
+          {/* Played cards */}
           {G.trick.map(({player,card})=>{
-            const isWinner=G.phase==='trick_result'&&G.trickRes?.w===player;
+            const winner=G.phase==='trick_result'&&G.trickRes?.w===player;
             return (
-              <div key={player} style={{textAlign:'center'}}>
-                <div style={{fontSize:'.66rem',color:'#555',marginBottom:4}}>{G.seatNames[player]}</div>
-                <div className={isWinner?'win-glow':''} style={{filter:isWinner?'drop-shadow(0 0 10px rgba(74,200,74,.6))':'none'}}>
-                  <CardView card={card} size="md" special={true}/>
+              <div key={player} style={cardPos(player)}>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontSize:'.55rem',color:'rgba(255,255,255,.35)',marginBottom:3,whiteSpace:'nowrap'}}>{G.seatNames[player]}</div>
+                  <div className={winner?'win-glow':''} style={{filter:winner?'drop-shadow(0 0 10px rgba(100,230,100,.8))':'none'}}>
+                    <CardView card={card} size="md" special={true}/>
+                  </div>
+                  {winner&&<div style={{fontSize:'.58rem',color:'#8be08b',fontWeight:700,marginTop:3,textAlign:'center'}}>✓</div>}
                 </div>
-                {isWinner&&<div style={{marginTop:3,fontSize:'.66rem',color:'#4a9e4a',fontWeight:700}}>✓</div>}
               </div>
             );
           })}
-          {Array.from({length:NUM_P-G.trick.length},(_,i)=>(
-            <div key={`e${i}`} style={{width:62,height:95,border:'1px dashed #222',borderRadius:9}}/>
-          ))}
+
+          {/* Trick result banner */}
+          {G.phase==='trick_result'&&G.trickRes&&(
+            <div className="fade-up" style={{position:'absolute',bottom:10,left:'50%',transform:'translateX(-50%)',background:'rgba(0,0,0,.7)',borderRadius:8,padding:'4px 14px',whiteSpace:'nowrap',fontSize:'.78rem',color:'#8be08b',fontWeight:600}}>
+              {G.seatNames[G.trickRes.w]} gewinnt den Stich
+            </div>
+          )}
         </div>
-        {G.phase==='trick_result'&&G.trickRes&&(
-          <div className="fade-up" style={{textAlign:'center',marginTop:10,fontSize:'.88rem',color:'#4a9e4a',fontWeight:600}}>
-            {G.seatNames[G.trickRes.w]} gewinnt den Stich
-          </div>
-        )}
+
+        {/* Right player */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'0 2px'}}>
+          <OpponentStrip seat={rightSeat} vertical={true}/>
+        </div>
       </div>
 
-      {/* My hand */}
-      <div style={{background:'rgba(255,255,255,.03)',borderRadius:10,padding:'12px 14px'}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-          <span style={{fontSize:'.66rem',color:'#4a9e4a',textTransform:'uppercase',letterSpacing:.8}}>Deine Hand</span>
-          {leadSuit&&<div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,.07)',borderRadius:14,padding:'3px 10px'}}>
-            <span style={{fontSize:'.82rem'}}>{SUIT_EMOJI[leadSuit]}</span>
-            <span style={{fontSize:'.68rem',fontWeight:700}}>{leadSuit} angespielt</span>
-          </div>}
+      {/* ── Row 3: my hand ── */}
+      <div style={{background:'rgba(255,255,255,.04)',borderRadius:10,padding:'10px 12px'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7}}>
+          <span style={{fontSize:'.62rem',color:myTurn?'#4a9e4a':'#555',textTransform:'uppercase',letterSpacing:.5}}>
+            {myTurn?'→ Du bist dran':G.phase==='playing'?`${G.seatNames[G.cur]} ist dran...`:''}
+          </span>
+          {leadSuit&&(
+            <span style={{fontSize:'.68rem',background:'rgba(255,255,255,.08)',borderRadius:10,padding:'2px 9px'}}>
+              {SUIT_EMOJI[leadSuit]} {leadSuit}
+            </span>
+          )}
         </div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+        <div style={{display:'flex',flexWrap:'wrap',gap:5,justifyContent:'center'}}>
           {myHand.map(card=>{
             const ok=canPlay(card);
             const isEO=card.suit==='Eichel'&&card.rank==='O';
@@ -645,11 +697,11 @@ function JassGame({authUser, roomCode, mySeat}) {
             );
           })}
         </div>
-        <div style={{marginTop:8,fontSize:'.7rem',color:'#444'}}>
-          {myTurn
-            ? (leadSuit?`Farbzwang: ${leadSuit} spielen (wenn vorhanden).`:'Du bist dran – wähle eine Karte.')
-            : (G.phase==='playing'?`${G.seatNames[G.cur]} ist dran...`:'')}
-        </div>
+        {myTurn&&leadSuit&&(
+          <div style={{marginTop:6,fontSize:'.65rem',color:'#444',textAlign:'center'}}>
+            Farbzwang: {leadSuit} spielen (wenn vorhanden)
+          </div>
+        )}
       </div>
     </div>
   );
