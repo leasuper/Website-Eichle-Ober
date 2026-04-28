@@ -147,7 +147,7 @@ function calcScore(rndIdx, tw, lastW, numPlayers) {
     if(r(0)) s += mt.length*5;
     if(r(1)) s += mc.filter(c=>c.suit==='Schilten').length*10;
     if(r(2)) s += mc.filter(c=>c.rank==='K').length*20;
-    if(r(3) && mc.some(c=>c.suit==='Eichel'&&c.rank==='O')) s+=40;
+    if(mc.some(c=>c.suit==='Eichel'&&c.rank==='O')) s += r(3) ? 67 : 25;
     if(r(4) && p===lastW) s+=50;
     return s;
   });
@@ -159,7 +159,7 @@ function cardDanger(card, rndIdx) {
   let v = 0;
   if(r(1)&&card.suit==='Schilten') v+=10;
   if(r(2)&&card.rank==='K') v+=20;
-  if(r(3)&&card.suit==='Eichel'&&card.rank==='O') v+=40;
+  if(card.suit==='Eichel'&&card.rank==='O') v += r(3) ? 67 : 25;
   return v;
 }
 function aiPlay(hand, trick, rndIdx, tricksDone, cpp) {
