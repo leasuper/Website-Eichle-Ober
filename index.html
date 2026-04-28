@@ -129,29 +129,14 @@
       font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase;
     }
     .nav-logo img { height: 26px; width: 26px; border-radius: 4px; object-fit: cover; opacity: 0.9; }
-    .nav-status {
-      justify-self: center;
-      display: flex; align-items: center; gap: 7px;
-      background: rgba(240,168,48,0.08);
-      border: 1px solid rgba(240,168,48,0.2);
-      border-radius: 100px; padding: 5px 14px 5px 10px;
-      font-family: var(--mono); font-size: 0.68rem;
-      color: var(--gold); letter-spacing: 0.08em;
-    }
-    .status-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--gold); animation: dotPulse 2s ease infinite;
-    }
-    @keyframes dotPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.8); } }
-    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-right { display: flex; align-items: center; gap: 20px; margin-left: auto; }
     .nav-links { display: flex; gap: 20px; list-style: none; }
     .nav-links a {
       font-family: var(--sans); font-size: 0.8rem; font-weight: 400;
       color: var(--muted); transition: color 0.2s; letter-spacing: 0.02em;
     }
     .nav-links a:hover { color: var(--ink); }
-    #clock { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.05em; }
-    #user-name-nav { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    #user-name-nav { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-left: auto; }
     #signout-btn {
       background: none; border: 1px solid var(--line);
       color: var(--muted); font-family: var(--mono); font-size: 0.7rem;
@@ -498,7 +483,6 @@
       nav { grid-template-columns: auto auto; padding: 14px 20px; }
       .nav-status { display: none; }
       .nav-links { display: none; }
-      #clock { display: none; }
       #user-name-nav { display: none; }
 
       /* Ticker */
@@ -845,7 +829,6 @@
         <li><a href="jass.html">🃏 GG</a></li>
         <li><a href="jasstafel.html">📊 Jasstafel</a></li>
       </ul>
-      <span id="clock">--:--:--</span>
       <span id="user-name-nav"></span>
       <button id="signout-btn" style="display:none" onclick="firebase.auth().signOut()">Abmelden</button>
     </div>
@@ -1097,16 +1080,6 @@
   </div>
 
   <script>
-    /* ── Clock ── */
-    function updateClock() {
-      var now = new Date();
-      document.getElementById('clock').textContent =
-        String(now.getHours()).padStart(2,'0') + ':' +
-        String(now.getMinutes()).padStart(2,'0') + ':' +
-        String(now.getSeconds()).padStart(2,'0');
-    }
-    updateClock(); setInterval(updateClock, 1000);
-
     /* ── Scroll nav ── */
     window.addEventListener('scroll', function() {
       document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
