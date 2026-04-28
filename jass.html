@@ -4,134 +4,113 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Guggitaler Jass – Eichel Ober</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
-    (function() {
-      var cfg = {
-        apiKey: "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
-        authDomain: "website-eichle-ober-bf1e5.firebaseapp.com",
-        projectId: "website-eichle-ober-bf1e5",
-        appId: "1:405255994774:web:5c590b8dd16ce9ebfd31b7"
-      };
-      firebase.initializeApp(cfg);
-      var ALLOWED = [
-        'eichleober@gmail.com','ella.baettig@gmail.com','noe.bertallo@icloud.com',
-        'lars.lumer@icloud.com','cpfenninger@outlook.com','le.nievergelt@gmail.com',
-        'silas.mueller4@gmail.com'
-      ];
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (!user || ALLOWED.indexOf(user.email.toLowerCase()) === -1) {
-          window.location.href = 'index.html';
-        }
-      });
-    })();
+    const ALLOWED = ['eichleober@gmail.com','ella.baettig@gmail.com','noe.bertallo@icloud.com',
+      'lars.lumer@icloud.com','cpfenninger@outlook.com','le.nievergelt@gmail.com','silas.mueller4@gmail.com'];
+    firebase.initializeApp({
+      apiKey: "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
+      authDomain: "website-eichle-ober-bf1e5.firebaseapp.com",
+      databaseURL: "https://website-eichle-ober-bf1e5-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "website-eichle-ober-bf1e5",
+      appId: "1:405255994774:web:5c590b8dd16ce9ebfd31b7"
+    });
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user || !ALLOWED.includes(user.email.toLowerCase())) {
+        window.location.href = 'index.html';
+      }
+    });
   </script>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <style>
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; font-family:'DM Sans',sans-serif; }
-    body { background:linear-gradient(165deg,#163a16 0%,#0a220a 100%); min-height:100vh; color:#fff; }
-    #root { min-height:100vh; }
-
-    .card-lift { transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s; }
-    .card-lift:hover { transform:translateY(-10px) scale(1.04); box-shadow:0 14px 32px rgba(0,0,0,.45); cursor:pointer; }
-    .card-dim { opacity:.3; filter:grayscale(40%); }
-    .card-special { animation:goldPulse 2s ease-in-out infinite; }
-    .card-special.card-lift:hover { box-shadow:0 0 0 6px rgba(212,160,16,.6), 0 14px 32px rgba(0,0,0,.45); }
-
-    @keyframes goldPulse {
-      0%,100% { box-shadow:0 0 0 0 rgba(212,160,16,.0); }
-      50%      { box-shadow:0 0 0 6px rgba(212,160,16,.55); }
-    }
-    @keyframes slideIn {
-      from { opacity:0; transform:translateY(-20px) scale(.85); }
-      to   { opacity:1; transform:translateY(0) scale(1); }
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(16px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    @keyframes winGlow {
-      0%,100% { transform:scale(1); }
-      50%      { transform:scale(1.12); }
-    }
-    .slide-in  { animation:slideIn .28s cubic-bezier(.34,1.2,.64,1) both; }
-    .fade-up   { animation:fadeUp .35s ease both; }
-    .win-glow  { animation:winGlow .5s ease; }
-
-    .btn-primary { transition:background .18s,transform .1s; }
-    .btn-primary:hover { filter:brightness(1.15); transform:scale(1.02); }
-    .btn-primary:active { transform:scale(.98); }
-
-    ::-webkit-scrollbar { width:4px; }
-    ::-webkit-scrollbar-track { background:transparent; }
-    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.2); border-radius:4px; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: 'DM Sans', system-ui, sans-serif; }
+    body { background: #111; color: #eee; min-height: 100vh; }
+    #root { min-height: 100vh; }
+    .card-lift { transition: transform .18s, box-shadow .18s; cursor: pointer; }
+    .card-lift:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 12px 28px rgba(0,0,0,.5); }
+    .card-dim { opacity: .3; filter: grayscale(40%); }
+    .card-special { animation: goldPulse 2s ease-in-out infinite; }
+    @keyframes goldPulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,160,16,0)} 50%{box-shadow:0 0 0 6px rgba(212,160,16,.55)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes winGlow { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    .fade-up { animation: fadeUp .3s ease both; }
+    .win-glow { animation: winGlow .5s ease; }
+    button, input { font-family: inherit; }
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+const { useState, useEffect, useRef } = React;
 
-// ── CONSTANTS ────────────────────────────────────────────────────────────────
-const SUITS  = ['Eichel','Schellen','Schilten','Rosen'];
-const SUIT_EMOJI= { Eichel:'🌰', Schellen:'🔔', Schilten:'🛡️', Rosen:'🌹' };
-const SUIT_FILE = { Eichel:'eichel', Schellen:'schelle', Schilten:'schilte', Rosen:'rose' };
-const RANK_FILE = { '6':'6','7':'7','8':'8','9':'9','B':'10','U':'under','O':'ober','K':'koenig','A':'ass' };
+// ── FIREBASE HELPERS ──────────────────────────────────────────────────────────
+const db = firebase.database();
+const roomRef  = code => db.ref(`jass_rooms/${code}`);
+const writeState = (code, state) =>
+  roomRef(code).child('stateJson').set(JSON.stringify(state));
+const readHand = async (code, seat) => {
+  const snap = await roomRef(code).child(`handsJson/seat_${seat}`).once('value');
+  return snap.val() ? JSON.parse(snap.val()) : [];
+};
+const writeHand = (code, seat, hand) =>
+  roomRef(code).child(`handsJson/seat_${seat}`).set(JSON.stringify(hand));
 
-const RANKS = ['6','7','8','9','B','U','O','K','A'];
-const ri    = r => RANKS.indexOf(r);
-
-const NUM_P  = 4;
-const CPP    = 9; // cards per player
-const NAMES  = ['Du','Hampi','Sepp','Ueli'];
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const SUITS     = ['Eichel','Schellen','Schilten','Rosen'];
+const SUIT_EMOJI = { Eichel:'🌰', Schellen:'🔔', Schilten:'🛡️', Rosen:'🌹' };
+const SUIT_FILE  = { Eichel:'eichel', Schellen:'schelle', Schilten:'schilte', Rosen:'rose' };
+const RANK_FILE  = { '6':'6','7':'7','8':'8','9':'9','B':'10','U':'under','O':'ober','K':'koenig','A':'ass' };
+const RANKS     = ['6','7','8','9','B','U','O','K','A'];
+const ri = r => RANKS.indexOf(r);
+const NUM_P = 4;
+const CPP   = 9;
 
 const ROUNDS = [
-  { name:'Stiche',        icon:'🃏', short:'+5/Stich',
-    desc:'Möglichst wenig Stiche machen – jeder Stich kostet +5 Punkte' },
-  { name:'Schilten',      icon:'🛡', short:'+10/Schilte',
-    desc:'Keine Schiltenkarten gewinnen – jede Schilte: +10 Punkte' },
-  { name:'Könige',        icon:'👑', short:'+20/König',
-    desc:'Keinen König gewinnen – jeder König: +20 Punkte' },
-  { name:'Eichel Ober',   icon:'♣',  short:'+40 Eichel Ober',
-    desc:'Den Eichel Ober nicht machen – er kostet +40 Punkte' },
-  { name:'Letzter Stich', icon:'⚡', short:'+50 Letzter',
-    desc:'Den letzten Stich nicht machen – kostet +50 Punkte' },
-  { name:'Alles!',        icon:'🌟', short:'Alle Regeln',
-    desc:'Alles zählt gleichzeitig: +5/Stich · +10/Schilte · +20/König · +40 Eichel Ober · +50 Letzter' },
+  { name:'Stiche',        icon:'🃏', short:'+5/Stich',    desc:'Jeder Stich kostet +5 Punkte' },
+  { name:'Schilten',      icon:'🛡', short:'+10/Schilte', desc:'Jede Schiltenkarte: +10 Punkte' },
+  { name:'Könige',        icon:'👑', short:'+20/König',   desc:'Jeder König: +20 Punkte' },
+  { name:'Eichel Ober',   icon:'♣',  short:'+40 EO',      desc:'Eichel Ober fangen: +40 Punkte' },
+  { name:'Letzter Stich', icon:'⚡', short:'+50 Letzter', desc:'Letzter Stich: +50 Punkte' },
+  { name:'Alles!',        icon:'🌟', short:'Alle Regeln', desc:'Alle Regeln gleichzeitig' },
 ];
 
-// ── HELPERS ──────────────────────────────────────────────────────────────────
-const createDeck = () => SUITS.flatMap(s => RANKS.map(r => ({suit:s,rank:r,id:`${s}-${r}`})));
-const shuffle = a => { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];} return b; };
-const sortHand = h => [...h].sort((a,b)=>{ const d=SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit); return d||ri(a.rank)-ri(b.rank); });
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const nameFromEmail = email => {
+  const part = email.split('@')[0].split('.')[0];
+  return part.charAt(0).toUpperCase() + part.slice(1);
+};
+const randomCode = () =>
+  Array.from({length:4}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*23)]).join('');
+const createDeck  = () => SUITS.flatMap(s => RANKS.map(r => ({suit:s, rank:r, id:`${s}-${r}`})));
+const shuffle     = a  => { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];} return b; };
+const sortHand    = h  => [...h].sort((a,b) => { const d=SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit); return d||ri(a.rank)-ri(b.rank); });
+
 function trickWinner(t) {
-  const s=t[0].card.suit; let best=t[0];
+  const s = t[0].card.suit; let best = t[0];
   for(const p of t) if(p.card.suit===s && ri(p.card.rank)>ri(best.card.rank)) best=p;
   return best.player;
 }
 function calcScore(rndIdx, tw, lastW) {
-  const r=n=>rndIdx===n||rndIdx===5;
-  return Array.from({length:NUM_P},(_,p)=>{
+  const r = n => rndIdx===n || rndIdx===5;
+  return Array.from({length:NUM_P}, (_,p) => {
     const mt=tw[p]||[], mc=mt.flat(); let s=0;
-    if(r(0)) s+=mt.length*5;
-    if(r(1)) s+=mc.filter(c=>c.suit==='Schilten').length*10;
-    if(r(2)) s+=mc.filter(c=>c.rank==='K').length*20;
-    if(r(3)&&mc.some(c=>c.suit==='Eichel'&&c.rank==='O')) s+=40;
-    if(r(4)&&p===lastW) s+=50;
+    if(r(0)) s += mt.length*5;
+    if(r(1)) s += mc.filter(c=>c.suit==='Schilten').length*10;
+    if(r(2)) s += mc.filter(c=>c.rank==='K').length*20;
+    if(r(3) && mc.some(c=>c.suit==='Eichel'&&c.rank==='O')) s+=40;
+    if(r(4) && p===lastW) s+=50;
     return s;
   });
 }
 
-// ── AI ───────────────────────────────────────────────────────────────────────
+// ── AI ────────────────────────────────────────────────────────────────────────
 function cardDanger(card, rndIdx) {
-  const r=n=>rndIdx===n||rndIdx===5;
+  const r = n => rndIdx===n || rndIdx===5;
   let v=0;
   if(r(1)&&card.suit==='Schilten') v+=10;
   if(r(2)&&card.rank==='K') v+=20;
@@ -141,228 +120,409 @@ function cardDanger(card, rndIdx) {
 function aiPlay(hand, trick, rndIdx, tricksDone) {
   let ok=hand;
   if(trick.length>0){ const ls=trick[0].card.suit, has=hand.filter(c=>c.suit===ls); if(has.length) ok=has; }
-  const byR=cs=>[...cs].sort((a,b)=>ri(a.rank)-ri(b.rank));
-  const isLast=tricksDone===CPP-1;
-
+  const byR = cs => [...cs].sort((a,b)=>ri(a.rank)-ri(b.rank));
+  const isLast = tricksDone===CPP-1;
   if(trick.length>0){
     const ls=trick[0].card.suit; let best=trick[0];
     for(const p of trick) if(p.card.suit===ls&&ri(p.card.rank)>ri(best.card.rank)) best=p;
     const losing=ok.filter(c=>c.suit!==ls||ri(c.rank)<ri(best.card.rank));
-    if(losing.length>0){
-      // Dump most dangerous losing card
-      return [...losing].sort((a,b)=>cardDanger(b,rndIdx)-cardDanger(a,rndIdx))[0];
-    }
-    // Must win – play lowest
-    if(rndIdx===4&&isLast) return byR(ok)[ok.length-1]; // last trick – win big
+    if(losing.length>0) return [...losing].sort((a,b)=>cardDanger(b,rndIdx)-cardDanger(a,rndIdx))[0];
+    if(rndIdx===4&&isLast) return byR(ok)[ok.length-1];
     return byR(ok)[0];
   }
-  // Leading
-  if((rndIdx===3||rndIdx===5)&&ok.length>1){
-    const eo=ok.find(c=>c.suit==='Eichel'&&c.rank==='O');
-    if(eo) return eo; // dump Eichel Ober as lead
-  }
+  if((rndIdx===3||rndIdx===5)&&ok.length>1){ const eo=ok.find(c=>c.suit==='Eichel'&&c.rank==='O'); if(eo) return eo; }
   if(rndIdx===4&&isLast) return byR(ok)[ok.length-1];
-  return byR(ok)[0]; // play lowest
+  return byR(ok)[0];
 }
 
-// ── CARD ─────────────────────────────────────────────────────────────────────
-function CardView({card, size='md', anim=false, special=false}) {
+// ── PURE GAME LOGIC ───────────────────────────────────────────────────────────
+function computeCardPlay(G, seat, card) {
+  const newTrick = [...G.trick, {player:seat, card}];
+  const newHandSizes = [...G.handSizes];
+  newHandSizes[seat]--;
+  if(newTrick.length===NUM_P){
+    const w = trickWinner(newTrick);
+    const cards = newTrick.map(p=>p.card);
+    const newTricksWon = G.tricksWon.map((t,i)=>i===w?[...t,cards]:t);
+    return {...G, trick:newTrick, handSizes:newHandSizes, phase:'trick_result',
+      trickRes:{w,cards}, tricksWon:newTricksWon, tricksDone:G.tricksDone+1, lastW:w};
+  }
+  return {...G, trick:newTrick, handSizes:newHandSizes, cur:(seat+1)%NUM_P};
+}
+
+async function hostDeal(roomCode, rndIdx, prevState, humanSeats, seatNames) {
+  const deck = shuffle(createDeck());
+  const hands = Array.from({length:NUM_P}, (_,i)=>sortHand(deck.slice(i*CPP,(i+1)*CPP)));
+  for(let seat=0; seat<NUM_P; seat++) {
+    await writeHand(roomCode, seat, hands[seat]);
+  }
+  const lp = prevState?.lastW ?? 0;
+  await writeState(roomCode, {
+    phase:'playing', rndIdx,
+    trick:[], tricksDone:0,
+    tricksWon:[[],[],[],[]],
+    lastW:lp, lead:lp, cur:lp,
+    totals:  prevState?.totals  ?? [0,0,0,0],
+    history: prevState?.history ?? [],
+    trickRes:null, rndRes:null,
+    handSizes:[CPP,CPP,CPP,CPP],
+    humanSeats, seatNames,
+  });
+}
+
+// ── CARD COMPONENTS ───────────────────────────────────────────────────────────
+function CardView({card, size='md', special=false}) {
   const w = {sm:46, md:62, lg:76}[size]||62;
   const isEO = card.suit==='Eichel'&&card.rank==='O';
   const src = `CH-Jasskartenset/${SUIT_FILE[card.suit]}_${RANK_FILE[card.rank]}.png`;
-  const shadow = isEO&&special
-    ? '0 0 0 2px #D4A010, 0 4px 14px rgba(0,0,0,.35)'
-    : '0 3px 10px rgba(0,0,0,.25)';
-  return(
-    <div className={anim?'slide-in':''} style={{display:'inline-block',position:'relative',userSelect:'none',flexShrink:0}}>
+  const shadow = isEO&&special ? '0 0 0 2px #D4A010, 0 4px 14px rgba(0,0,0,.35)' : '0 3px 10px rgba(0,0,0,.25)';
+  return (
+    <div style={{display:'inline-block',position:'relative',userSelect:'none',flexShrink:0}}>
       <img src={src} alt={`${card.suit} ${card.rank}`}
         style={{width:w,height:'auto',display:'block',borderRadius:9,boxShadow:shadow}}
         draggable="false"
       />
-      {isEO&&special&&<div style={{position:'absolute',top:-6,right:-6,background:'#D4A010',borderRadius:'50%',width:16,height:16,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,color:'#fff',fontWeight:700,boxShadow:'0 2px 6px rgba(0,0,0,.3)'}}>★</div>}
+      {isEO&&special&&<div style={{position:'absolute',top:-5,right:-5,background:'#D4A010',borderRadius:'50%',width:16,height:16,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,color:'#fff',fontWeight:700}}>★</div>}
     </div>
   );
 }
-function CardBack({w=20,h=30}){
-  return(
-    <div style={{width:w,height:h,borderRadius:4,background:'linear-gradient(135deg,#1a4d1a,#4a9e4a)',border:'1px solid rgba(255,255,255,.18)',flexShrink:0}}/>
-  );
+function CardBack({w=20,h=30}) {
+  return <div style={{width:w,height:h,borderRadius:4,background:'linear-gradient(135deg,#1a4d1a,#4a9e4a)',border:'1px solid rgba(255,255,255,.15)',flexShrink:0}}/>;
 }
 
-// ── TABLE STYLES (shared) ─────────────────────────────────────────────────────
-const TH={padding:'9px 14px',fontWeight:700,color:'#2d6a2d',textAlign:'center',borderBottom:'2px solid #c5dfc0',fontSize:'0.84rem',background:'#f4f9f2'};
-const TD={padding:'9px 12px',textAlign:'center',borderBottom:'1px solid #f0f0f0',fontSize:'0.88rem'};
+// ── LOBBY ─────────────────────────────────────────────────────────────────────
+function Lobby({authUser, onJoined}) {
+  const [codeInput, setCodeInput] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const myName = nameFromEmail(authUser.email);
 
-// ── MAIN GAME ────────────────────────────────────────────────────────────────
-function JassGame(){
-  const init=()=>({
-    phase:'intro',
-    rndIdx:0,
-    hands:[[],[],[],[]],
-    trick:[],
-    tricksDone:0,
-    tricksWon:[[],[],[],[]],
-    lastW:0,
-    totals:[0,0,0,0],
-    history:[],
-    lead:0, cur:0,
-    trickRes:null,
-    rndRes:null,
-  });
-
-  const [G,setG]=useState(init());
-  const tmr=useRef(null);
-
-  const deal=(base,rndIdx)=>{
-    const deck=shuffle(createDeck());
-    const hands=Array.from({length:NUM_P},(_,i)=>sortHand(deck.slice(i*CPP,(i+1)*CPP)));
-    const lp=base.lead??0;
-    return{...base,phase:'playing',rndIdx,hands,trick:[],tricksDone:0,tricksWon:[[],[],[],[]],lastW:lp,lead:lp,cur:lp,trickRes:null,rndRes:null};
+  const createRoom = async () => {
+    setBusy(true); setError('');
+    const code = randomCode();
+    const initialState = {
+      phase:'waiting', rndIdx:0, trick:[], tricksDone:0, tricksWon:[[],[],[],[]],
+      lastW:0, lead:0, cur:0, totals:[0,0,0,0], history:[], trickRes:null, rndRes:null,
+      handSizes:[0,0,0,0], humanSeats:[0], seatNames:[myName,'KI','KI','KI'],
+    };
+    await roomRef(code).set({
+      stateJson: JSON.stringify(initialState),
+      players: {[authUser.uid]: {name:myName, seat:0}},
+    });
+    localStorage.setItem('jass_room', code);
+    onJoined(code, 0);
   };
 
-  const startGame=()=>setG(deal({...init(),totals:[0,0,0,0],history:[],lead:0},0));
-
-  const playCard=useCallback((pi,card)=>{
-    setG(prev=>{
-      if(prev.phase!=='playing'||prev.cur!==pi) return prev;
-      // Follow-suit check
-      if(prev.trick.length>0){
-        const ls=prev.trick[0].card.suit;
-        if(prev.hands[pi].some(c=>c.suit===ls)&&card.suit!==ls) return prev;
-      }
-      const newTrick=[...prev.trick,{player:pi,card}];
-      const newHands=prev.hands.map((h,i)=>i===pi?h.filter(c=>c.id!==card.id):h);
-
-      if(newTrick.length===NUM_P){
-        const w=trickWinner(newTrick);
-        const cards=newTrick.map(p=>p.card);
-        const tw=prev.tricksWon.map((t,i)=>i===w?[...t,cards]:t);
-        return{...prev,hands:newHands,trick:newTrick,phase:'trick_result',
-          trickRes:{w,cards},tricksWon:tw,tricksDone:prev.tricksDone+1,lastW:w};
-      }
-      return{...prev,hands:newHands,trick:newTrick,cur:(pi+1)%NUM_P};
-    });
-  },[]);
-
-  const advance=useCallback(()=>{
-    setG(prev=>{
-      if(prev.tricksDone>=CPP){
-        const scores=calcScore(prev.rndIdx,prev.tricksWon,prev.lastW);
-        const totals=prev.totals.map((t,i)=>t+scores[i]);
-        return{...prev,phase:'round_result',history:[...prev.history,scores],totals,rndRes:{rndIdx:prev.rndIdx,scores}};
-      }
-      const n=prev.lastW;
-      return{...prev,phase:'playing',trick:[],lead:n,cur:n,trickRes:null};
-    });
-  },[]);
-
-  const nextRound=()=>{
-    setG(prev=>{
-      const n=prev.rndIdx+1;
-      if(n>=ROUNDS.length) return{...prev,phase:'game_over'};
-      return deal(prev,n);
-    });
-  };
-
-  useEffect(()=>{
-    clearTimeout(tmr.current);
-    if(G.phase==='playing'&&G.cur!==0){
-      tmr.current=setTimeout(()=>{
-        const c=aiPlay(G.hands[G.cur],G.trick,G.rndIdx,G.tricksDone);
-        if(c) playCard(G.cur,c);
-      },500);
+  const joinRoom = async () => {
+    if(!codeInput.trim()) return;
+    setBusy(true); setError('');
+    const code = codeInput.trim().toUpperCase();
+    const snap = await roomRef(code).once('value');
+    if(!snap.exists()) { setError('Raum nicht gefunden'); setBusy(false); return; }
+    const players = snap.val().players || {};
+    if(players[authUser.uid]) {
+      localStorage.setItem('jass_room', code);
+      onJoined(code, players[authUser.uid].seat);
+      return;
     }
-    if(G.phase==='trick_result'){
-      tmr.current=setTimeout(advance,1500);
+    const taken = Object.values(players).map(p=>p.seat);
+    const seat = [0,1,2,3].find(s=>!taken.includes(s));
+    if(seat===undefined) { setError('Raum ist voll'); setBusy(false); return; }
+    await roomRef(code).child(`players/${authUser.uid}`).set({name:myName, seat});
+    const sSnap = await roomRef(code).child('stateJson').once('value');
+    if(sSnap.val()) {
+      const st = JSON.parse(sSnap.val());
+      const newNames = [...(st.seatNames||['KI','KI','KI','KI'])];
+      newNames[seat] = myName;
+      const newHuman = [...(st.humanSeats||[])];
+      if(!newHuman.includes(seat)) newHuman.push(seat);
+      await writeState(code, {...st, seatNames:newNames, humanSeats:newHuman});
     }
-    return()=>clearTimeout(tmr.current);
-  },[G.phase,G.cur,G.rndIdx,G.tricksDone]);
-
-  const leadSuit=G.trick.length>0?G.trick[0].card.suit:null;
-  const canPlay=card=>{
-    if(G.cur!==0||G.phase!=='playing') return false;
-    if(!leadSuit) return true;
-    return G.hands[0].some(c=>c.suit===leadSuit)?card.suit===leadSuit:true;
+    localStorage.setItem('jass_room', code);
+    onJoined(code, seat);
   };
-  const rnd=ROUNDS[G.rndIdx]||ROUNDS[0];
-  const isLastTrick=G.tricksDone===CPP-1&&G.phase==='playing';
-  const isLastTrickResult=G.tricksDone===CPP&&G.phase==='trick_result';
 
-  // ── INTRO ──
-  if(G.phase==='intro') return(
+  return (
     <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
-      <div className="fade-up" style={{background:'#fff',borderRadius:22,padding:'44px 40px',maxWidth:500,width:'100%',color:'#1a1a1a',boxShadow:'0 28px 72px rgba(0,0,0,.45)'}}>
-        <a href="index.html" style={{fontSize:'.8rem',color:'#2d6a2d',textDecoration:'none',display:'block',marginBottom:18}}>← Zur Website</a>
-        <div style={{textAlign:'center',marginBottom:28}}>
-          <div style={{fontSize:'3.2rem',marginBottom:6}}>🃏</div>
-          <h1 style={{fontFamily:"'Libre Baskerville',serif",fontSize:'2rem',color:'#1a4d1a',marginBottom:6}}>Guggitaler</h1>
-          <p style={{color:'#666',lineHeight:1.6,fontSize:'.9rem'}}>Du spielst gegen <strong>Hampi</strong>, <strong>Sepp</strong> und <strong>Ueli</strong>.<br/>Kein Trumpf · Farbzwang · <strong>Wer am wenigsten Punkte hat, gewinnt.</strong></p>
-        </div>
-        <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:28}}>
-          {ROUNDS.map((r,i)=>(
-            <div key={i} style={{display:'flex',gap:12,alignItems:'center',background:i===5?'#fff8e8':'#f4f9f2',borderRadius:10,padding:'10px 14px',border:i===5?'1.5px solid #D4A010':'1px solid #e0eedd'}}>
-              <div style={{width:30,height:30,background:i===5?'#D4A010':'#1a4d1a',color:'#fff',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.78rem',fontWeight:700,flexShrink:0}}>{i+1}</div>
-              <div style={{flex:1}}>
-                <div style={{fontWeight:700,fontSize:'.9rem',color:'#1a4d1a'}}>{r.name}</div>
-                <div style={{fontSize:'.76rem',color:'#888',marginTop:1}}>{r.desc}</div>
-              </div>
-              <div style={{fontSize:'.72rem',fontWeight:700,color:'#c0392b',background:'#fdeaea',borderRadius:6,padding:'2px 8px',flexShrink:0}}>{r.short}</div>
-            </div>
-          ))}
-        </div>
-        <button className="btn-primary" onClick={startGame}
-          style={{width:'100%',background:'#1a4d1a',color:'#fff',border:'none',borderRadius:12,padding:'15px',fontSize:'1rem',fontWeight:700,cursor:'pointer',letterSpacing:.3}}>
-          Jetzt spielen →
+      <div style={{background:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:14,padding:32,maxWidth:360,width:'100%'}}>
+        <a href="index.html" style={{color:'#555',textDecoration:'none',fontSize:'.8rem'}}>← Zurück</a>
+        <h1 style={{fontSize:'1.5rem',fontWeight:700,margin:'16px 0 6px'}}>Guggitaler</h1>
+        <p style={{color:'#666',fontSize:'.82rem',marginBottom:28}}>Kein Trumpf · Farbzwang · Wer am wenigsten Punkte hat, gewinnt</p>
+        <button onClick={createRoom} disabled={busy}
+          style={{width:'100%',background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:'pointer',marginBottom:14}}>
+          Neues Spiel erstellen
         </button>
+        <div style={{textAlign:'center',color:'#444',fontSize:'.78rem',marginBottom:14}}>oder</div>
+        <div style={{display:'flex',gap:8}}>
+          <input value={codeInput} onChange={e=>setCodeInput(e.target.value.toUpperCase())}
+            placeholder="CODE" maxLength={4} onKeyDown={e=>e.key==='Enter'&&joinRoom()}
+            style={{flex:1,background:'#222',border:'1px solid #333',borderRadius:8,padding:'11px 12px',color:'#fff',fontSize:'1rem',letterSpacing:4,textTransform:'uppercase'}}
+          />
+          <button onClick={joinRoom} disabled={busy||!codeInput}
+            style={{background:'#222',color:'#aaa',border:'1px solid #333',borderRadius:8,padding:'11px 16px',fontWeight:600,fontSize:'.9rem',cursor:'pointer'}}>
+            Beitreten
+          </button>
+        </div>
+        {error&&<p style={{color:'#e55',marginTop:10,fontSize:'.82rem'}}>{error}</p>}
+        <p style={{color:'#444',fontSize:'.72rem',marginTop:14}}>Angemeldet als {myName}</p>
       </div>
     </div>
   );
+}
+
+// ── WAITING ROOM ──────────────────────────────────────────────────────────────
+function WaitingRoom({authUser, roomCode, mySeat, onGameStart}) {
+  const [seats, setSeats] = useState(
+    Array.from({length:4}, (_,i)=>({name:i===mySeat?nameFromEmail(authUser.email):'KI', isHuman:i===mySeat}))
+  );
+  const [starting, setStarting] = useState(false);
+  const isHost = mySeat===0;
+
+  useEffect(() => {
+    const pRef = roomRef(roomCode).child('players');
+    const cb = snap => {
+      const players = snap.val()||{};
+      const next = Array.from({length:4}, ()=>({name:'KI',isHuman:false}));
+      Object.values(players).forEach(p => { next[p.seat]={name:p.name,isHuman:true}; });
+      setSeats(next);
+    };
+    pRef.on('value', cb);
+    return () => pRef.off('value', cb);
+  }, [roomCode]);
+
+  useEffect(() => {
+    if(isHost) return;
+    const sRef = roomRef(roomCode).child('stateJson');
+    const cb = snap => {
+      if(!snap.val()) return;
+      const st = JSON.parse(snap.val());
+      if(st.phase==='playing'||st.phase==='trick_result') onGameStart();
+    };
+    sRef.on('value', cb);
+    return () => sRef.off('value', cb);
+  }, [roomCode, isHost]);
+
+  const start = async () => {
+    setStarting(true);
+    const humanSeats = seats.map((s,i)=>s.isHuman?i:-1).filter(i=>i>=0);
+    const seatNames  = seats.map(s=>s.name);
+    await hostDeal(roomCode, 0, {totals:[0,0,0,0],history:[],lastW:0}, humanSeats, seatNames);
+    onGameStart();
+  };
+
+  return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
+      <div style={{background:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:14,padding:32,maxWidth:360,width:'100%'}}>
+        <a href="index.html" style={{color:'#555',textDecoration:'none',fontSize:'.8rem'}}>← Zurück</a>
+        <div style={{display:'flex',alignItems:'baseline',gap:10,margin:'16px 0 6px'}}>
+          <span style={{fontSize:'1.1rem',fontWeight:700,color:'#aaa'}}>Raumcode</span>
+          <span style={{fontSize:'2rem',fontWeight:900,letterSpacing:6,color:'#4a9e4a'}}>{roomCode}</span>
+        </div>
+        <p style={{color:'#555',fontSize:'.78rem',marginBottom:20}}>Teile diesen Code mit deinen Freunden</p>
+        <div style={{display:'flex',flexDirection:'column',gap:6,marginBottom:24}}>
+          {seats.map((s,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 14px',background:'#1e1e1e',borderRadius:8,border:i===mySeat?'1px solid #4a9e4a':'1px solid #252525'}}>
+              <div style={{width:26,height:26,borderRadius:'50%',background:s.isHuman?'#2d6a2d':'#222',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.72rem',fontWeight:700,color:s.isHuman?'#fff':'#444',flexShrink:0}}>{i+1}</div>
+              <span style={{fontWeight:i===mySeat?700:400,color:s.isHuman?'#eee':'#444'}}>{s.name}</span>
+              {i===mySeat&&<span style={{marginLeft:'auto',fontSize:'.68rem',color:'#4a9e4a'}}>Du</span>}
+            </div>
+          ))}
+        </div>
+        {isHost
+          ? <button onClick={start} disabled={starting}
+              style={{width:'100%',background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:'pointer'}}>
+              {starting?'Starten...':'Spiel starten →'}
+            </button>
+          : <p style={{textAlign:'center',color:'#555',fontSize:'.88rem'}}>Warten auf Host...</p>
+        }
+      </div>
+    </div>
+  );
+}
+
+// ── JASS GAME ─────────────────────────────────────────────────────────────────
+function JassGame({authUser, roomCode, mySeat}) {
+  const [G, setG]           = useState(null);
+  const [myHand, setMyHand] = useState([]);
+  const Gref      = useRef(null);
+  const tmr       = useRef(null);
+  const aiRunning = useRef(false);
+  const isHost = mySeat===0;
+
+  useEffect(() => { Gref.current = G; }, [G]);
+
+  useEffect(() => {
+    const sRef = roomRef(roomCode).child('stateJson');
+    const cb = snap => { if(snap.val()) setG(JSON.parse(snap.val())); };
+    sRef.on('value', cb);
+    return () => sRef.off('value', cb);
+  }, [roomCode]);
+
+  useEffect(() => {
+    const hRef = roomRef(roomCode).child(`handsJson/seat_${mySeat}`);
+    const cb = snap => { if(snap.val()) setMyHand(JSON.parse(snap.val())); };
+    hRef.on('value', cb);
+    return () => hRef.off('value', cb);
+  }, [roomCode, mySeat]);
+
+  // Host: drive timing & AI
+  useEffect(() => {
+    if(!isHost||!G) return;
+    clearTimeout(tmr.current);
+    if(G.phase==='trick_result') {
+      tmr.current = setTimeout(hostAdvance, 1500);
+    } else if(G.phase==='playing' && !G.humanSeats.includes(G.cur)) {
+      tmr.current = setTimeout(()=>hostRunAI(G.cur), 600);
+    }
+    return () => clearTimeout(tmr.current);
+  }, [G?.phase, G?.cur, G?.tricksDone, isHost]);
+
+  const hostRunAI = async seat => {
+    if(aiRunning.current) return;
+    aiRunning.current = true;
+    try {
+      const G = Gref.current;
+      if(!G||G.phase!=='playing') return;
+      const hand = await readHand(roomCode, seat);
+      if(!hand.length) return;
+      const card = aiPlay(hand, G.trick, G.rndIdx, G.tricksDone);
+      if(!card) return;
+      await writeHand(roomCode, seat, hand.filter(c=>c.id!==card.id));
+      await writeState(roomCode, computeCardPlay(G, seat, card));
+    } finally {
+      aiRunning.current = false;
+    }
+  };
+
+  const hostAdvance = async () => {
+    const G = Gref.current;
+    if(!G) return;
+    if(G.tricksDone>=CPP) {
+      const scores = calcScore(G.rndIdx, G.tricksWon, G.lastW);
+      const totals = G.totals.map((t,i)=>t+scores[i]);
+      await writeState(roomCode, {...G, phase:'round_result', history:[...G.history,scores], totals, rndRes:{rndIdx:G.rndIdx,scores}});
+    } else {
+      await writeState(roomCode, {...G, phase:'playing', trick:[], lead:G.lastW, cur:G.lastW, trickRes:null});
+    }
+  };
+
+  const humanPlayCard = async card => {
+    if(!G||G.phase!=='playing'||G.cur!==mySeat) return;
+    if(G.trick.length>0){
+      const ls=G.trick[0].card.suit;
+      if(myHand.some(c=>c.suit===ls)&&card.suit!==ls) return;
+    }
+    await writeHand(roomCode, mySeat, myHand.filter(c=>c.id!==card.id));
+    await writeState(roomCode, computeCardPlay(G, mySeat, card));
+  };
+
+  const hostNextRound = async () => {
+    if(!G||!isHost) return;
+    const n = G.rndIdx+1;
+    if(n>=ROUNDS.length) {
+      await writeState(roomCode, {...G, phase:'game_over'});
+    } else {
+      await hostDeal(roomCode, n, G, G.humanSeats, G.seatNames);
+    }
+  };
+
+  if(!G) return <div style={{color:'#555',padding:40,textAlign:'center'}}>Lade...</div>;
+
+  const rnd     = ROUNDS[G.rndIdx]||ROUNDS[0];
+  const leadSuit = G.trick.length>0?G.trick[0].card.suit:null;
+  const myTurn   = G.cur===mySeat&&G.phase==='playing';
+  const canPlay  = card => {
+    if(!myTurn) return false;
+    if(!leadSuit) return true;
+    return myHand.some(c=>c.suit===leadSuit)?card.suit===leadSuit:true;
+  };
+  const isLastTrick       = G.tricksDone===CPP-1&&G.phase==='playing';
+  const isLastTrickResult = G.tricksDone===CPP&&G.phase==='trick_result';
+
+  // ── ROUND RESULT ──
+  if(G.phase==='round_result'&&G.rndRes) {
+    const next = G.rndIdx+1;
+    return (
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
+        <div className="fade-up" style={{background:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:14,padding:32,maxWidth:400,width:'100%'}}>
+          <div style={{textAlign:'center',marginBottom:20}}>
+            <div style={{fontSize:'2rem',marginBottom:8}}>{rnd.icon}</div>
+            <h2 style={{fontSize:'1.4rem',marginBottom:4}}>Spiel {G.rndIdx+1}: {rnd.name}</h2>
+            <p style={{color:'#666',fontSize:'.8rem'}}>{rnd.desc}</p>
+          </div>
+          <table style={{width:'100%',borderCollapse:'collapse',marginBottom:24}}>
+            <thead><tr>
+              {['Spieler','Punkte','Total'].map(h=>(
+                <th key={h} style={{padding:'8px 10px',textAlign:h==='Spieler'?'left':'center',color:'#555',fontWeight:600,fontSize:'.78rem',borderBottom:'1px solid #2a2a2a'}}>{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>
+              {G.seatNames.map((name,i)=>{
+                const s=G.rndRes.scores[i];
+                return (
+                  <tr key={i} style={{background:i===mySeat?'rgba(74,158,74,.08)':''}}>
+                    <td style={{padding:'9px 10px',fontWeight:i===mySeat?700:400}}>{name}{i===mySeat?' (Du)':''}</td>
+                    <td style={{padding:'9px 10px',textAlign:'center',fontWeight:700,fontSize:'1.05rem',color:s>0?'#e55':s===0?'#555':'#4a9e4a'}}>{s>0?'+':''}{s}</td>
+                    <td style={{padding:'9px 10px',textAlign:'center',color:'#777'}}>{G.totals[i]}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {isHost
+            ? <button onClick={hostNextRound}
+                style={{width:'100%',background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'.95rem',cursor:'pointer'}}>
+                {next<ROUNDS.length?`Weiter → Spiel ${next+1}: ${ROUNDS[next].name}`:'Zum Endresultat →'}
+              </button>
+            : <p style={{textAlign:'center',color:'#555',fontSize:'.88rem'}}>Warten auf Host...</p>
+          }
+        </div>
+      </div>
+    );
+  }
 
   // ── GAME OVER ──
-  if(G.phase==='game_over'){
-    const sorted=NAMES.map((n,i)=>({n,i,s:G.totals[i]})).sort((a,b)=>a.s-b.s);
-    const win=sorted[0];
-    return(
+  if(G.phase==='game_over') {
+    const sorted = G.seatNames.map((n,i)=>({n,i,s:G.totals[i]})).sort((a,b)=>a.s-b.s);
+    const win = sorted[0];
+    return (
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
-        <div className="fade-up" style={{background:'#fff',borderRadius:22,padding:'40px 36px',maxWidth:720,width:'100%',color:'#1a1a1a',boxShadow:'0 28px 72px rgba(0,0,0,.45)'}}>
-          <div style={{textAlign:'center',marginBottom:24}}>
-            <div style={{fontSize:'3rem',marginBottom:8}}>🏆</div>
-            <h2 style={{fontFamily:"'Libre Baskerville',serif",fontSize:'1.8rem',color:'#1a4d1a',marginBottom:6}}>Endresultat</h2>
-            <p style={{fontSize:'1.1rem',color:'#555'}}>{win.n==='Du'?'🎉 Du gewinnst! Am wenigsten Strafpunkte!':` ${win.n} gewinnt mit den wenigsten Punkten!`}</p>
+        <div className="fade-up" style={{background:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:14,padding:32,maxWidth:580,width:'100%'}}>
+          <div style={{textAlign:'center',marginBottom:20}}>
+            <div style={{fontSize:'2.5rem',marginBottom:8}}>🏆</div>
+            <h2 style={{fontSize:'1.6rem',marginBottom:6}}>Endresultat</h2>
+            <p style={{color:'#aaa'}}>{win.i===mySeat?'🎉 Du gewinnst!':win.n+' gewinnt!'} Am wenigsten Strafpunkte.</p>
           </div>
-          <div style={{overflowX:'auto',marginBottom:28}}>
+          <div style={{overflowX:'auto',marginBottom:24}}>
             <table style={{width:'100%',borderCollapse:'collapse'}}>
-              <thead>
-                <tr>
-                  <th style={TH}>#</th>
-                  <th style={TH}>Spieler</th>
-                  {ROUNDS.map((r,i)=><th key={i} style={{...TH,fontSize:'.76rem'}}>{r.icon} {r.name}</th>)}
-                  <th style={{...TH,color:'#c0392b'}}>Total</th>
-                </tr>
-              </thead>
+              <thead><tr>
+                {['#','Spieler',...ROUNDS.map(r=>r.icon),'Total'].map((h,i)=>(
+                  <th key={i} style={{padding:'8px 6px',textAlign:i<2?'left':'center',color:i===ROUNDS.length+2?'#e55':'#555',fontWeight:600,fontSize:'.75rem',borderBottom:'1px solid #2a2a2a'}}>{h}</th>
+                ))}
+              </tr></thead>
               <tbody>
                 {sorted.map((p,rank)=>(
-                  <tr key={p.i} style={{background:p.i===0?'#eaf4e7':''}}>
-                    <td style={{...TD,fontWeight:700}}>{rank+1}.</td>
-                    <td style={{...TD,fontWeight:p.i===0?700:400}}>{p.n}</td>
+                  <tr key={p.i} style={{background:p.i===mySeat?'rgba(74,158,74,.08)':''}}>
+                    <td style={{padding:'9px 6px',fontWeight:700,color:rank===0?'#4a9e4a':'#666'}}>{rank+1}.</td>
+                    <td style={{padding:'9px 6px',fontWeight:p.i===mySeat?700:400}}>{p.n}</td>
                     {G.history.map((rs,ri2)=>(
-                      <td key={ri2} style={{...TD,color:rs[p.i]>0?'#c0392b':rs[p.i]===0?'#999':'#2d6a2d',fontWeight:600}}>
+                      <td key={ri2} style={{padding:'9px 4px',textAlign:'center',color:rs[p.i]>0?'#e55':rs[p.i]===0?'#444':'#4a9e4a',fontSize:'.82rem',fontWeight:600}}>
                         {rs[p.i]>0?'+':''}{rs[p.i]}
                       </td>
                     ))}
-                    <td style={{...TD,fontWeight:700,fontSize:'1.05rem',color:rank===0?'#2d6a2d':'#c0392b'}}>{p.s}</td>
+                    <td style={{padding:'9px 6px',textAlign:'center',fontWeight:700,fontSize:'1rem',color:rank===0?'#4a9e4a':'#e55'}}>{p.s}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div style={{display:'flex',gap:12}}>
-            <button className="btn-primary" onClick={startGame}
-              style={{flex:1,background:'#1a4d1a',color:'#fff',border:'none',borderRadius:12,padding:'13px',fontWeight:700,cursor:'pointer',fontSize:'.95rem'}}>
+          <div style={{display:'flex',gap:10}}>
+            {isHost&&<button
+              onClick={()=>hostDeal(roomCode,0,{totals:[0,0,0,0],history:[],lastW:0},G.humanSeats,G.seatNames)}
+              style={{flex:1,background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,cursor:'pointer'}}>
               Nochmals spielen
-            </button>
-            <a href="index.html"
-              style={{flex:1,background:'#f4f4f4',color:'#555',borderRadius:12,padding:'13px',fontWeight:600,cursor:'pointer',fontSize:'.95rem',textDecoration:'none',textAlign:'center',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            </button>}
+            <a href="index.html" style={{flex:1,background:'#1e1e1e',color:'#aaa',border:'1px solid #2a2a2a',borderRadius:8,padding:'12px',fontWeight:600,textDecoration:'none',textAlign:'center',display:'flex',alignItems:'center',justifyContent:'center'}}>
               ← Zurück
             </a>
           </div>
@@ -371,199 +531,160 @@ function JassGame(){
     );
   }
 
-  // ── ROUND RESULT ──
-  if(G.phase==='round_result'&&G.rndRes){
-    const next=G.rndIdx+1;
-    return(
-      <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
-        <div className="fade-up" style={{background:'#fff',borderRadius:22,padding:'40px 36px',maxWidth:520,width:'100%',color:'#1a1a1a',boxShadow:'0 28px 72px rgba(0,0,0,.45)'}}>
-          <div style={{textAlign:'center',marginBottom:24}}>
-            <div style={{fontSize:'2.5rem',marginBottom:8}}>{rnd.icon}</div>
-            <h2 style={{fontFamily:"'Libre Baskerville',serif",fontSize:'1.6rem',color:'#1a4d1a'}}>Spiel {G.rndIdx+1}: {rnd.name}</h2>
-            <p style={{color:'#888',fontSize:'.84rem',marginTop:6}}>{rnd.desc}</p>
-          </div>
-          <table style={{width:'100%',borderCollapse:'collapse',marginBottom:28}}>
-            <thead>
-              <tr>
-                <th style={TH}>Spieler</th>
-                <th style={TH}>Dieses Spiel</th>
-                <th style={TH}>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {NAMES.map((name,i)=>{
-                const s=G.rndRes.scores[i];
-                return(
-                  <tr key={i} style={{background:i===0?'#eaf4e7':''}}>
-                    <td style={{...TD,fontWeight:i===0?700:400}}>{name}</td>
-                    <td style={{...TD,fontWeight:700,fontSize:'1.15rem',color:s>0?'#c0392b':s===0?'#999':'#2d6a2d'}}>{s>0?'+':''}{s}</td>
-                    <td style={{...TD,fontWeight:600}}>{G.totals[i]}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <button className="btn-primary" onClick={nextRound}
-            style={{width:'100%',background:'#1a4d1a',color:'#fff',border:'none',borderRadius:12,padding:'14px',fontWeight:700,cursor:'pointer',fontSize:'.95rem'}}>
-            {next<ROUNDS.length ? `Weiter → Spiel ${next+1}: ${ROUNDS[next].name}` : 'Zum Endresultat →'}
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // ── PLAYING / TRICK RESULT ──
+  const trickNum   = Math.min(G.tricksDone+1, CPP);
+  const otherSeats = [0,1,2,3].filter(s=>s!==mySeat);
 
-  // ── PLAYING / TRICK_RESULT ──
-  const trickNum = Math.min(G.tricksDone+1, CPP);
+  return (
+    <div style={{maxWidth:900,margin:'0 auto',padding:'10px 12px 24px',minHeight:'100vh',display:'flex',flexDirection:'column',gap:8}}>
 
-  return(
-    <div style={{maxWidth:960,margin:'0 auto',padding:'10px 12px 24px',minHeight:'100vh',display:'flex',flexDirection:'column',gap:10}}>
-
-      {/* ── Top bar ── */}
+      {/* Top bar */}
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="index.html" style={{color:'rgba(255,255,255,.55)',textDecoration:'none',fontSize:'.78rem'}}>← Zurück</a>
-        <div style={{fontFamily:"'Libre Baskerville',serif",fontSize:'1rem',color:'rgba(255,255,255,.8)'}}>Guggitaler</div>
-        <div style={{fontSize:'.78rem',color:'rgba(255,255,255,.5)'}}>Spiel {G.rndIdx+1} / {ROUNDS.length}</div>
+        <a href="index.html" style={{color:'#444',textDecoration:'none',fontSize:'.78rem'}}>← Zurück</a>
+        <span style={{fontSize:'.8rem',color:'#555'}}>Raum {roomCode}</span>
+        <span style={{fontSize:'.75rem',color:'#444'}}>Spiel {G.rndIdx+1}/{ROUNDS.length}</span>
       </div>
 
-      {/* ── Scores ── */}
+      {/* Scores */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:6}}>
-        {NAMES.map((name,i)=>(
-          <div key={i} style={{
-            background:i===0?'rgba(255,255,255,.16)':'rgba(0,0,0,.22)',
-            border:i===0?'1px solid rgba(255,255,255,.3)':'1px solid transparent',
-            borderRadius:10,padding:'7px 4px',textAlign:'center',
-          }}>
-            <div style={{fontSize:'.68rem',color:'#a8d5a2',marginBottom:2,letterSpacing:.3}}>{name}</div>
-            <div style={{fontSize:'1.5rem',fontWeight:700,lineHeight:1}}>{G.totals[i]}</div>
-            <div style={{fontSize:'.62rem',color:'rgba(255,255,255,.35)',marginTop:2}}>{G.hands[i].length} Karten</div>
+        {G.seatNames.map((name,i)=>(
+          <div key={i} style={{background:i===mySeat?'rgba(74,158,74,.12)':'rgba(255,255,255,.03)',border:i===mySeat?'1px solid rgba(74,158,74,.35)':'1px solid #1e1e1e',borderRadius:8,padding:'7px 4px',textAlign:'center'}}>
+            <div style={{fontSize:'.62rem',color:'#4a9e4a',marginBottom:2}}>{name}</div>
+            <div style={{fontSize:'1.35rem',fontWeight:700}}>{G.totals[i]}</div>
+            <div style={{fontSize:'.58rem',color:'#444',marginTop:1}}>{G.handSizes[i]} Karten</div>
           </div>
         ))}
       </div>
 
-      {/* ── Round info ── */}
-      <div style={{background:G.rndIdx===5?'rgba(212,160,16,.18)':'rgba(255,255,255,.07)',borderRadius:10,padding:'9px 14px',display:'flex',alignItems:'center',gap:10,border:G.rndIdx===5?'1px solid rgba(212,160,16,.4)':'none'}}>
-        <span style={{fontSize:'1.4rem'}}>{rnd.icon}</span>
+      {/* Round info */}
+      <div style={{background:'rgba(255,255,255,.04)',borderRadius:8,padding:'8px 12px',display:'flex',alignItems:'center',gap:10}}>
+        <span style={{fontSize:'1.2rem'}}>{rnd.icon}</span>
         <div style={{flex:1}}>
-          <div style={{fontWeight:700,fontSize:'.88rem'}}>{rnd.name}</div>
-          <div style={{fontSize:'.74rem',color:'rgba(255,255,255,.6)',marginTop:1}}>{rnd.desc}</div>
+          <div style={{fontWeight:700,fontSize:'.85rem'}}>{rnd.name}</div>
+          <div style={{fontSize:'.7rem',color:'#555',marginTop:1}}>{rnd.desc}</div>
         </div>
         <div style={{textAlign:'right',flexShrink:0}}>
-          <div style={{fontSize:'.72rem',color:'rgba(255,255,255,.45)'}}>Stich {trickNum}/9</div>
-          {(isLastTrick||isLastTrickResult)&&<div style={{fontSize:'.72rem',color:'#e8c050',fontWeight:700,marginTop:2}}>⚡ Letzter!</div>}
+          <div style={{fontSize:'.68rem',color:'#444'}}>Stich {trickNum}/9</div>
+          {(isLastTrick||isLastTrickResult)&&<div style={{fontSize:'.68rem',color:'#e8c050',fontWeight:700}}>⚡ Letzter!</div>}
         </div>
       </div>
 
-      {/* ── AI hands ── */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
-        {[1,2,3].map(pi=>(
-          <div key={pi} style={{background:'rgba(0,0,0,.18)',borderRadius:10,padding:'9px 12px'}}>
-            <div style={{fontSize:'.7rem',color:'#a8d5a2',marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
-              <span>{NAMES[pi]}</span>
-              {G.cur===pi&&G.phase==='playing'&&<span style={{animation:'fadeUp .4s ease infinite alternate',opacity:.8}}>🤔</span>}
+      {/* Other players */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6}}>
+        {otherSeats.map(seat=>(
+          <div key={seat} style={{background:'rgba(255,255,255,.03)',borderRadius:8,padding:'8px 10px'}}>
+            <div style={{fontSize:'.66rem',color:'#4a9e4a',marginBottom:5,display:'flex',alignItems:'center',gap:4}}>
+              <span>{G.seatNames[seat]}</span>
+              {G.cur===seat&&G.phase==='playing'&&<span style={{opacity:.7}}>🤔</span>}
             </div>
-            <div style={{display:'flex',flexWrap:'wrap',gap:2.5}}>
-              {G.hands[pi].map((_,ci)=><CardBack key={ci} w={17} h={26}/>)}
+            <div style={{display:'flex',flexWrap:'wrap',gap:2}}>
+              {Array.from({length:G.handSizes[seat]},(_,ci)=><CardBack key={ci} w={16} h={25}/>)}
             </div>
           </div>
         ))}
       </div>
 
-      {/* ── TABLE / TRICK AREA (BIG) ── */}
-      <div style={{
-        background:'radial-gradient(ellipse at center, #1d6b1d 0%, #0f420f 100%)',
-        borderRadius:18,
-        padding:'20px 24px 24px',
-        flex:1,
-        minHeight:200,
-        border:'1px solid rgba(255,255,255,.08)',
-        boxShadow:'inset 0 0 60px rgba(0,0,0,.3)',
-        position:'relative',
-      }}>
-        {/* Felt texture overlay */}
-        <div style={{position:'absolute',inset:0,borderRadius:18,background:'repeating-linear-gradient(45deg,rgba(0,0,0,.02) 0,rgba(0,0,0,.02) 1px,transparent 1px,transparent 8px)',pointerEvents:'none'}}/>
-
-        <div style={{fontSize:'.68rem',color:'rgba(255,255,255,.3)',textTransform:'uppercase',letterSpacing:1.5,marginBottom:16,textAlign:'center'}}>
-          Tisch
-        </div>
-
-        {/* Cards on table */}
-        <div style={{display:'flex',justifyContent:'center',alignItems:'center',gap:20,flexWrap:'wrap',minHeight:120}}>
-          {G.trick.map(({player,card},idx)=>{
+      {/* Table */}
+      <div style={{background:'rgba(255,255,255,.03)',border:'1px solid #1e1e1e',borderRadius:12,padding:'14px 18px',flex:1,minHeight:150}}>
+        <div style={{fontSize:'.62rem',color:'#333',textTransform:'uppercase',letterSpacing:1.5,marginBottom:10,textAlign:'center'}}>Tisch</div>
+        <div style={{display:'flex',justifyContent:'center',alignItems:'flex-end',gap:14,flexWrap:'wrap',minHeight:100}}>
+          {G.trick.map(({player,card})=>{
             const isWinner=G.phase==='trick_result'&&G.trickRes?.w===player;
-            const isEO=card.suit==='Eichel'&&card.rank==='O';
-            return(
-              <div key={player} style={{textAlign:'center',position:'relative'}}>
-                <div style={{fontSize:'.72rem',color:'rgba(255,255,255,.55)',marginBottom:5,letterSpacing:.3}}>{NAMES[player]}</div>
-                <div className={isWinner?'win-glow':''} style={{
-                  transform:isWinner?'scale(1.08)':'scale(1)',
-                  transition:'transform .25s',
-                  filter:isWinner?'drop-shadow(0 0 12px rgba(212,200,80,.8))':'none',
-                }}>
-                  <CardView card={card} size="md" anim={true} special={true}/>
+            return (
+              <div key={player} style={{textAlign:'center'}}>
+                <div style={{fontSize:'.66rem',color:'#555',marginBottom:4}}>{G.seatNames[player]}</div>
+                <div className={isWinner?'win-glow':''} style={{filter:isWinner?'drop-shadow(0 0 10px rgba(74,200,74,.6))':'none'}}>
+                  <CardView card={card} size="md" special={true}/>
                 </div>
-                {isWinner&&<div style={{marginTop:5,fontSize:'.72rem',color:'#8be08b',fontWeight:700}}>✓ gewonnen</div>}
-                {isEO&&!isWinner&&<div style={{marginTop:4,fontSize:'.68rem',color:'#D4A010',fontWeight:700}}>★ Eichel Ober</div>}
+                {isWinner&&<div style={{marginTop:3,fontSize:'.66rem',color:'#4a9e4a',fontWeight:700}}>✓</div>}
               </div>
             );
           })}
-
-          {/* Empty slots */}
           {Array.from({length:NUM_P-G.trick.length},(_,i)=>(
-            <div key={`e${i}`} style={{width:62,height:95,border:'2px dashed rgba(255,255,255,.1)',borderRadius:9}}/>
+            <div key={`e${i}`} style={{width:62,height:95,border:'1px dashed #222',borderRadius:9}}/>
           ))}
         </div>
-
-        {/* Trick result message */}
         {G.phase==='trick_result'&&G.trickRes&&(
-          <div className="fade-up" style={{textAlign:'center',marginTop:16,fontSize:'1rem',color:'#a8e0a8',fontWeight:600}}>
-            {NAMES[G.trickRes.w]} gewinnt den Stich
-            {(G.trickRes.w!==undefined)&&G.rndIdx===3&&G.trick.some(p=>p.card.suit==='Eichel'&&p.card.rank==='O')
-              ?<span style={{color:'#D4A010',marginLeft:6}}>+40 Pkt!</span>:''}
+          <div className="fade-up" style={{textAlign:'center',marginTop:10,fontSize:'.88rem',color:'#4a9e4a',fontWeight:600}}>
+            {G.seatNames[G.trickRes.w]} gewinnt den Stich
           </div>
         )}
       </div>
 
-      {/* ── Player hand ── */}
-      <div style={{background:'rgba(255,255,255,.06)',borderRadius:14,padding:'14px 16px'}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
-          <div style={{fontSize:'.7rem',color:'#a8d5a2',textTransform:'uppercase',letterSpacing:1}}>Deine Hand</div>
-          {leadSuit&&(
-            <div style={{
-              display:'flex',alignItems:'center',gap:6,
-              background:'rgba(255,255,255,.12)',borderRadius:20,
-              padding:'3px 10px 3px 8px',
-            }}>
-              <span style={{fontSize:'.9rem'}}>{SUIT_EMOJI[leadSuit]}</span>
-              <span style={{fontSize:'.72rem',fontWeight:700,color:'#fff'}}>{leadSuit} angespielt</span>
-            </div>
-          )}
+      {/* My hand */}
+      <div style={{background:'rgba(255,255,255,.03)',borderRadius:10,padding:'12px 14px'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+          <span style={{fontSize:'.66rem',color:'#4a9e4a',textTransform:'uppercase',letterSpacing:.8}}>Deine Hand</span>
+          {leadSuit&&<div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,.07)',borderRadius:14,padding:'3px 10px'}}>
+            <span style={{fontSize:'.82rem'}}>{SUIT_EMOJI[leadSuit]}</span>
+            <span style={{fontSize:'.68rem',fontWeight:700}}>{leadSuit} angespielt</span>
+          </div>}
         </div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:7}}>
-          {G.hands[0].map(card=>{
+        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+          {myHand.map(card=>{
             const ok=canPlay(card);
             const isEO=card.suit==='Eichel'&&card.rank==='O';
-            return(
-              <div key={card.id}
-                className={ok?'card-lift'+(isEO?' card-special':''):'card-dim'}
-                onClick={()=>ok&&playCard(0,card)}
-                title={isEO?'Achtung: Eichel Ober (+40 Pkt.!)':''}
-              >
+            return (
+              <div key={card.id} className={ok?'card-lift'+(isEO?' card-special':''):'card-dim'} onClick={()=>ok&&humanPlayCard(card)}>
                 <CardView card={card} size="lg" special={isEO}/>
               </div>
             );
           })}
         </div>
-        {G.cur===0&&G.phase==='playing'&&(
-          <div style={{marginTop:9,fontSize:'.75rem',color:'rgba(255,255,255,.4)'}}>
-            {leadSuit?`Farbzwang: Du musst ${leadSuit} spielen (wenn vorhanden).`:'Du bist dran – wähle eine Karte.'}
-          </div>
-        )}
+        <div style={{marginTop:8,fontSize:'.7rem',color:'#444'}}>
+          {myTurn
+            ? (leadSuit?`Farbzwang: ${leadSuit} spielen (wenn vorhanden).`:'Du bist dran – wähle eine Karte.')
+            : (G.phase==='playing'?`${G.seatNames[G.cur]} ist dran...`:'')}
+        </div>
       </div>
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<JassGame/>);
+// ── ROOT APP ──────────────────────────────────────────────────────────────────
+function App() {
+  const [authUser, setAuthUser] = useState(null);
+  const [screen,   setScreen]   = useState('loading');
+  const [roomCode, setRoomCode] = useState('');
+  const [mySeat,   setMySeat]   = useState(-1);
+
+  useEffect(() => {
+    return firebase.auth().onAuthStateChanged(async user => {
+      if(!user) return;
+      setAuthUser(user);
+      const saved = localStorage.getItem('jass_room');
+      if(saved) {
+        const pSnap = await roomRef(saved).child(`players/${user.uid}`).once('value');
+        if(pSnap.exists()) {
+          const seat = pSnap.val().seat;
+          const sSnap = await roomRef(saved).child('stateJson').once('value');
+          const st = sSnap.val()?JSON.parse(sSnap.val()):null;
+          if(st && st.phase!=='game_over') {
+            setRoomCode(saved); setMySeat(seat);
+            setScreen(['playing','trick_result','round_result'].includes(st.phase)?'game':'waiting');
+            return;
+          }
+        }
+        localStorage.removeItem('jass_room');
+      }
+      setScreen('lobby');
+    });
+  }, []);
+
+  if(screen==='loading') return <div style={{color:'#555',padding:40,textAlign:'center'}}>Laden...</div>;
+
+  if(screen==='lobby') return (
+    <Lobby authUser={authUser} onJoined={(c,s)=>{setRoomCode(c);setMySeat(s);setScreen('waiting');}}/>
+  );
+  if(screen==='waiting') return (
+    <WaitingRoom authUser={authUser} roomCode={roomCode} mySeat={mySeat} onGameStart={()=>setScreen('game')}/>
+  );
+  if(screen==='game') return (
+    <JassGame authUser={authUser} roomCode={roomCode} mySeat={mySeat}/>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
