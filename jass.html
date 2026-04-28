@@ -271,7 +271,7 @@ function Lobby({authUser, onJoined}) {
 }
 
 // ── WAITING ROOM ──────────────────────────────────────────────────────────────
-function WaitingRoom({authUser, roomCode, mySeat, onGameStart}) {
+function WaitingRoom({authUser, roomCode, mySeat, onGameStart, onLeave}) {
   const [seats, setSeats] = useState(
     Array.from({length:4}, (_,i)=>({name:i===mySeat?nameFromEmail(authUser.email):'KI', isHuman:i===mySeat}))
   );
@@ -310,6 +310,16 @@ function WaitingRoom({authUser, roomCode, mySeat, onGameStart}) {
     onGameStart();
   };
 
+  const leaveRoom = async () => {
+    localStorage.removeItem('jass_room');
+    if(isHost) {
+      await roomRef(roomCode).remove();
+    } else {
+      await roomRef(roomCode).child(`players/${authUser.uid}`).remove();
+    }
+    onLeave();
+  };
+
   return (
     <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
       <div style={{background:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:14,padding:32,maxWidth:360,width:'100%'}}>
@@ -335,6 +345,10 @@ function WaitingRoom({authUser, roomCode, mySeat, onGameStart}) {
             </button>
           : <p style={{textAlign:'center',color:'#555',fontSize:'.88rem'}}>Warten auf Host...</p>
         }
+        <button onClick={leaveRoom}
+          style={{width:'100%',marginTop:10,background:'none',color:'#555',border:'1px solid #2a2a2a',borderRadius:8,padding:'10px',fontWeight:600,fontSize:'.88rem',cursor:'pointer'}}>
+          {isHost ? 'Raum auflösen' : 'Raum verlassen'}
+        </button>
       </div>
     </div>
   );
@@ -677,7 +691,9 @@ function App() {
     <Lobby authUser={authUser} onJoined={(c,s)=>{setRoomCode(c);setMySeat(s);setScreen('waiting');}}/>
   );
   if(screen==='waiting') return (
-    <WaitingRoom authUser={authUser} roomCode={roomCode} mySeat={mySeat} onGameStart={()=>setScreen('game')}/>
+    <WaitingRoom authUser={authUser} roomCode={roomCode} mySeat={mySeat}
+      onGameStart={()=>setScreen('game')}
+      onLeave={()=>{setRoomCode('');setMySeat(-1);setScreen('lobby');}}/>
   );
   if(screen==='game') return (
     <JassGame authUser={authUser} roomCode={roomCode} mySeat={mySeat}/>
