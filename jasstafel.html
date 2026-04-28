@@ -526,26 +526,54 @@
 
     /* ── Modal ── */
     function buildInputRows(players) {
+      var roundNum = activeRounds().length + 1;
       var wrap = document.getElementById('input-rows-wrap');
       wrap.innerHTML = '';
       players.forEach(function(p, i) {
         var card = document.createElement('div');
         card.className = 'player-card';
+        var numsHtml = '<div class="card-nums">';
+        var radiosHtml = '<div class="card-radios">';
+
+        // Round-specific inputs
+        if (roundNum === 1) {
+          // Stiche + EO 25
+          numsHtml += '<div class="card-num"><label>Stiche</label><input class="num-input" type="number" id="s-' + i + '" min="0" max="36" value="0" inputmode="numeric"></div>';
+          radiosHtml += '<label class="card-radio" style="color:#c8860a"><input class="radio-input radio-orange" type="radio" name="eichel25" value="' + i + '"> 🌰 EO +25</label>';
+        } else if (roundNum === 2) {
+          // Schilten + EO 25
+          numsHtml += '<div class="card-num"><label>Schilten</label><input class="num-input" type="number" id="sc-' + i + '" min="0" max="9" value="0" inputmode="numeric"></div>';
+          radiosHtml += '<label class="card-radio" style="color:#c8860a"><input class="radio-input radio-orange" type="radio" name="eichel25" value="' + i + '"> 🌰 EO +25</label>';
+        } else if (roundNum === 3) {
+          // Könige + EO 25
+          numsHtml += '<div class="card-num"><label>Könige</label><input class="num-input" type="number" id="k-' + i + '" min="0" max="4" value="0" inputmode="numeric"></div>';
+          radiosHtml += '<label class="card-radio" style="color:#c8860a"><input class="radio-input radio-orange" type="radio" name="eichel25" value="' + i + '"> 🌰 EO +25</label>';
+        } else if (roundNum === 4) {
+          // Only EO 67
+          radiosHtml += '<label class="card-radio" style="color:var(--gold)"><input class="radio-input radio-gold" type="radio" name="eichel" value="' + i + '"> 🌰 EO +67</label>';
+        } else if (roundNum === 5) {
+          // Letzter Stich + EO 25
+          radiosHtml += '<label class="card-radio" style="color:#c8860a"><input class="radio-input radio-orange" type="radio" name="eichel25" value="' + i + '"> 🌰 EO +25</label>';
+          radiosHtml += '<label class="card-radio"><input class="radio-input" type="radio" name="letzter" value="' + i + '"> ⭐ Letzter Stich</label>';
+        } else if (roundNum === 6) {
+          // Everything except EO 25
+          numsHtml += '<div class="card-num"><label>Stiche</label><input class="num-input" type="number" id="s-' + i + '" min="0" max="36" value="0" inputmode="numeric"></div>';
+          numsHtml += '<div class="card-num"><label>Schilten</label><input class="num-input" type="number" id="sc-' + i + '" min="0" max="9" value="0" inputmode="numeric"></div>';
+          numsHtml += '<div class="card-num"><label>Könige</label><input class="num-input" type="number" id="k-' + i + '" min="0" max="4" value="0" inputmode="numeric"></div>';
+          radiosHtml += '<label class="card-radio" style="color:var(--gold)"><input class="radio-input radio-gold" type="radio" name="eichel" value="' + i + '"> 🌰 EO +67</label>';
+          radiosHtml += '<label class="card-radio"><input class="radio-input" type="radio" name="letzter" value="' + i + '"> ⭐ Letzter Stich</label>';
+        }
+
+        numsHtml += '</div>';
+        radiosHtml += '</div>';
+
         card.innerHTML =
           '<div class="player-card-header">' +
             '<span class="card-name">' + escHtml(p.name) + '</span>' +
             (p.role ? '<span class="card-role">' + escHtml(p.role) + '</span>' : '') +
           '</div>' +
-          '<div class="card-nums">' +
-            '<div class="card-num"><label>Stiche</label><input class="num-input" type="number" id="s-' + i + '" min="0" max="36" value="0" inputmode="numeric"></div>' +
-            '<div class="card-num"><label>Schilten</label><input class="num-input" type="number" id="sc-' + i + '" min="0" max="9" value="0" inputmode="numeric"></div>' +
-            '<div class="card-num"><label>Könige</label><input class="num-input" type="number" id="k-' + i + '" min="0" max="4" value="0" inputmode="numeric"></div>' +
-          '</div>' +
-          '<div class="card-radios">' +
-            '<label class="card-radio" style="color:var(--gold)"><input class="radio-input radio-gold" type="radio" name="eichel" value="' + i + '"> 🌰 EO +67</label>' +
-            '<label class="card-radio" style="color:#c8860a"><input class="radio-input radio-orange" type="radio" name="eichel25" value="' + i + '"> 🌰 EO +25</label>' +
-            '<label class="card-radio"><input class="radio-input" type="radio" name="letzter" value="' + i + '"> ⭐ Letzter Stich</label>' +
-          '</div>';
+          numsHtml +
+          radiosHtml;
         wrap.appendChild(card);
       });
     }
@@ -553,7 +581,9 @@
     function openModal() {
       buildInputRows(activePlayers());
       document.getElementById('modal-overlay').classList.add('open');
-      document.getElementById('s-0').focus();
+      // Focus on first available input
+      var firstInput = document.querySelector('.num-input') || document.querySelector('.radio-input');
+      if (firstInput) firstInput.focus();
     }
 
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
