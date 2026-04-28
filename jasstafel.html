@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jasstafel – Eichel Ober</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♣</text></svg>">
+  <link rel="icon" type="image/png" href="no_schellen_nobg.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -647,9 +647,9 @@
     function submitRound() {
       var players = activePlayers();
       var roundNum = activeRounds().length + 1;
-      var stiche   = players.map(function(_, i) { return parseInt(document.getElementById('s-'  + i).value) || 0; });
-      var schilten = players.map(function(_, i) { return parseInt(document.getElementById('sc-' + i).value) || 0; });
-      var koenige  = players.map(function(_, i) { return parseInt(document.getElementById('k-'  + i).value) || 0; });
+      var stiche   = players.map(function(_, i) { var el = document.getElementById('s-' + i); return el ? parseInt(el.value) || 0 : 0; });
+      var schilten = players.map(function(_, i) { var el = document.getElementById('sc-' + i); return el ? parseInt(el.value) || 0 : 0; });
+      var koenige  = players.map(function(_, i) { var el = document.getElementById('k-' + i); return el ? parseInt(el.value) || 0 : 0; });
       var eoEl   = document.querySelector('input[name="eichel"]:checked');
       var eo25El = document.querySelector('input[name="eichel25"]:checked');
       var lsEl   = document.querySelector('input[name="letzter"]:checked');
