@@ -795,8 +795,15 @@
       setTimeout(function() { call.classList.remove('visible','accepting'); call.style.display = ''; }, 500);
     }
 
-    var audioCtx, ringInterval;
+    var audioCtx, ringInterval, ringAudio;
     function playRing() {
+      ringAudio = new Audio('eichel_ober_anruf.mp3');
+      ringAudio.loop = true;
+      ringAudio.play();
+      return;
+
+      // Default generated beep (commented out)
+      /*
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       function beep() {
         [880,1108,1320].forEach(function(f,i) {
@@ -811,10 +818,12 @@
         });
       }
       beep(); ringInterval = setInterval(beep, 1800);
+      */
     }
     function stopRing() {
       if (ringInterval) clearInterval(ringInterval);
       if (audioCtx) audioCtx.close();
+      if (ringAudio) { ringAudio.pause(); ringAudio.currentTime = 0; }
     }
   </script>
 
