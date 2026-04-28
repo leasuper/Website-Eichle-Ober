@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jasstafel – Eichel Ober</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♣</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -588,19 +589,86 @@
 
     function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
+    function validateRound(roundNum, stiche, schilten, koenige, eoIndex, eo25Index, lsIndex, numPlayers) {
+      var cardsPerPlayer = Math.floor(36 / numPlayers);
+      var maxStiche = cardsPerPlayer; // Max tricks per round
+      var totalStiche = stiche.reduce(function(a, b) { return a + b; }, 0);
+      var totalSchilten = schilten.reduce(function(a, b) { return a + b; }, 0);
+      var totalKoenige = koenige.reduce(function(a, b) { return a + b; }, 0);
+
+      if (roundNum === 1) {
+        // Runde 1: Stiche müssen sich zu maxStiche addieren
+        if (totalStiche !== maxStiche) {
+          return 'Runde 1: Summe Stiche muss ' + maxStiche + ' sein (aktuell: ' + totalStiche + ')';
+        }
+      } else if (roundNum === 2) {
+        // Runde 2: 9 Schilten müssen verteilt werden
+        var expectedSchilten = (numPlayers === 5) ? 8 : 9; // 5 Spieler: Schellen 7 wird nicht verteilt
+        if (totalSchilten !== expectedSchilten) {
+          return 'Runde 2: Es müssen ' + expectedSchilten + ' Schilten verteilt werden (aktuell: ' + totalSchilten + ')';
+        }
+      } else if (roundNum === 3) {
+        // Runde 3: 4 Könige müssen verteilt werden
+        if (totalKoenige !== 4) {
+          return 'Runde 3: Es müssen 4 Könige verteilt werden (aktuell: ' + totalKoenige + ')';
+        }
+      } else if (roundNum === 4) {
+        // Runde 4: 1 Eichel Ober muss verteilt werden
+        if (eoIndex === -1) {
+          return 'Runde 4: Ein Spieler muss den Eichel Ober fangen (EO +67)';
+        }
+      } else if (roundNum === 5) {
+        // Runde 5: 1 letzter Stich muss vergeben werden
+        if (lsIndex === -1) {
+          return 'Runde 5: Ein Spieler muss den letzten Stich gewinnen (⭐ Letzter Stich)';
+        }
+      } else if (roundNum === 6) {
+        // Runde 6: Alle Kriterien müssen erfüllt sein
+        if (totalStiche !== maxStiche) {
+          return 'Runde 6: Summe Stiche muss ' + maxStiche + ' sein (aktuell: ' + totalStiche + ')';
+        }
+        var expectedSchilten6 = (numPlayers === 5) ? 8 : 9;
+        if (totalSchilten !== expectedSchilten6) {
+          return 'Runde 6: Es müssen ' + expectedSchilten6 + ' Schilten verteilt werden (aktuell: ' + totalSchilten + ')';
+        }
+        if (totalKoenige !== 4) {
+          return 'Runde 6: Es müssen 4 Könige verteilt werden (aktuell: ' + totalKoenige + ')';
+        }
+        if (eoIndex === -1) {
+          return 'Runde 6: Ein Spieler muss den Eichel Ober fangen (EO +67)';
+        }
+        if (lsIndex === -1) {
+          return 'Runde 6: Ein Spieler muss den letzten Stich gewinnen (⭐ Letzter Stich)';
+        }
+      }
+      return null; // Alle Validierungen bestanden
+    }
+
     function submitRound() {
       var players = activePlayers();
+      var roundNum = activeRounds().length + 1;
       var stiche   = players.map(function(_, i) { return parseInt(document.getElementById('s-'  + i).value) || 0; });
       var schilten = players.map(function(_, i) { return parseInt(document.getElementById('sc-' + i).value) || 0; });
       var koenige  = players.map(function(_, i) { return parseInt(document.getElementById('k-'  + i).value) || 0; });
       var eoEl   = document.querySelector('input[name="eichel"]:checked');
       var eo25El = document.querySelector('input[name="eichel25"]:checked');
       var lsEl   = document.querySelector('input[name="letzter"]:checked');
+      var eoIndex = eoEl ? parseInt(eoEl.value) : -1;
+      var eo25Index = eo25El ? parseInt(eo25El.value) : -1;
+      var lsIndex = lsEl ? parseInt(lsEl.value) : -1;
+
+      // Validierung durchführen
+      var validationError = validateRound(roundNum, stiche, schilten, koenige, eoIndex, eo25Index, lsIndex, players.length);
+      if (validationError) {
+        showToast('❌ ' + validationError);
+        return;
+      }
+
       var roundData = {
         stiche: stiche, schilten: schilten, koenige: koenige,
-        eichelOber:   eoEl   ? parseInt(eoEl.value)   : -1,
-        eichelOber25: eo25El ? parseInt(eo25El.value) : -1,
-        letzterStich: lsEl   ? parseInt(lsEl.value)   : -1,
+        eichelOber:   eoIndex,
+        eichelOber25: eo25Index,
+        letzterStich: lsIndex,
       };
       if (mode === 'gast') { gastRounds.push(roundData); render(); }
       else { rounds.push(roundData); save(); render(); }
