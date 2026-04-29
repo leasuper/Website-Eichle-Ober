@@ -567,7 +567,7 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     if(G.rndIdx === 1) {
       const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
       const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
-      roundFinished = schiltenCount === 4 && eichelOberPlayed;
+      roundFinished = schiltenCount === 9 && eichelOberPlayed;
     }
     // Runde 3 (Könige): Runde fertig, wenn alle Könige + Eichel Ober gespielt wurden
     else if(G.rndIdx === 2) {
@@ -643,11 +643,11 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     if(!G) return cppForN(G?.numPlayers||4);
     const allCards = G.tricksWon.flat().flat();
     
-    // Runde 2 (Schilten): 4 Schilten + 1 Eichel Ober = 5 Karten
+    // Runde 2 (Schilten): 9 Schilten + 1 Eichel Ober
     if(G.rndIdx === 1) {
       const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
       const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
-      if(schiltenCount === 4 && eichelOberPlayed) return G.tricksDone;
+      if(schiltenCount === 9 && eichelOberPlayed) return G.tricksDone;
     }
     
     // Runde 3 (Könige): 4 Könige + 1 Eichel Ober = 5 Karten
