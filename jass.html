@@ -864,8 +864,16 @@ function App() {
   const [mySeat,   setMySeat]   = useState(-1);
 
   useEffect(() => {
+    const ALLOWED = ['eichleober@gmail.com','ella.baettig@gmail.com','noe.bertallo@icloud.com',
+      'lars.lumer@icloud.com','cpfenninger@outlook.com','le.nievergelt@gmail.com','silas.mueller4@gmail.com'];
+
     return firebase.auth().onAuthStateChanged(async user => {
       if(!user) { setScreen('login'); return; }
+      if(!ALLOWED.includes(user.email.toLowerCase())) {
+        firebase.auth().signOut();
+        setScreen('login');
+        return;
+      }
       setAuthUser(user);
       const saved = localStorage.getItem('jass_room');
       if(saved){
