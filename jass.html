@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="no_schellen_nobg.png">
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script>
     firebase.initializeApp({
       apiKey: "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
@@ -996,44 +997,67 @@ function App() {
   const [mySeat,   setMySeat]   = useState(-1);
 
   useEffect(() => {
-    const uid  = localStorage.getItem('jass_uid');
-    const name = localStorage.getItem('jass_name');
-    if(!uid || !name) { setScreen('login'); return; }
-    const user = {uid, name};
-    setAuthUser(user);
-    const saved = localStorage.getItem('jass_room');
-    if(saved) {
-      roomRef(saved).child(`players/${uid}`).once('value').then(pSnap => {
-        if(pSnap.exists()) {
-          const seat = pSnap.val().seat;
-          roomRef(saved).child('stateJson').once('value').then(sSnap => {
-            const st = sSnap.val() ? JSON.parse(sSnap.val()) : null;
-            if(st && st.phase !== 'game_over') {
-              setRoomCode(saved); setMySeat(seat);
-              setScreen(['playing','trick_result','round_result'].includes(st.phase) ? 'game' : 'waiting');
-            } else {
-              localStorage.removeItem('jass_room');
-              setScreen('lobby');
-            }
-          });
-        } else {
-          localStorage.removeItem('jass_room');
-          setScreen('lobby');
+    const unsubscribe = firebase.auth().onAuthStateChanged(async fireUser => {
+      const name = localStorage.getItem('jass_name');
+      if(!name) { setScreen('login'); return; }
+      let uid;
+      if(fireUser) {
+        uid = fireUser.uid;
+      } else {
+        try {
+          const cred = await firebase.auth().signInAnonymously();
+          uid = cred.user.uid;
+        } catch(e) {
+          console.error('Anonymous auth failed:', e);
+          setScreen('login');
+          return;
         }
-      });
-    } else {
-      setScreen('lobby');
-    }
+      }
+      localStorage.setItem('jass_uid', uid);
+      const user = {uid, name};
+      setAuthUser(user);
+      const saved = localStorage.getItem('jass_room');
+      if(saved) {
+        roomRef(saved).child(`players/${uid}`).once('value').then(pSnap => {
+          if(pSnap.exists()) {
+            const seat = pSnap.val().seat;
+            roomRef(saved).child('stateJson').once('value').then(sSnap => {
+              const st = sSnap.val() ? JSON.parse(sSnap.val()) : null;
+              if(st && st.phase !== 'game_over') {
+                setRoomCode(saved); setMySeat(seat);
+                setScreen(['playing','trick_result','round_result'].includes(st.phase) ? 'game' : 'waiting');
+              } else {
+                localStorage.removeItem('jass_room');
+                setScreen('lobby');
+              }
+            });
+          } else {
+            localStorage.removeItem('jass_room');
+            setScreen('lobby');
+          }
+        });
+      } else {
+        setScreen('lobby');
+      }
+    });
+    return unsubscribe;
   }, []);
 
   const goLobby = () => { setScreen('lobby'); setRoomCode(''); setMySeat(-1); };
 
-  const handleNameSubmit = name => {
-    const uid = 'g_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-    localStorage.setItem('jass_uid', uid);
-    localStorage.setItem('jass_name', name);
-    setAuthUser({uid, name});
-    setScreen('lobby');
+  const handleNameSubmit = async name => {
+    try {
+      localStorage.setItem('jass_name', name);
+      const cred = await firebase.auth().signInAnonymously();
+      const uid = cred.user.uid;
+      localStorage.setItem('jass_uid', uid);
+      setAuthUser({uid, name});
+      setScreen('lobby');
+    } catch(e) {
+      localStorage.removeItem('jass_name');
+      console.error('Sign-in failed:', e);
+      alert('Verbindungsfehler. Bitte Seite neu laden und nochmals versuchen.');
+    }
   };
 
   if(screen==='loading') return <div style={{color:'#555',padding:40,textAlign:'center'}}>Laden...</div>;
