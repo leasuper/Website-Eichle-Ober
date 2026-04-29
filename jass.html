@@ -503,13 +503,15 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
   useEffect(() => {
     if(!isHost||!G) return;
     clearTimeout(tmr.current);
+    
+    // Wenn trick_result: hostAdvance mit geringerer Verzögerung aufrufen
     if(G.phase==='trick_result') {
-      tmr.current = setTimeout(hostAdvance, 1500);
+      tmr.current = setTimeout(() => hostAdvance(G), 800);
     } else if(G.phase==='playing' && !G.humanSeats.includes(G.cur)) {
       tmr.current = setTimeout(()=>hostRunAI(G.cur), 700);
     }
     return () => clearTimeout(tmr.current);
-  }, [G?.phase, G?.cur, G?.tricksDone, isHost, G?.humanSeats?.length]);
+  }, [G?.phase, G?.cur, G?.tricksDone, G?.trick?.length, isHost, G?.humanSeats?.length]);
 
   const hostRunAI = async seat => {
     if(aiRunning.current) return;
@@ -519,11 +521,31 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
       if(!G||G.phase!=='playing') return;
       
       // Überprüfen, ob die Runde bereits abgeschlossen sein sollte
-      if(isRoundFinished()) return;
+      const cpp = cppForN(G.numPlayers||4);
+      const allCards = G.tricksWon.flat().flat();
+      let roundFinished = false;
+      
+      if(G.rndIdx === 1) {
+        const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
+        const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+        roundFinished = schiltenCount === 4 && eichelOberPlayed;
+      }
+      else if(G.rndIdx === 2) {
+        const kingCount = allCards.filter(c => c.rank === 'K').length;
+        const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+        roundFinished = kingCount === 4 && eichelOberPlayed;
+      }
+      else if(G.rndIdx === 3) {
+        roundFinished = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+      }
+      else {
+        roundFinished = G.tricksDone >= cpp;
+      }
+      
+      if(roundFinished) return;
       
       const hand = await readHand(roomCode, seat);
       if(!hand.length) return;
-      const cpp  = cppForN(G.numPlayers||4);
       const card = aiPlay(hand, G.trick, G.rndIdx, G.tricksDone, cpp);
       if(!card) return;
       await writeHand(roomCode, seat, hand.filter(c=>c.id!==card.id));
@@ -531,42 +553,38 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     } finally { aiRunning.current = false; }
   };
 
-  const isRoundFinished = () => {
-    const G = Gref.current;
-    if(!G) return false;
-    const cpp = cppForN(G.numPlayers||4);
+
+  const hostAdvance = async (currentG) => {
+    const G = currentG || Gref.current;
+    if(!G) return;
     
     // Alle gespielten Karten sammeln
+    const cpp = cppForN(G.numPlayers||4);
     const allCards = G.tricksWon.flat().flat();
+    let roundFinished = false;
     
     // Runde 2 (Schilten): Runde fertig, wenn alle Schilten + Eichel Ober gespielt wurden
     if(G.rndIdx === 1) {
       const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
       const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
-      return schiltenCount === 4 && eichelOberPlayed;
+      roundFinished = schiltenCount === 4 && eichelOberPlayed;
     }
-    
     // Runde 3 (Könige): Runde fertig, wenn alle Könige + Eichel Ober gespielt wurden
-    if(G.rndIdx === 2) {
+    else if(G.rndIdx === 2) {
       const kingCount = allCards.filter(c => c.rank === 'K').length;
       const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
-      return kingCount === 4 && eichelOberPlayed;
+      roundFinished = kingCount === 4 && eichelOberPlayed;
     }
-    
     // Runde 4 (Eichel Ober): Runde fertig, wenn Eichel Ober gespielt wurde
-    if(G.rndIdx === 3) {
-      return allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+    else if(G.rndIdx === 3) {
+      roundFinished = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+    }
+    // Für alle anderen Runden: alle Karten müssen gespielt sein
+    else {
+      roundFinished = G.tricksDone >= cpp;
     }
     
-    // Für alle anderen Runden: alle Karten müssen gespielt sein
-    return G.tricksDone >= cpp;
-  };
-
-  const hostAdvance = async () => {
-    const G = Gref.current;
-    if(!G) return;
-    
-    if(isRoundFinished()){
+    if(roundFinished){
       const scores = calcScore(G.rndIdx, G.tricksWon, G.lastW, G.numPlayers||4);
       const totals = G.totals.map((t,i)=>t+scores[i]);
       await writeState(roomCode, {...G, phase:'round_result', history:[...G.history,scores], totals, rndRes:{rndIdx:G.rndIdx,scores}});
