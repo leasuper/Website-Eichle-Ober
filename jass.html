@@ -517,6 +517,10 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     try {
       const G = Gref.current;
       if(!G||G.phase!=='playing') return;
+      
+      // Überprüfen, ob die Runde bereits abgeschlossen sein sollte
+      if(isRoundFinished()) return;
+      
       const hand = await readHand(roomCode, seat);
       if(!hand.length) return;
       const cpp  = cppForN(G.numPlayers||4);
