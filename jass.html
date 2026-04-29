@@ -9,8 +9,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
-    const ALLOWED = ['eichleober@gmail.com','ella.baettig@gmail.com','noe.bertallo@icloud.com',
-      'lars.lumer@icloud.com','cpfenninger@outlook.com','le.nievergelt@gmail.com','silas.mueller4@gmail.com'];
     firebase.initializeApp({
       apiKey: "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
       authDomain: "website-eichle-ober-bf1e5.firebaseapp.com",
@@ -18,18 +16,14 @@
       projectId: "website-eichle-ober-bf1e5",
       appId: "1:405255994774:web:5c590b8dd16ce9ebfd31b7"
     });
-    firebase.auth().onAuthStateChanged(user => {
-      if (!user || !ALLOWED.includes(user.email.toLowerCase())) {
-        window.location.href = 'index.html';
-      }
-    });
   </script>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; font-family: 'DM Sans', system-ui, sans-serif; }
+    html, body { height: 100%; font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif; }
     body {
       background:
         repeating-linear-gradient(91deg, transparent, transparent 3px, rgba(0,0,0,.016) 3px, rgba(0,0,0,.016) 4px),
@@ -45,19 +39,63 @@
     .card-dim  { opacity: .3; filter: grayscale(50%); cursor: default; }
     .card-special { animation: goldPulse 2s ease-in-out infinite; }
 
+    /* ── STITCH DESIGN: Player badge ── */
     .player-badge {
-      background: rgba(12,9,3,.88);
-      color: #d0ccc0;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 7px;
-      padding: 4px 9px;
+      background: rgba(10,8,3,.88);
+      color: rgba(240,236,224,.5);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: 4px 10px;
       font-size: .6rem;
-      font-weight: 600;
+      font-weight: 700;
       white-space: nowrap;
-      backdrop-filter: blur(4px);
-      letter-spacing: .3px;
+      backdrop-filter: blur(8px);
+      letter-spacing: .4px;
+      transition: color .2s, border-color .2s, background .2s, box-shadow .2s;
     }
-    .player-badge.active { border-color: #4a9e4a; color: #8be08b; }
+    .player-badge.active {
+      border-color: rgba(197,160,33,.65);
+      color: #eac243;
+      background: rgba(197,160,33,.12);
+      box-shadow: 0 0 14px rgba(197,160,33,.28);
+    }
+
+    /* ── STITCH DESIGN: Glass panels ── */
+    .jass-score-panel {
+      background: rgba(10,8,3,.88);
+      border: 1px solid rgba(197,160,33,.3);
+      border-radius: 10px;
+      backdrop-filter: blur(12px);
+      padding: 8px 12px;
+    }
+    .jass-hand-panel {
+      background: rgba(10,8,3,.82);
+      border: 1px solid rgba(197,160,33,.14);
+      border-radius: 14px;
+      padding: 10px 14px 14px;
+      backdrop-filter: blur(8px);
+    }
+    .jass-leave-btn {
+      background: rgba(10,8,3,.82); color: rgba(220,80,80,.85);
+      border: 1px solid rgba(200,60,60,.3); border-radius: 8px;
+      padding: 5px 11px; font-size: .65rem; font-weight: 700;
+      cursor: pointer; flex-shrink: 0; backdrop-filter: blur(8px);
+      letter-spacing: .5px; text-transform: uppercase; align-self: flex-start;
+      font-family: inherit; transition: border-color .2s, color .2s;
+    }
+    .jass-leave-btn:hover { border-color: rgba(200,60,60,.65); color: #e55; }
+
+    /* ── STITCH DESIGN: Responsive ── */
+    .jass-playing-screen { padding: 8px; gap: 6px; }
+    @media (min-width: 640px) {
+      .jass-playing-screen { padding: 14px !important; gap: 10px !important; }
+      .jass-score-panel { min-width: 148px; }
+    }
+    @media (max-width: 639px) {
+      .jass-playing-screen { padding: 5px !important; gap: 4px !important; }
+      .player-badge { font-size: .55rem; padding: 3px 7px; }
+      .jass-score-panel { min-width: 108px; padding: 6px 9px; }
+    }
 
     .dark-panel {
       background: rgba(10,8,3,.86);
@@ -235,7 +273,7 @@ function CardView({card, size='md', special=false}) {
   );
 }
 function CardBack({w=17, h=26}) {
-  return <div style={{width:w,height:h,borderRadius:4,background:'linear-gradient(135deg,#1a4d1a,#4a9e4a)',border:'1px solid rgba(255,255,255,.2)',flexShrink:0}}/>;
+  return <div style={{width:w,height:h,borderRadius:3,flexShrink:0,background:'linear-gradient(135deg,#0e0a04 0%,#1c1408 55%,#0e0a04 100%)',border:'1px solid rgba(197,160,33,.22)',boxShadow:'inset 0 0 3px rgba(197,160,33,.08)'}}/>;
 }
 
 // ── LOBBY ─────────────────────────────────────────────────────────────────────
@@ -574,6 +612,8 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     );
   };
 
+  const isMobile = window.innerWidth < 640;
+
   // ── ROUND RESULT ──
   if(G.phase==='round_result'&&G.rndRes) {
     const next=G.rndIdx+1;
@@ -669,60 +709,72 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
   }
 
   // ── PLAYING / TRICK RESULT ──
-  return (
-    <div style={{display:'grid',gridTemplateRows:'auto 1fr auto',height:'100vh',padding:'8px',gap:6}}>
+  const cardH    = isMobile ? 108 : 128;
+  const cardSize = isMobile ? 'md' : 'lg';
 
-      {/* Row 1: leave button | top opponents | scoreboard */}
-      <div style={{display:'flex',alignItems:'flex-end',gap:8,minHeight:64}}>
-        <button onClick={handleLeave} style={{background:'rgba(12,9,3,.82)',color:'#c44',border:'1px solid #c44',borderRadius:7,padding:'5px 10px',fontSize:'.7rem',fontWeight:700,cursor:'pointer',flexShrink:0,alignSelf:'flex-start',whiteSpace:'nowrap'}}>
-          {isHost?'Beenden':'Verlassen'}
+  return (
+    <div className="jass-playing-screen" style={{display:'grid',gridTemplateRows:'auto 1fr auto',height:'100vh'}}>
+
+      {/* Row 1: leave | top opponents | scoreboard */}
+      <div style={{display:'flex',alignItems:'flex-start',gap:8}}>
+
+        <button className="jass-leave-btn" onClick={handleLeave}>
+          {isHost?'⬛ Ende':'← Weg'}
         </button>
 
-        <div style={{flex:1,display:'flex',justifyContent:'center',alignItems:'flex-end',gap:14,flexWrap:'wrap'}}>
+        <div style={{flex:1,display:'flex',justifyContent:'center',alignItems:'flex-end',gap:isMobile?8:14,flexWrap:'wrap',paddingBottom:2}}>
           {topSeats.map(seat=><PlayerBadge key={seat} seat={seat} orientation="top"/>)}
         </div>
 
-        {/* Scoreboard */}
-        <div style={{background:'rgba(12,9,3,.9)',border:'1px solid rgba(255,255,255,.1)',borderRadius:10,padding:'8px 12px',flexShrink:0,minWidth:128}}>
-          <div style={{fontSize:'.54rem',color:'#555',textTransform:'uppercase',letterSpacing:.7,marginBottom:5}}>
-            {rnd.icon} {rnd.name}{(isLastTrick||isLastTrickResult)?' ⚡':''}
+        {/* Glassmorphism scoreboard */}
+        <div className="jass-score-panel" style={{flexShrink:0}}>
+          <div style={{
+            fontSize:'.54rem',color:'#C5A021',textTransform:'uppercase',
+            letterSpacing:.8,marginBottom:5,fontWeight:700,
+            borderBottom:'1px solid rgba(197,160,33,.15)',paddingBottom:4,
+            display:'flex',alignItems:'center',gap:4
+          }}>
+            <span>{rnd.icon}</span>
+            <span>{rnd.name}{(isLastTrick||isLastTrickResult)?' ⚡':''}</span>
           </div>
           {G.seatNames.map((name,i)=>(
             <div key={i} style={{display:'flex',justifyContent:'space-between',gap:8,padding:'2px 0'}}>
-              <span style={{fontSize:'.72rem',color:i===mySeat?'#f0ece0':'#888',fontWeight:i===mySeat?700:400}}>
-                {i===mySeat?'Du':name}
+              <span style={{fontSize:'.68rem',fontWeight:i===mySeat?700:400,color:i===mySeat?'#f0ece0':'rgba(240,236,224,.4)'}}>
+                {i===mySeat?'Ich':name}
               </span>
-              <span style={{fontSize:'.8rem',fontWeight:700,color:G.cur===i&&G.phase==='playing'?'#4a9e4a':'#777'}}>
+              <span style={{fontSize:'.75rem',fontWeight:700,color:i===mySeat?'#C5A021':G.cur===i&&G.phase==='playing'?'rgba(139,224,139,.85)':'rgba(240,236,224,.25)'}}>
                 {G.totals[i]}
               </span>
             </div>
           ))}
-          <div style={{borderTop:'1px solid #1a1a1a',marginTop:4,paddingTop:3,fontSize:'.54rem',color:'#444',textAlign:'right'}}>
-            Stich {Math.min(G.tricksDone+1,CPP)}/{CPP}
+          <div style={{borderTop:'1px solid rgba(197,160,33,.1)',marginTop:4,paddingTop:3,fontSize:'.52rem',color:'rgba(197,160,33,.45)',textAlign:'right',letterSpacing:.5}}>
+            {Math.min(G.tricksDone+1,CPP)}/{CPP} STICH
           </div>
         </div>
       </div>
 
       {/* Row 2: left | felt table | right */}
-      <div style={{display:'flex',gap:6,alignItems:'stretch',minHeight:0}}>
+      <div style={{display:'flex',gap:isMobile?4:8,alignItems:'stretch',minHeight:0,overflow:'hidden'}}>
 
         {/* Left opponents */}
-        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-evenly',alignItems:'center',gap:6}}>
+        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-evenly',alignItems:'center',gap:6,flexShrink:0}}>
           {leftSeats.map(seat=><PlayerBadge key={seat} seat={seat} orientation="left"/>)}
         </div>
 
         {/* Green felt table */}
         <div style={{
-          flex:1, position:'relative',
+          flex:1,position:'relative',
           background:'radial-gradient(ellipse at center, #1f6c1f 0%, #0d3d0d 100%)',
-          borderRadius:24,
-          border:'4px solid #081e08',
+          borderRadius:isMobile?18:24,
+          border:`${isMobile?3:4}px solid #081e08`,
           boxShadow:'inset 0 0 60px rgba(0,0,0,.5), 0 6px 28px rgba(0,0,0,.4)',
           overflow:'hidden',
+          maxWidth:isMobile?undefined:480,
+          margin:isMobile?undefined:'0 auto',
+          alignSelf:'stretch',
         }}>
           <div style={{position:'absolute',inset:0,background:'repeating-linear-gradient(45deg,rgba(0,0,0,.018) 0,rgba(0,0,0,.018) 1px,transparent 1px,transparent 5px)',pointerEvents:'none'}}/>
 
-          {/* Empty card slots */}
           {Array.from({length:NP},(_,off)=>{
             const fakeSeat=(mySeat+off)%NP;
             if(G.trick.some(t=>t.player===fakeSeat)) return null;
@@ -730,7 +782,6 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
             return <div key={off} style={{...pos,width:60,height:92,border:'1px dashed rgba(255,255,255,.07)',borderRadius:8}}/>;
           })}
 
-          {/* Played cards */}
           {G.trick.map(({player,card})=>{
             const winner=G.phase==='trick_result'&&G.trickRes?.w===player;
             return (
@@ -747,33 +798,33 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
           })}
 
           {G.phase==='trick_result'&&G.trickRes&&(
-            <div className="fade-up" style={{position:'absolute',bottom:10,left:'50%',transform:'translateX(-50%)',background:'rgba(0,0,0,.72)',borderRadius:8,padding:'5px 16px',whiteSpace:'nowrap',fontSize:'.78rem',color:'#8be08b',fontWeight:600}}>
+            <div className="fade-up" style={{position:'absolute',bottom:10,left:'50%',transform:'translateX(-50%)',background:'rgba(0,0,0,.78)',backdropFilter:'blur(6px)',border:'1px solid rgba(139,224,139,.2)',borderRadius:8,padding:'5px 16px',whiteSpace:'nowrap',fontSize:'.75rem',color:'#8be08b',fontWeight:700}}>
               {G.seatNames[G.trickRes.w]} gewinnt den Stich
             </div>
           )}
         </div>
 
         {/* Right opponents */}
-        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-evenly',alignItems:'center',gap:6}}>
+        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-evenly',alignItems:'center',gap:6,flexShrink:0}}>
           {rightSeats.map(seat=><PlayerBadge key={seat} seat={seat} orientation="right"/>)}
         </div>
       </div>
 
       {/* Row 3: fanned hand */}
-      <div style={{background:'rgba(12,9,3,.8)',borderRadius:12,padding:'10px 14px 14px',border:'1px solid rgba(255,255,255,.08)'}}>
+      <div className="jass-hand-panel">
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
-          <span style={{fontSize:'.62rem',fontWeight:700,textTransform:'uppercase',letterSpacing:.5,color:myTurn?'#4a9e4a':'#666'}}>
-            {myTurn?'→ Du bist dran':G.phase==='playing'?`${G.seatNames[G.cur]} ist dran...`:''}
+          <span style={{fontSize:'.62rem',fontWeight:700,textTransform:'uppercase',letterSpacing:.5,color:myTurn?'#C5A021':'rgba(240,236,224,.3)'}}>
+            {myTurn?'→ Du bist dran':G.phase==='playing'?`${G.seatNames[G.cur]} ist dran…`:''}
           </span>
           {leadSuit&&(
-            <span style={{fontSize:'.68rem',background:'rgba(255,255,255,.08)',borderRadius:10,padding:'2px 9px',color:'#f0ece0'}}>
+            <span style={{fontSize:'.65rem',background:'rgba(197,160,33,.1)',border:'1px solid rgba(197,160,33,.25)',borderRadius:10,padding:'2px 9px',color:'#C5A021',fontWeight:600}}>
               {SUIT_EMOJI[leadSuit]} {leadSuit}
             </span>
           )}
         </div>
 
         {/* Fan */}
-        <div style={{position:'relative',height:118,display:'flex',justifyContent:'center'}}>
+        <div style={{position:'relative',height:cardH,display:'flex',justifyContent:'center'}}>
           {myHand.map((card,idx)=>{
             const total  = myHand.length;
             const center = (total-1)/2;
@@ -784,9 +835,9 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
             const isEO   = card.suit==='Eichel'&&card.rank==='O';
             return (
               <div key={card.id}
-                style={{position:'absolute',bottom:0,left:`calc(50% + ${rel*gap}px - 37px)`,transform:`rotate(${rot}deg)`,transformOrigin:'bottom center',zIndex:idx}}>
+                style={{position:'absolute',bottom:0,left:`calc(50% + ${rel*gap}px - ${isMobile?30:37}px)`,transform:`rotate(${rot}deg)`,transformOrigin:'bottom center',zIndex:idx}}>
                 <div className={ok?'card-lift'+(isEO?' card-special':''):'card-dim'} onClick={()=>ok&&humanPlayCard(card)}>
-                  <CardView card={card} size="lg" special={isEO}/>
+                  <CardView card={card} size={cardSize} special={isEO}/>
                 </div>
               </div>
             );
@@ -794,7 +845,7 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
         </div>
 
         {myTurn&&leadSuit&&(
-          <div style={{marginTop:4,fontSize:'.6rem',color:'#555',textAlign:'center'}}>
+          <div style={{marginTop:4,fontSize:'.6rem',color:'rgba(255,255,255,.28)',textAlign:'center'}}>
             Farbzwang: {leadSuit} spielen (wenn vorhanden)
           </div>
         )}
@@ -811,8 +862,16 @@ function App() {
   const [mySeat,   setMySeat]   = useState(-1);
 
   useEffect(() => {
+    const ALLOWED = ['eichleober@gmail.com','ella.baettig@gmail.com','noe.bertallo@icloud.com',
+      'lars.lumer@icloud.com','cpfenninger@outlook.com','le.nievergelt@gmail.com','silas.mueller4@gmail.com'];
+
     return firebase.auth().onAuthStateChanged(async user => {
-      if(!user) return;
+      if(!user) { setScreen('login'); return; }
+      if(!ALLOWED.includes(user.email.toLowerCase())) {
+        firebase.auth().signOut();
+        setScreen('login');
+        return;
+      }
       setAuthUser(user);
       const saved = localStorage.getItem('jass_room');
       if(saved){
@@ -836,6 +895,22 @@ function App() {
   const goLobby = () => { setScreen('lobby'); setRoomCode(''); setMySeat(-1); };
 
   if(screen==='loading') return <div style={{color:'#555',padding:40,textAlign:'center'}}>Laden...</div>;
+  if(screen==='login') return (
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
+      <div style={{background:'rgba(12,9,3,.82)',border:'1px solid rgba(255,255,255,.1)',borderRadius:16,padding:'40px 32px',maxWidth:340,width:'100%',textAlign:'center'}}>
+        <div style={{fontSize:'2.4rem',marginBottom:8}}>🃏</div>
+        <div style={{fontSize:'1.4rem',fontWeight:800,color:'#f0ece0',marginBottom:6,letterSpacing:1}}>Guggitaler Jass</div>
+        <div style={{fontSize:'.82rem',color:'rgba(240,236,224,.45)',marginBottom:32}}>Kein Trumpf · Farbzwang · Wer am wenigsten Punkte hat, gewinnt</div>
+        <button
+          onClick={() => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())}
+          style={{width:'100%',display:'flex',alignItems:'center',justifyContent:'center',gap:12,background:'#fff',color:'#1a1201',border:'none',borderRadius:8,padding:'13px 16px',fontWeight:700,fontSize:'.95rem',cursor:'pointer',marginBottom:12}}>
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 29.9 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-21 0-1.3-.2-2.7-.5-4z"/></svg>
+          Mit Google anmelden
+        </button>
+        <a href="index.html" style={{display:'block',fontSize:'.75rem',color:'rgba(240,236,224,.3)',textDecoration:'none',marginTop:8}}>← Zurück zur Vereinsseite</a>
+      </div>
+    </div>
+  );
   if(screen==='lobby')   return <Lobby authUser={authUser} onJoined={(c,s)=>{setRoomCode(c);setMySeat(s);setScreen('waiting');}}/>;
   if(screen==='waiting') return <WaitingRoom authUser={authUser} roomCode={roomCode} mySeat={mySeat} onGameStart={()=>setScreen('game')} onLeave={goLobby}/>;
   if(screen==='game')    return <JassGame authUser={authUser} roomCode={roomCode} mySeat={mySeat} onLeave={goLobby}/>;
