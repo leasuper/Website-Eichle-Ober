@@ -298,20 +298,26 @@ function Lobby({authUser, onJoined}) {
 
   const createRoom = async () => {
     setBusy(true); setError('');
-    const code = randomCode();
-    const seatNames = buildSeatNames(myName, numPlayers);
-    const init = {
-      phase:'waiting', rndIdx:0, numPlayers,
-      trick:[], tricksDone:0, tricksWon:Array(numPlayers).fill(null).map(()=>[]),
-      lastW:0, lead:0, cur:0,
-      totals:Array(numPlayers).fill(0), history:[],
-      trickRes:null, rndRes:null,
-      handSizes:Array(numPlayers).fill(0),
-      humanSeats:[0], seatNames,
-    };
-    await roomRef(code).set({ stateJson:JSON.stringify(init), players:{[authUser.uid]:{name:myName,seat:0}} });
-    localStorage.setItem('jass_room', code);
-    onJoined(code, 0);
+    try {
+      const code = randomCode();
+      const seatNames = buildSeatNames(myName, numPlayers);
+      const init = {
+        phase:'waiting', rndIdx:0, numPlayers,
+        trick:[], tricksDone:0, tricksWon:Array(numPlayers).fill(null).map(()=>[]),
+        lastW:0, lead:0, cur:0,
+        totals:Array(numPlayers).fill(0), history:[],
+        trickRes:null, rndRes:null,
+        handSizes:Array(numPlayers).fill(0),
+        humanSeats:[0], seatNames,
+      };
+      await roomRef(code).set({ stateJson:JSON.stringify(init), players:{[authUser.uid]:{name:myName,seat:0}} });
+      localStorage.setItem('jass_room', code);
+      onJoined(code, 0);
+    } catch(e) {
+      console.error('createRoom failed:', e);
+      setError('Verbindungsfehler – bitte Seite neu laden und nochmals versuchen.');
+      setBusy(false);
+    }
   };
 
   const joinRoom = async () => {
@@ -385,6 +391,7 @@ function Lobby({authUser, onJoined}) {
 function WaitingRoom({authUser, roomCode, mySeat, onGameStart, onLeave}) {
   const [st, setSt]           = useState(null);
   const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState('');
   const isHost = mySeat === 0;
 
   useEffect(() => {
@@ -419,9 +426,15 @@ function WaitingRoom({authUser, roomCode, mySeat, onGameStart, onLeave}) {
 
   const start = async () => {
     if(!st) return;
-    setStarting(true);
-    await hostDeal(roomCode, 0, {totals:Array(st.numPlayers).fill(0),history:[],lastW:0}, st.humanSeats, st.seatNames, st.numPlayers);
-    onGameStart();
+    setStarting(true); setStartError('');
+    try {
+      await hostDeal(roomCode, 0, {totals:Array(st.numPlayers).fill(0),history:[],lastW:0}, st.humanSeats, st.seatNames, st.numPlayers);
+      onGameStart();
+    } catch(e) {
+      console.error('Start failed:', e);
+      setStarting(false);
+      setStartError('Fehler beim Starten – bitte nochmals versuchen.');
+    }
   };
 
   const NP         = st?.numPlayers || 4;
@@ -455,9 +468,10 @@ function WaitingRoom({authUser, roomCode, mySeat, onGameStart, onLeave}) {
 
         {isHost ? (
           <>
-            <button onClick={start} disabled={starting} style={{width:'100%',background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:'pointer',marginBottom:8}}>
-              {starting?'Starte...':'Spiel starten →'}
+            <button onClick={start} disabled={starting||!st} style={{width:'100%',background:starting||!st?'rgba(45,106,45,.5)':'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:starting||!st?'default':'pointer',marginBottom:8,transition:'background .2s'}}>
+              {!st?'Verbinde…':starting?'Starte…':'Spiel starten →'}
             </button>
+            {startError&&<p style={{color:'#e55',fontSize:'.78rem',marginBottom:8,textAlign:'center'}}>{startError}</p>}
             <button onClick={handleCancel} style={{width:'100%',background:'transparent',color:'#c44',border:'1px solid #c44',borderRadius:8,padding:'9px',fontWeight:600,fontSize:'.88rem',cursor:'pointer'}}>
               Raum abbrechen
             </button>
