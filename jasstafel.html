@@ -106,7 +106,8 @@
 
     /* ── SCORE TABLE ── */
     .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; background: var(--bg2); min-width: 400px; }
+    table { width: 100%; border-collapse: collapse; background: var(--bg2); min-width: 400px; table-layout: fixed; }
+    thead th, tbody td, tfoot td { min-width: 0; }
     thead th { background: var(--bg3); color: var(--ink); padding: 13px 12px; text-align: center; font-family: var(--mono); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
     thead th:first-child { text-align: left; position: sticky; left: 0; z-index: 2; background: var(--bg3); }
     .player-name { display: block; font-size: 0.88rem; font-weight: 700; font-family: var(--serif); color: var(--ink); }

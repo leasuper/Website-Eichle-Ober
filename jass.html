@@ -317,15 +317,13 @@ function Lobby({authUser, onJoined}) {
           Neues Spiel erstellen
         </button>
         <div style={{textAlign:'center',color:'#444',fontSize:'.75rem',marginBottom:14}}>oder</div>
-        <div style={{display:'flex',gap:8}}>
-          <input value={codeInput} onChange={e=>setCodeInput(e.target.value.toUpperCase())}
-            placeholder="CODE" maxLength={4} onKeyDown={e=>e.key==='Enter'&&joinRoom()}
-            style={{flex:1,background:'rgba(255,255,255,.06)',border:'1px solid #333',borderRadius:8,padding:'11px 12px',color:'#f0ece0',fontSize:'1rem',letterSpacing:4,textTransform:'uppercase'}}
-          />
-          <button onClick={joinRoom} disabled={busy||!codeInput} style={{background:'rgba(255,255,255,.06)',color:'#aaa',border:'1px solid #333',borderRadius:8,padding:'11px 16px',fontWeight:600,fontSize:'.9rem',cursor:'pointer'}}>
-            Beitreten
-          </button>
-        </div>
+        <input value={codeInput} onChange={e=>setCodeInput(e.target.value.toUpperCase())}
+          placeholder="CODE" maxLength={4} onKeyDown={e=>e.key==='Enter'&&joinRoom()}
+          style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid #333',borderRadius:8,padding:'11px 12px',color:'#f0ece0',fontSize:'1rem',letterSpacing:4,textTransform:'uppercase',marginBottom:8}}
+        />
+        <button onClick={joinRoom} disabled={busy||!codeInput} style={{width:'100%',background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:'pointer'}}>
+          Beitreten
+        </button>
         {error&&<p style={{color:'#e55',marginTop:10,fontSize:'.82rem'}}>{error}</p>}
         <p style={{color:'#444',fontSize:'.7rem',marginTop:14}}>Angemeldet als {myName}</p>
       </div>
