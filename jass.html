@@ -357,9 +357,9 @@ function Lobby({authUser, onJoined}) {
         <div style={{textAlign:'center',color:'#444',fontSize:'.75rem',marginBottom:14}}>oder</div>
         <input value={codeInput} onChange={e=>setCodeInput(e.target.value.toUpperCase())}
           placeholder="CODE" maxLength={4} onKeyDown={e=>e.key==='Enter'&&joinRoom()}
-          style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid #333',borderRadius:8,padding:'11px 12px',color:'#f0ece0',fontSize:'1rem',letterSpacing:4,textTransform:'uppercase',marginBottom:8}}
+          style={{width:'100%',background:'rgba(255,255,255,.06)',border:'1px solid #333',borderRadius:8,padding:'12px',color:'#f0ece0',fontSize:'1rem',letterSpacing:4,textTransform:'uppercase',marginBottom:10,boxSizing:'border-box'}}
         />
-        <button onClick={joinRoom} disabled={busy||!codeInput} style={{width:'100%',background:'#2d6a2d',color:'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:'pointer'}}>
+        <button onClick={joinRoom} disabled={busy||!codeInput} style={{width:'100%',background:busy||!codeInput?'rgba(45,106,45,.4)':'#2d6a2d',color:busy||!codeInput?'rgba(255,255,255,.4)':'#fff',border:'none',borderRadius:8,padding:'12px',fontWeight:700,fontSize:'1rem',cursor:busy||!codeInput?'not-allowed':'pointer',transition:'all .2s',boxSizing:'border-box'}}>
           Beitreten
         </button>
         {error&&<p style={{color:'#e55',marginTop:10,fontSize:'.82rem'}}>{error}</p>}
