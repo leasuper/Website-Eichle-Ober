@@ -180,14 +180,26 @@ function trickWinner(t) {
 }
 
 function calcScore(rndIdx, tw, lastW, numPlayers) {
-  const r = n => rndIdx===n || rndIdx===5;
   return Array.from({length:numPlayers}, (_,p) => {
     const mt=tw[p]||[], mc=mt.flat(); let s=0;
-    if(r(0)) s += mt.length*5;
-    if(r(1)) s += mc.filter(c=>c.suit==='Schilten').length*10;
-    if(r(2)) s += mc.filter(c=>c.rank==='K').length*20;
-    if(mc.some(c=>c.suit==='Eichel'&&c.rank==='O')) s += r(3) ? 67 : 25;
-    if(r(4) && p===lastW) s+=50;
+    const hasEO = mc.some(c=>c.suit==='Eichel'&&c.rank==='O');
+    
+    // Runde 1: 5 Pkt/Stich + 25 EO
+    if(rndIdx===0 || rndIdx===5) s += mt.length*5;
+    // Runde 2: 10 Pkt/Schilte + 25 EO
+    if(rndIdx===1 || rndIdx===5) s += mc.filter(c=>c.suit==='Schilten').length*10;
+    // Runde 3: 20 Pkt/König + 25 EO
+    if(rndIdx===2 || rndIdx===5) s += mc.filter(c=>c.rank==='K').length*20;
+    
+    // EO: +67 nur in Runde 4 & 6, sonst +25
+    if(hasEO) {
+      if(rndIdx===3 || rndIdx===5) s += 67;  // Runden 4 & 6: EO +67
+      else s += 25;                           // Runden 1-3, 5: EO +25
+    }
+    
+    // Runde 5 & 6: 50 Pkt/letzter Stich
+    if((rndIdx===4 || rndIdx===5) && p===lastW) s+=50;
+    
     return s;
   });
 }
