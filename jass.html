@@ -515,11 +515,42 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     } finally { aiRunning.current = false; }
   };
 
+  const isRoundFinished = () => {
+    const G = Gref.current;
+    if(!G) return false;
+    const cpp = cppForN(G.numPlayers||4);
+    
+    // Alle gespielten Karten sammeln
+    const allCards = G.tricksWon.flat().flat();
+    
+    // Runde 2 (Schilten): Runde fertig, wenn alle Schilten + Eichel Ober gespielt wurden
+    if(G.rndIdx === 1) {
+      const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
+      const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+      return schiltenCount === 4 && eichelOberPlayed;
+    }
+    
+    // Runde 3 (Könige): Runde fertig, wenn alle Könige + Eichel Ober gespielt wurden
+    if(G.rndIdx === 2) {
+      const kingCount = allCards.filter(c => c.rank === 'K').length;
+      const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+      return kingCount === 4 && eichelOberPlayed;
+    }
+    
+    // Runde 4 (Eichel Ober): Runde fertig, wenn Eichel Ober gespielt wurde
+    if(G.rndIdx === 3) {
+      return allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+    }
+    
+    // Für alle anderen Runden: alle Karten müssen gespielt sein
+    return G.tricksDone >= cpp;
+  };
+
   const hostAdvance = async () => {
     const G = Gref.current;
     if(!G) return;
-    const cpp = cppForN(G.numPlayers||4);
-    if(G.tricksDone >= cpp){
+    
+    if(isRoundFinished()){
       const scores = calcScore(G.rndIdx, G.tricksWon, G.lastW, G.numPlayers||4);
       const totals = G.totals.map((t,i)=>t+scores[i]);
       await writeState(roomCode, {...G, phase:'round_result', history:[...G.history,scores], totals, rndRes:{rndIdx:G.rndIdx,scores}});
@@ -574,8 +605,35 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
     if(!leadSuit) return true;
     return myHand.some(c=>c.suit===leadSuit) ? card.suit===leadSuit : true;
   };
-  const isLastTrick       = G.tricksDone===CPP-1 && G.phase==='playing';
-  const isLastTrickResult = G.tricksDone===CPP    && G.phase==='trick_result';
+  const calculateRoundEndCondition = () => {
+    if(!G) return cppForN(G?.numPlayers||4);
+    const allCards = G.tricksWon.flat().flat();
+    
+    // Runde 2 (Schilten): 4 Schilten + 1 Eichel Ober = 5 Karten
+    if(G.rndIdx === 1) {
+      const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
+      const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+      if(schiltenCount === 4 && eichelOberPlayed) return G.tricksDone;
+    }
+    
+    // Runde 3 (Könige): 4 Könige + 1 Eichel Ober = 5 Karten
+    if(G.rndIdx === 2) {
+      const kingCount = allCards.filter(c => c.rank === 'K').length;
+      const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+      if(kingCount === 4 && eichelOberPlayed) return G.tricksDone;
+    }
+    
+    // Runde 4 (Eichel Ober): Nur 1 Karte
+    if(G.rndIdx === 3) {
+      if(allCards.some(c => c.suit === 'Eichel' && c.rank === 'O')) return G.tricksDone;
+    }
+    
+    // Für alle anderen Runden: normale Rundenlänge
+    return cppForN(G?.numPlayers||4);
+  };
+  
+  const isLastTrick       = G && calculateRoundEndCondition() === G.tricksDone + 1 && G.phase==='playing';
+  const isLastTrickResult = G && calculateRoundEndCondition() === G.tricksDone && G.phase==='trick_result';
 
   // Clockwise seat layout around table (offset from mySeat)
   const others     = Array.from({length:NP-1}, (_,i)=>(mySeat+1+i)%NP);
