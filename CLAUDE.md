@@ -57,9 +57,7 @@ eichle ober/
 
 ### Auth
 - Google Sign-In via Firebase Auth (`signInWithPopup`)
-- **Whitelist** (Allowlist): Nur diese E-Mails dürfen rein:
-  `eichleober@gmail.com`, `ella.baettig@gmail.com`, `noe.bertallo@icloud.com`,
-  `lars.lumer@icloud.com`, `cpfenninger@outlook.com`, `le.nievergelt@gmail.com`, `silas.mueller4@gmail.com`
+- **Whitelist** (Allowlist): Erlaubte E-Mails stehen im `ALLOWED`-Array direkt in `index.html`
 - `currentUser` ist eine globale Variable (kein React), wird in `onAuthStateChanged` gesetzt
 
 ### Design
@@ -205,7 +203,7 @@ App               ← Root: screen-State, authUser-State, localStorage-Restore
     "diskussion": { ".read": "auth != null", ".write": "auth != null" },
     "config": {
       ".read":  "auth != null",
-      ".write": "auth.token.email == 'le.nievergelt@gmail.com' || auth.token.email == 'eichleober@gmail.com'"
+      ".write": "auth.token.email == '[admin1]' || auth.token.email == '[admin2]'"  // E-Mails direkt in index.html
     }
   }
 }
