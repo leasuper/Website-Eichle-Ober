@@ -22,17 +22,7 @@ Vereins-Website des Guggitaler Jass-Klubs. Statische HTML-Dateien, kein Build-St
 
 ## Firebase-Konfiguration
 
-```js
-firebase.initializeApp({
-  apiKey:      "AIzaSyAT95KlfXEiKAtRQ1PtMqctBOU-c5MW73A",
-  authDomain:  "website-eichle-ober-bf1e5.firebaseapp.com",
-  databaseURL: "https://website-eichle-ober-bf1e5-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId:   "website-eichle-ober-bf1e5",
-  appId:       "1:405255994774:web:5c590b8dd16ce9ebfd31b7"
-});
-```
-
-Der API-Key ist im HTML eingebettet — das ist so gewollt (Firebase-Client-Key, kein Server-Secret).
+Die Firebase-Config (API-Key, Database-URL, App-ID) steht direkt in `index.html` und `jass.html` — dort nachschauen. Nicht hier duplizieren (öffentliches Repo).
 
 ---
 
