@@ -173,6 +173,24 @@ const buildSeatNames = (myName, numPlayers) => {
   return names;
 };
 
+const getEarlyEndReason = (rndIdx, tricksDone, cpp, allCards) => {
+  if (tricksDone >= cpp) return null;
+  if (rndIdx === 1) {
+    const schiltenCount = allCards.filter(c => c.suit === 'Schilten').length;
+    const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+    if (schiltenCount === 9 && eichelOberPlayed) return "Alle Schilten und der Eichel Ober wurden gespielt - nächste Runde!";
+  }
+  if (rndIdx === 2) {
+    const kingCount = allCards.filter(c => c.rank === 'K').length;
+    const eichelOberPlayed = allCards.some(c => c.suit === 'Eichel' && c.rank === 'O');
+    if (kingCount === 4 && eichelOberPlayed) return "Alle Könige und der Eichel Ober wurden gespielt - nächste Runde!";
+  }
+  if (rndIdx === 3) {
+    if (allCards.some(c => c.suit === 'Eichel' && c.rank === 'O')) return "Der Eichel Ober wurde gespielt - nächste Runde!";
+  }
+  return null;
+};
+
 function trickWinner(t) {
   const s = t[0].card.suit; let best = t[0];
   for(const p of t) if(p.card.suit===s && ri(p.card.rank)>ri(best.card.rank)) best=p;
@@ -724,6 +742,8 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
   // ── ROUND RESULT ──
   if(G.phase==='round_result'&&G.rndRes) {
     const next=G.rndIdx+1;
+    const allCards = G.tricksWon.flat().flat();
+    const earlyEndReason = getEarlyEndReason(G.rndIdx, G.tricksDone, CPP, allCards);
     return (
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:20}}>
         <div className="fade-up dark-panel" style={{padding:32,maxWidth:420,width:'100%'}}>
@@ -751,6 +771,11 @@ function JassGame({authUser, roomCode, mySeat, onLeave}) {
               })}
             </tbody>
           </table>
+          {earlyEndReason && (
+            <div style={{textAlign:'center', marginBottom: 20, fontSize: '.9rem', color: '#C5A021', fontWeight: 600}}>
+              {earlyEndReason}
+            </div>
+          )}
           <div style={{display:'flex',gap:8}}>
             <button onClick={handleLeave} style={{background:'transparent',color:'#c44',border:'1px solid #c44',borderRadius:8,padding:'9px 14px',fontWeight:600,fontSize:'.82rem',cursor:'pointer',flexShrink:0}}>
               Verlassen
